@@ -15,7 +15,8 @@ urlpatterns = [
     # --- API v1 ---
     path("api/v1/", include("apps.core.urls")),
     path("api/v1/", include("apps.accounts.urls")),
-    # B2+ plug their app routers here, e.g. path("api/v1/", include("apps.dogs.urls")),
+    path("api/v1/", include("apps.dogs.urls")),
+    # B3+ plug their app routers here, e.g. path("api/v1/", include("apps.gardens.urls")),
     # --- OpenAPI schema ---
     path("api/v1/schema/", SpectacularAPIView.as_view(), name="schema"),
 ]

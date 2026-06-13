@@ -166,6 +166,173 @@ paths:
               schema:
                 $ref: '#/components/schemas/AuthTokens'
           description: ''
+  /api/v1/dogs/:
+    get:
+      operationId: dogs_list
+      description: GET /dogs/ — the logged-in client's dogs; POST /dogs/ — add a dog.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - dogs
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDogListList'
+          description: ''
+    post:
+      operationId: dogs_create
+      description: GET /dogs/ — the logged-in client's dogs; POST /dogs/ — add a dog.
+      tags:
+      - dogs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DogWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DogWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DogWrite'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DogDetail'
+          description: ''
+  /api/v1/dogs/{id}/:
+    get:
+      operationId: dogs_retrieve
+      description: GET/PATCH/DELETE /dogs/{id}/ — only the owner's own dog (others
+        → 404).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - dogs
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DogDetail'
+          description: ''
+    patch:
+      operationId: dogs_partial_update
+      description: GET/PATCH/DELETE /dogs/{id}/ — only the owner's own dog (others
+        → 404).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - dogs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedDogWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedDogWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedDogWrite'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DogDetail'
+          description: ''
+    delete:
+      operationId: dogs_destroy
+      description: GET/PATCH/DELETE /dogs/{id}/ — only the owner's own dog (others
+        → 404).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - dogs
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/dogs/{id}/photo/:
+    post:
+      operationId: dogs_photo_create
+      description: POST /dogs/{id}/photo/ — upload (compress + store) the dog's avatar.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - dogs
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DogPhoto'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DogPhoto'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DogDetail'
+          description: ''
   /api/v1/health/:
     get:
       operationId: health_retrieve
@@ -280,6 +447,9 @@ components:
       - access
       - refresh
       - user
+    BlankEnum:
+      enum:
+      - ''
     Detail:
       type: object
       description: 'Generic ``{"detail": "..."}`` response.'
@@ -289,6 +459,201 @@ components:
           readOnly: true
       required:
       - detail
+    DogDetail:
+      type: object
+      description: Full read shape of a dog. ``DogListSerializer`` narrows the field
+        set.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        breed:
+          type: string
+          readOnly: true
+        birth_date:
+          type: string
+          format: date
+          readOnly: true
+          nullable: true
+        age_label:
+          type: string
+          nullable: true
+          readOnly: true
+        weight_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,1})?$
+          readOnly: true
+          nullable: true
+        sex:
+          allOf:
+          - $ref: '#/components/schemas/SexEnum'
+          readOnly: true
+        is_sterilized:
+          type: boolean
+          readOnly: true
+        vaccinations_valid_until:
+          type: string
+          format: date
+          readOnly: true
+          nullable: true
+        vaccinations_status:
+          type: string
+          readOnly: true
+        deworming_valid_until:
+          type: string
+          format: date
+          readOnly: true
+          nullable: true
+        deworming_status:
+          type: string
+          readOnly: true
+        health_status:
+          type: string
+          readOnly: true
+        notes:
+          type: string
+          readOnly: true
+        photo:
+          type: string
+          format: uri
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - age_label
+      - birth_date
+      - breed
+      - created_at
+      - deworming_status
+      - deworming_valid_until
+      - health_status
+      - id
+      - is_sterilized
+      - name
+      - notes
+      - photo
+      - sex
+      - updated_at
+      - vaccinations_status
+      - vaccinations_valid_until
+      - weight_kg
+    DogList:
+      type: object
+      description: Lighter shape for the "Moi pupile" list (drops free-text and audit
+        fields).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        breed:
+          type: string
+          readOnly: true
+        age_label:
+          type: string
+          nullable: true
+          readOnly: true
+        weight_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,1})?$
+          readOnly: true
+          nullable: true
+        sex:
+          allOf:
+          - $ref: '#/components/schemas/SexEnum'
+          readOnly: true
+        is_sterilized:
+          type: boolean
+          readOnly: true
+        vaccinations_status:
+          type: string
+          readOnly: true
+        deworming_status:
+          type: string
+          readOnly: true
+        health_status:
+          type: string
+          readOnly: true
+        photo:
+          type: string
+          format: uri
+          readOnly: true
+          nullable: true
+      required:
+      - age_label
+      - breed
+      - deworming_status
+      - health_status
+      - id
+      - is_sterilized
+      - name
+      - photo
+      - sex
+      - vaccinations_status
+      - weight_kg
+    DogPhoto:
+      type: object
+      description: Multipart photo upload for a dog (PLAN 8.2). Heavy validation happens
+        on processing.
+      properties:
+        photo:
+          type: string
+          format: uri
+          writeOnly: true
+      required:
+      - photo
+    DogWrite:
+      type: object
+      description: Validate dog input on create/update. ``owner`` and ``photo`` are
+        set elsewhere.
+      properties:
+        name:
+          type: string
+          maxLength: 60
+        breed:
+          type: string
+          maxLength: 80
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+        weight_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,1})?$
+          nullable: true
+        sex:
+          oneOf:
+          - $ref: '#/components/schemas/SexEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        is_sterilized:
+          type: boolean
+        vaccinations_valid_until:
+          type: string
+          format: date
+          nullable: true
+        deworming_valid_until:
+          type: string
+          format: date
+          nullable: true
+        notes:
+          type: string
+      required:
+      - name
     HealthResponse:
       type: object
       properties:
@@ -325,6 +690,29 @@ components:
           writeOnly: true
       required:
       - refresh
+    PaginatedDogListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/DogList'
     PasswordResetConfirm:
       type: object
       description: Set a new password using the token from the reset e-mail.
@@ -353,6 +741,42 @@ components:
           format: email
       required:
       - email
+    PatchedDogWrite:
+      type: object
+      description: Validate dog input on create/update. ``owner`` and ``photo`` are
+        set elsewhere.
+      properties:
+        name:
+          type: string
+          maxLength: 60
+        breed:
+          type: string
+          maxLength: 80
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+        weight_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,1})?$
+          nullable: true
+        sex:
+          oneOf:
+          - $ref: '#/components/schemas/SexEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        is_sterilized:
+          type: boolean
+        vaccinations_valid_until:
+          type: string
+          format: date
+          nullable: true
+        deworming_valid_until:
+          type: string
+          format: date
+          nullable: true
+        notes:
+          type: string
     PatchedMeUpdate:
       type: object
       description: Editable profile fields (PATCH /me/). ``role``/``email`` are intentionally
@@ -429,6 +853,14 @@ components:
       description: |-
         * `client` - client
         * `host` - host
+    SexEnum:
+      enum:
+      - male
+      - female
+      type: string
+      description: |-
+        * `male` - Samiec
+        * `female` - Suka
     TokenRefresh:
       type: object
       properties:
