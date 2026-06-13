@@ -211,7 +211,8 @@ ruff>=0.11
     "date-fns": "^4.1.0",
     "lucide-react": "^0.510.0",          // ikony
     "clsx": "^2.1.0",
-    "@fontsource-variable/inter": "^5.2.0"
+    "@fontsource-variable/inter": "^5.2.0",
+    "@fontsource-variable/jetbrains-mono": "^5.2.0"  // mono z design systemu (ceny, ID, metadane)
   },
   "devDependencies": {
     "typescript": "~5.8.0",
@@ -261,7 +262,8 @@ psi-park/
 ├── docs/
 │   ├── PLAN.md                  # ten dokument (źródło prawdy)
 │   ├── analiza.pdf              # analiza wstępna (źródłowa)
-│   └── projekt.pdf              # UML, ERD, projekt UI, lista technologii (źródłowy)
+│   ├── projekt.pdf              # UML, ERD, projekt UI, lista technologii (źródłowy)
+│   └── design/                  # handoff Claude Design — prototypy 9 ekranów FE (sek. 16.1.1)
 ├── README.md                    # quickstart + sekcja "Decyzje implementacyjne"
 ├── docker-compose.yml
 ├── .env.example
@@ -1066,9 +1068,10 @@ Każda część = jedno zlecenie dla jednego agenta. Format: **Cel · Zależnoś
 
 ## 16. Podział pracy — FRONTEND
 
-Frontend to **osobna aplikacja** (SPA React/Vite/TS), komunikuje się z backendem wyłącznie po HTTP (`/api/v1`) i WS (`/ws`). Wszystkie ekrany odwzorowują mockupy z projekt.pdf (estetyka: zielona paleta PsiPark, miękkie zaokrąglenia, lekkie cienie, font Inter, dużo bieli i pastelowej zieleni).
+Frontend to **osobna aplikacja** (SPA React/Vite/TS), komunikuje się z backendem wyłącznie po HTTP (`/api/v1`) i WS (`/ws`). **Wizualnym źródłem prawdy jest handoff Claude Design w `docs/design/`** (gotowe prototypy 9 ekranów — mapowanie ekran→część w sek. 16.1.1); `projekt.pdf` pozostaje źródłem modelu danych/UML. Estetyka: zieleń marki `#2E7D32`, ciepła biel tła `#FAFFFA`, ciemny tekst `#1B1B1B`, font **Inter** (+ JetBrains Mono na metadane/ceny), **pill-buttony**, miękkie zaokrąglenia i 3-poziomowe cienie, dużo bieli — inspirowane Airbnb (dużo zdjęć, czysty layout).
 
 ### 16.0. Zasady wspólne dla wszystkich części FE
+- **Zgodność z designem (priorytet):** każdy ekran odtwarza odpowiedni prototyp z `docs/design/project/` **piksel-w-piksel** — kolory, odstępy, typografia i komponenty wyłącznie wg tokenów §16.1; rozjazd z handoffem Claude Design traktujemy jak błąd. Cel produktu: UI w **100% zgodne** z Claude Design.
 - Routing danych: każda strona pobiera dane przez hooki React Query z `features/<x>/api.ts`; komponenty nie wołają axiosa.
 - Typy odpowiedzi wyłącznie z `shared/api/schema.d.ts` (generowane z `backend/schema.yaml`).
 - 4 stany widoku (loading/error/empty/success) obowiązkowe.
@@ -1078,24 +1081,58 @@ Frontend to **osobna aplikacja** (SPA React/Vite/TS), komunikuje się z backende
 
 ### 16.1. Design system (część F0 tworzy, reszta używa)
 
-**Tokeny w `src/index.css`** (Tailwind v4, `@theme` — bez `tailwind.config.js`):
+**Tokeny w `src/index.css`** (Tailwind v4, `@theme` — bez `tailwind.config.js`). Wartości są **1:1 z Claude Design** (`docs/design/project/Design System.html` + `assets/auth.css`) — to wiążące źródło palety; nie zmieniaj odcieni bez aktualizacji handoffu:
 ```css
 @import "tailwindcss";
 @theme {
-  --color-brand-50:#f0f9f1; --color-brand-100:#dcf0de; --color-brand-200:#bbe1c0;
-  --color-brand-300:#8ccd96; --color-brand-400:#57b168; --color-brand-500:#2f9e44; /* primary */
-  --color-brand-600:#268038; --color-brand-700:#216a30; --color-brand-800:#1d5429;
-  --color-surface:#ffffff; --color-canvas:#f6faf6;     /* tło stron jak w mockupach */
-  --color-ink-900:#14211a; --color-ink-700:#3a4a40; --color-ink-500:#6b7c70; --color-ink-300:#9fb0a4;
-  --color-border:#e4ece5; --color-danger:#dc2626; --color-warning:#d97706; --color-success:#16a34a;
-  --radius-card:16px; --radius-control:10px; --shadow-card:0 1px 3px rgba(20,33,26,.06),0 8px 24px rgba(20,33,26,.05);
-  --font-sans:"Inter Variable", system-ui, sans-serif;
+  /* Zieleń marki — 700 = primary (#2E7D32, natura/ogrody) */
+  --color-green-50:#F0F8EE; --color-green-100:#DCEFD8; --color-green-300:#A5D6A7;
+  --color-green-500:#66BB6A; --color-green-600:#43A047; --color-green-700:#2E7D32;
+  --color-green-800:#1B5E20; --color-green-900:#0F3D14;
+  /* Neutrale — tekst podstawowy #1B1B1B */
+  --color-ink-50:#F5F5F4; --color-ink-100:#ECECEC; --color-ink-200:#D8D8D8;
+  --color-ink-300:#B5B5B5; --color-ink-500:#6B6B6B; --color-ink-700:#3A3A3A; --color-ink-900:#1B1B1B;
+  /* Powierzchnie — ciepła biel tła stron + białe karty */
+  --color-bone:#FAFFFA; --color-surface:#FFFFFF;
+  /* Stany */
+  --color-success:#2E7D32; --color-warning:#E2A03F; --color-danger:#C5443A; --color-info:#3A6FB0;
+  /* Akcenty (łapy / pinezki mapy) + fioletowy fokus pola karty Stripe */
+  --color-clay:#C97B5A; --color-sun:#E8B84A; --color-stripe:#635BFF;
+  /* Promienie (skala 6→28 + pill) */
+  --radius-xs:6px; --radius-sm:10px; --radius-md:14px; --radius-lg:20px; --radius-xl:28px; --radius-pill:999px;
+  /* Cienie (3 poziomy) */
+  --shadow-1:0 1px 2px rgba(20,30,20,.06),0 1px 1px rgba(20,30,20,.04);
+  --shadow-2:0 4px 12px rgba(20,30,20,.06),0 2px 4px rgba(20,30,20,.04);
+  --shadow-3:0 12px 28px rgba(20,30,20,.10),0 4px 10px rgba(20,30,20,.05);
+  /* Typografia — Inter (UI) + JetBrains Mono (ceny, ID, metadane, tokeny) */
+  --font-sans:"Inter","Inter Variable",system-ui,"Segoe UI",sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
 }
 ```
-Status zdrowia psa / weryfikacji mapowany na `success/warning/danger` (kropki w mockupie „Moi pupile").
+Skala typografii (Inter): display 56 → 40 → 32 → 28 → 22 → 20 → 18 → 16 → 15 → 14 → **13 (body)** → 12 → 11 (caption); wagi 400/500/600/700. Status zdrowia psa / weryfikacji mapowany na `success/warning/danger` (kropki z poświatą w panelu „Moi pupile").
 
 **Biblioteka komponentów `src/shared/ui/`** (każdy z wariantami + stanami + a11y, pokryte podstawowymi testami render):
-`Button` (primary/secondary/ghost/danger, loading, ikona), `Input`, `Textarea`, `Select`, `Checkbox`, `RadioGroup`, `Toggle`, `DatePicker` (react-day-picker, locale pl), `TimeRangePicker`, `Badge` (status: pending/approved/confirmed/rejected/cancelled + health), `Avatar` (inicjały/zdjęcie), `Card`, `Modal`/`Dialog` (focus trap), `Drawer`, `Tabs`, `Table` (sortowalna, paginacja), `Pagination`, `Rating` (gwiazdki, read/write), `Toast`/`Toaster`, `Skeleton`, `EmptyState` (ilustracja+CTA), `Spinner`, `Tooltip`, `Stepper` (wizard), `StatCard` (kafelek liczbowy), `PriceTag`, `FileDropzone` (upload zdjęć), `MapView` (wrapper Leaflet), `FormField` (label+error+hint wrapper dla RHF).
+`Button` (primary/secondary/ghost/danger × sm/md/lg, kształt **pill**, loading, ikona), `Input`, `Textarea`, `Select`, `Checkbox`, `RadioGroup`, `Toggle`, `DatePicker` (react-day-picker, locale pl), `TimeRangePicker` (rząd chipów godzin: klik start → klik koniec, środkowe podświetlone, zajęte disabled), `Badge` (warianty success/warning/danger/info/neutral/outline/solid/rating — statusy rezerwacji pending/approved/confirmed/rejected/cancelled + zdrowie + ocena ★), `Avatar` (inicjały/zdjęcie), `Card`, `Modal`/`Dialog` (focus trap), `Drawer`, `Tabs`, `Table` (sortowalna, paginacja), `Pagination`, `Rating` (gwiazdki, read/write), `Toast`/`Toaster`, `Skeleton`, `EmptyState` (ilustracja+CTA), `Spinner`, `Tooltip`, `Stepper` (wizard 1·2·3 z aktywnym ringiem), `StatCard` (kafelek liczbowy), `PriceTag`, `FileDropzone` (upload zdjęć), `MapView` (wrapper Leaflet), `FormField` (label+error+hint wrapper dla RHF).
+
+**Ikonografia:** `lucide-react` dla ikon generycznych + mały zestaw **autorskich ikon tematycznych line** (pies, łapa, kość, ogród/drzewo, furtka-klucz, tarcza-bezpieczeństwo, pinezka, kalendarz, gwiazdka) przeniesionych jako SVG z `docs/design/project/Design System.html` (sekcja „Ikony tematyczne", 24 ikony). Karta oferty (`GardenCard`): okładka 4:3, badge statusu w lewym górnym, „serce" (zapisz) w prawym górnym, price-tag, rating ★+liczba recenzji.
+
+### 16.1.1. Ekrany źródłowe (Claude Design handoff)
+
+**Wizualnym źródłem prawdy są prototypy HTML/CSS w `docs/design/project/`** (handoff z claude.ai/design; intencje i historia iteracji w `docs/design/chats/chat1.md`, instrukcja w `docs/design/README.md`). Odtwarzaj je **piksel-w-piksel** w React — odwzoruj wygląd, nie kopiuj struktury HTML prototypu. Mapowanie ekran → część:
+
+| Plik w `docs/design/project/` | Część | Kluczowe elementy do odwzorowania |
+|---|---|---|
+| `Design System.html` | F0 | paleta, typografia, promienie/cienie, Button 4×3 pill, inputy, badge, karty, 24 ikony tematyczne |
+| `Home Page.html` | F2 | nav (logo, wyszukiwarka centralnie max 640px, „Zostań gospodarzem" + „Zaloguj się" + ciemny CTA „Zarejestruj się"); hero z podświetloną frazą „idealny ogród" + 3 staty; pasek filtrów pill; **split 50/50** lista kart 2×3 ↔ sticky mapa z ceną na pinezkach; **hover karty ↔ podświetlenie pinezki**; ciemna stopka 5 kolumn |
+| `Garden Detail.html` | F3 | galeria 1 duże + 2×2; breadcrumb; „★ 4,8 · 23 recenzje"; highlights; udogodnienia (dostępne + przekreślone brakujące); zasady; karta gospodarza; sticky BookingWidget („45 / zł / za godzinę", kalendarz, **chipy godzin**, licznik psów ± z dopłatą, koszty na żywo); mini-mapa z ringiem przybliżonej lokalizacji + „dokładny adres po rezerwacji" |
+| `Booking Form.html` | F4 (krok 1) | stepper 1→2→3; sekcje 01 Kiedy / 02 Pies (karty radio z badge szczepień) / 03 Wiadomość (textarea 0/500) / 04 Regulamin (3 wymagane + 1 opcjonalny); sticky podsumowanie; CTA disabled do zaznaczenia 3 zgód; plakietka „Bezpieczna rezerwacja · SSL" |
+| `Payment.html` | F4 (krok 2) | **tylko karty** (Stripe): pasek „Akceptujemy VISA/Mastercard/AMEX", compound input (numer + auto-detekcja brandu, MM/RR, CVC, właściciel), **fokus fioletowy `--color-stripe`**, „Zapisz kartę"; dane do rozliczenia + rozwijane „faktura na firmę" (NIP); CTA „Zapłać 89 zł" z kłódką; trust bar 3-D Secure · PCI DSS · Stripe; modal autoryzacji 3-D Secure |
+| `Login.html` | F1 | „Cześć ponownie!"; e-mail + hasło (toggle podglądu); „Zapamiętaj mnie na 30 dni" + „Zapomniałeś hasła?"; CTA; divider „lub" + Google/Apple (tylko wizualnie, §18); link do rejestracji; lewa kolumna = ilustracja biegnącego psa (SVG) |
+| `Register.html` | F1 | toggle **Klient / Gospodarz** (ikony łapa/płot, „Szukam ogrodu"/„Wynajmuję ogród"); imię+nazwisko 2 kolumny; e-mail/telefon/hasło/powtórz; **miernik siły hasła** (4 segmenty: Słabe/OK/Dobre/Mocne); 3 checkboxy (RODO + Regulamin wymagane, newsletter opcjonalny); CTA disabled do obu wymaganych |
+| `Client Panel.html` | F5 | sidebar 280px (avatar + „Klient", Moje rezerwacje/Moi pupile/Recenzje/Wiadomości[badge]/Ustawienia, „Wyloguj się" w danger); 4 StatCard; taby Nadchodzące/Zakończone/Anulowane; karty rezerwacji (miniatura \| info \| akcje) z badge statusu; zakładka „Moi pupile" z kropkami statusu zdrowia |
+| `Host Panel.html` | F6 | sidebar (avatar MK + weryfikacja + „Super-Gospodarz"; Moje ogrody/Rezerwacje[badge]/Harmonogram/Wiadomości/Zarobki; widget zarobków ciemnozielony „1 847 zł"); 4 StatCard; taby Wszystkie/Oczekuje(•)/Zaakceptowane/Odrzucone; **tabela rezerwacji** (Klient/Pies/Ogród/Data/Kwota brutto+netto/Status/Akcje), wiersze pending z pomarańczowym lewym borderem, Akceptuj/Odrzuć; zakładka „Moje ogrody" — karty 16:9 z badge statusu |
+
+`Login.html`/`Register.html` współdzielą `docs/design/project/assets/auth.css` i ilustrację `assets/garden-dog.svg`. SSO Google/Apple pozostaje **tylko wizualne** (PLAN §18). Płatność **wyłącznie kartą przez Stripe** — pierwotny wybór metod (BLIK/Przelewy24/Apple/Google Pay) został **świadomie usunięty** w handoffie (decyzja właściciela: „aplikacja obsługuje tylko Stripe, karty płatnicze").
 
 ### 16.2. Tablica tras (`src/app/router.tsx`, React Router v7)
 
@@ -1137,11 +1174,11 @@ Ochrona tras: `RequireAuth` i `RequireRole` (czyta `AuthContext`), przekierowani
 
 ### F0 — Szkielet FE, design system, routing, auth, API client
 **Cel:** fundament, na którym budują F1–F8. **Zależności:** B0 (schema.yaml istnieje). 
-**Zakres:** init Vite+React19+TS strict; Tailwind v4 + tokeny (16.1); `shared/ui` (16.1) z testami render i Storybook-free demo stroną `/_ui` (tylko dev); `shared/api` (client+interceptory+typy); `shared/auth` (context+guards+tokens); `shared/lib`; layouty (Public z navbarem jak w mockupie: logo PsiPark, miasto, „Zostań gospodarzem", „Zaloguj się/Zarejestruj"; Auth split-screen; trzy Dashboard z sidebarami wg mockupów 5/6); router z lazy; providers; `EmptyState`/error boundary/404; `vite.config` (proxy /api,/ws; vitest); ESLint/Prettier/tsconfig; `npm run gen:api`.
+**Zakres:** init Vite+React19+TS strict; Tailwind v4 + tokeny (16.1); `shared/ui` (16.1) z testami render i Storybook-free demo stroną `/_ui` (tylko dev); `shared/api` (client+interceptory+typy); `shared/auth` (context+guards+tokens); `shared/lib`; layouty (Public z navbarem jak w mockupie: logo PsiPark, miasto, „Zostań gospodarzem", „Zaloguj się/Zarejestruj"; Auth split-screen; trzy Dashboard z sidebarami wg `Client Panel.html`/`Host Panel.html`); router z lazy; providers; `EmptyState`/error boundary/404; `vite.config` (proxy /api,/ws; vitest); ESLint/Prettier/tsconfig; `npm run gen:api`.
 **DoD:** `npm run dev` pokazuje Home placeholder + `/_ui` z komponentami; lint/typecheck/test/build zielone; interceptor JWT przetestowany (mock 401→refresh→retry).
 
 ### F1 — Uwierzytelnianie (Logowanie, Rejestracja, Reset)
-**Cel:** ekrany auth wg mockupu 4. **Zależności:** F0, B1.
+**Cel:** ekrany auth (`Login.html`, `Register.html`; sek. 16.1.1). **Zależności:** F0, B1.
 **Zakres / strony:**
 - **AuthLayout** split: lewa kolumna pastelowa ilustracja (wzgórza+pies+chmury, SVG/obraz) z kartką-testimonialem na dole; prawa kolumna formularz. „Wróć do strony głównej" u góry.
 - **Rejestracja** (`/rejestracja`): toggle **Klient / Gospodarz** (segmenty z mockupu), pola Imię, Nazwisko, E-mail, Telefon, Hasło (siła), Powtórz hasło; checkboxy: akceptacja Regulaminu+Polityki (wymagana), zgoda marketingowa (opcjonalna); przycisk „Załóż konto"; przyciski Google/Apple (wizualnie, disabled z tooltipem „wkrótce" — poza zakresem auth społ.); link „Masz już konto? Zaloguj się". Walidacja zod, mapowanie błędów 400 z API na pola. Po sukcesie: zapis tokenów, redirect (klient→`/panel`, host→`/gospodarz`).
@@ -1149,7 +1186,7 @@ Ochrona tras: `RequireAuth` i `RequireRole` (czyta `AuthContext`), przekierowani
 - **Reset hasła**: ekran z e-mailem (wyślij link) + ekran ustawienia nowego hasła po `:token`.
 **DoD:** pełny cykl rejestracja→logowanie→reset działa na żywym backendzie; walidacje i błędy API po polsku; testy render+walidacja formularzy.
 
-### F2 — Strona główna: katalog + wyszukiwarka + mapa (mockup 1)
+### F2 — Strona główna: katalog + wyszukiwarka + mapa (`Home Page.html`)
 **Cel:** publiczny katalog z filtrami i mapą split-view. **Zależności:** F0, B3.
 **Zakres / sekcje strony:**
 - **Hero**: nagłówek „Znajdź **idealny ogród** dla swojego psa" (akcent zielony), podtytuł, **SearchBar**: Miasto (autouzupełnianie z dostępnych miast), Kiedy (DatePicker), Godziny (TimeRangePicker), liczba psów (stepper), przycisk „Szukaj". Pasek statystyk (liczba ogrodów, średnia cena, średnia ocena) — z lekkiego endpointu agregatów lub policzone z listy.
@@ -1159,7 +1196,7 @@ Ochrona tras: `RequireAuth` i `RequireRole` (czyta `AuthContext`), przekierowani
 - Stany: skeleton kart, empty („Brak ogrodów dla tych filtrów" + reset), error+retry. Paginacja/scroll (paginacja stronicowa zgodnie z API).
 **DoD:** filtry+sort+mapa+paginacja działają z API, stan w URL; budżet renderu płynny; testy: FiltersBar (zmiana filtra → query), GardenCard, mapowanie listy.
 
-### F3 — Szczegóły ogrodu + widget rezerwacji (mockup 2)
+### F3 — Szczegóły ogrodu + widget rezerwacji (`Garden Detail.html`)
 **Cel:** strona oferty z bookingiem. **Zależności:** F0, B3 (B4 dla dostępności realnej, B8 dla „napisz do gospodarza").
 **Zakres / sekcje:**
 - **Galeria** (mozaika zdjęć, lightbox „Pokaż wszystkie zdjęcia"), breadcrumb, tytuł, ocena+liczba recenzji, lokalizacja, akcje „Udostępnij/Zapisz".
@@ -1168,28 +1205,28 @@ Ochrona tras: `RequireAuth` i `RequireRole` (czyta `AuthContext`), przekierowani
 - Stany loading/error; SEO-friendly tytuł.
 **DoD:** dostępność i ceny zgadzają się z API; przejście do wizardu z poprawnym kontekstem; „napisz do gospodarza" tworzy konwersację; testy: kalkulacja ceny, blokada zajętych slotów, gość→login.
 
-### F4 — Wizard rezerwacji + płatność Stripe (mockup 3)
+### F4 — Wizard rezerwacji + płatność Stripe (`Booking Form.html` + `Payment.html`)
 **Cel:** dwukrokowy checkout. **Zależności:** F3, B4, B5, B6.
 **Zakres:**
 - **Stepper**: 1 „Szczegóły rezerwacji" · 2 „Płatność" · 3 „Potwierdzenie".
 - **Krok 1** (`/rezerwacja/:gardenId`): „Kiedy przyjedziesz?" (edycja daty/godzin z F3), „Z którym psem przyjedziesz?" (lista psów klienta z F5/B2, radio + „Dodaj kolejnego psa" → szybki modal dodania psa), „Wiadomość dla gospodarza" (textarea), „Akceptacja regulaminu" (checkboxy wymagane). **Sidebar podsumowania** (sticky): miniatura+tytuł ogrodu, data, godziny, pies, rozbicie kwot, Razem. Przycisk „Przejdź do płatności" → `POST /reservations/` (tworzy `pending_payment`) → `POST /reservations/:id/payment-intent/`.
-- **Krok 2** „Płatność": **Stripe `<Elements>`+`<PaymentElement>`** (dane karty), sekcja „Dane do rozliczenia" (imię/nazwisko, e-mail, adres, kod, miasto, kraj, opcja „chcę fakturę na firmę" → NIP/nazwa). Przycisk „Zapłać {kwota}". `confirmPayment({redirect:'if_required'})`. Po sukcesie → polling `GET /reservations/:id` aż `awaiting_host` (webhook) → krok 3. Obsługa błędu karty (komunikat PL), karty testowe w hint pod formularzem (dev).
+- **Krok 2** „Płatność" (`Payment.html`): **Stripe `<Elements>`+`<PaymentElement>` skonfigurowany wyłącznie na karty** (bez BLIK/P24/Apple/Google Pay — świadoma decyzja, sek. 16.1.1); pasek „Akceptujemy VISA/Mastercard/AMEX", fokus pola w fiolecie `--color-stripe`, opcja „Zapisz kartę"; sekcja „Dane do rozliczenia" (imię/nazwisko, e-mail, adres, kod, miasto, kraj, rozwijane „chcę fakturę na firmę" → NIP/nazwa). Przycisk „Zapłać {kwota}" z kłódką + trust bar (3-D Secure · PCI DSS · Stripe). `confirmPayment({redirect:'if_required'})`. Po sukcesie → polling `GET /reservations/:id` aż `awaiting_host` (webhook) → krok 3. Obsługa błędu karty (komunikat PL), karty testowe w hint pod formularzem (dev).
 - **Krok 3** (`/rezerwacja/:id/sukces`): potwierdzenie „Rezerwacja oczekuje na akceptację gospodarza", podsumowanie, linki: „Moje rezerwacje", „Pobierz fakturę" (gdy gotowa), „Wróć do katalogu".
 - Guardy: tylko właściciel rezerwacji; wygasła/opłacona → odpowiedni komunikat i redirect.
 **DoD:** pełna płatność testową kartą Stripe kończy się rezerwacją `awaiting_host` i fakturą; stany błędów obsłużone; testy: walidacja kroku 1, kalkulacja, mock potwierdzenia płatności, polling statusu.
 
-### F5 — Panel klienta: rezerwacje, pupile, recenzje, ustawienia (mockup 5)
+### F5 — Panel klienta: rezerwacje, pupile, recenzje, ustawienia (`Client Panel.html`)
 **Cel:** dashboard klienta. **Zależności:** F0, B4, B2, B7, B6.
-**Zakres / strony (DashboardClient layout — sidebar z mockupu 5: avatar+„KLIENT", Moje rezerwacje, Moi pupile, Recenzje, Wiadomości[F7], Ustawienia konta, Centrum pomocy, „Wyloguj się"):**
+**Zakres / strony (DashboardClient layout — sidebar wg `Client Panel.html`: avatar+„Klient", Moje rezerwacje, Moi pupile, Recenzje, Wiadomości[F7], Ustawienia konta, Centrum pomocy, „Wyloguj się"):**
 - **Moje rezerwacje** (`/panel`): nagłówek „Witaj z powrotem, {imię}", 4 **StatCard** (Wszystkich rezerwacji, Spędzonego w ogrodach (h), Wystawionych recenzji, Wydane zł), przyciski „Eksport CSV", „Znajdź ogród". **Tabs**: Nadchodzące / Zakończone / Anulowane (liczniki). **Karta rezerwacji**: miniatura, tytuł ogrodu, badge statusu („POTWIERDZONA" itd.), miasto+gospodarz, data, godziny, liczba godzin, pies, kwota; akcje wg statusu: „Szczegóły", „Faktura" (download), „Anuluj" (modal z polityką 24h → pokazuje czy refund), dla zakończonych „Wystaw recenzję" (modal Rating+komentarz → B7).
 - **Moi pupile** (`/panel/pupile`): nagłówek + „Dodaj psa". **Karta psa**: avatar/inicjał, imię, badge „AKTYWNY", rasa/wiek/waga/płeć/sterylizacja, „w PsiPark od…", statystyki (Rezerwacje, Łącznie h, Ulubiony ogród), **statusy zdrowia** z kolorowymi kropkami (Szczepienia „Ważne do…", Odrobaczanie, Książeczka zdrowia — `success/warning/danger` z `health_status`), akcje „Edytuj profil", „Dodaj zdjęcia", „Dokumenty". Kafelek „+ Dodaj kolejnego psa". Formularz psa (modal/strona) z polami z 7.2 + upload.
 - **Recenzje** (`/panel/recenzje`): zakładki „Do wystawienia" (z `reviews/eligible`) i „Wystawione" (edycja/usuń).
 - **Ustawienia konta** (`/panel/ustawienia`, wspólne też dla hosta): dane osobowe (PATCH /me), zmiana hasła, zgody marketingowe, **usunięcie konta** (RODO, modal potwierdzenia), wylogowanie ze wszystkich urządzeń (blacklist).
 **DoD:** wszystkie akcje (anuluj/refund, recenzja, CRUD psa, faktura, edycja profilu) działają z API; statusy zdrowia poprawne; testy: karty rezerwacji per status, health status, formularz psa.
 
-### F6 — Panel gospodarza: ogrody, rezerwacje, harmonogram, zarobki (mockup 6)
+### F6 — Panel gospodarza: ogrody, rezerwacje, harmonogram, zarobki (`Host Panel.html`)
 **Cel:** dashboard hosta. **Zależności:** F0, B3, B4, (B5 dla zarobków).
-**Zakres / strony (DashboardHost layout — sidebar z mockupu 6: „GOSPODARZ", Moje ogrody, Rezerwacje, Harmonogram, Wiadomości[F7], Zarobki, Ustawienia; kafelek salda „1 847 zł"):**
+**Zakres / strony (DashboardHost layout — sidebar wg `Host Panel.html`: „Gospodarz", Moje ogrody, Rezerwacje, Harmonogram, Wiadomości[F7], Zarobki, Ustawienia; widget salda „1 847 zł"):**
 - **Moje ogrody** (`/gospodarz`): siatka **kart ogrodu** z badge statusu („AKTYWNY"/„OCZEKUJE WERYFIKACJI"/„ODRZUCONY" z powodem), miniatura, tytuł, lokalizacja, statystyki (rezerwacje, ocena, przychód), cena/h, akcje „Edytuj", „Statystyki", przełącznik aktywności; kafelek „+ Dodaj nowy ogród".
 - **Formularz ogrodu** (`/gospodarz/ogrody/nowy` i `/:id/edycja`): pola z 7.3 (tytuł, opis, miasto, adres, powierzchnia, nawierzchnia, ogrodzenie+wysokość, max psów, cena/h, godziny otwarcia, min. godziny), **udogodnienia** (multi-checkbox z `Amenity`), **zasady** (lista edytowalna), **LocationPicker** (Leaflet — klik ustawia lat/lng, marker przeciągalny), **upload zdjęć** (FileDropzone, sortowanie, okładka, max 12). Walidacja zod. Po zapisie info „ogród oczekuje na weryfikację".
 - **Rezerwacje** (`/gospodarz/rezerwacje`): StatCard (Czeka na decyzję, Potwierdzonych w mies., śr. czas odpowiedzi, śr. ocena), **Tabs** Wszystkie/Oczekujące/Zaakceptowane/Odrzucone (liczniki), **Tabela** (klient+avatar, pies, ogród, data+godziny, kwota, status) z akcjami **Akceptuj/Odrzuć** (modal odrzucenia z powodem → refund), „Szczegóły"; paginacja; „Eksport CSV", „Otwórz harmonogram".
@@ -1197,7 +1234,7 @@ Ochrona tras: `RequireAuth` i `RequireRole` (czyta `AuthContext`), przekierowani
 - **Zarobki** (`/gospodarz/zarobki`): saldo, lista transakcji (rezerwacje opłacone, prowizje), suma miesięczna; (wykresy proste słupkowe własne SVG — bez biblioteki, opcjonalne).
 **DoD:** host tworzy/edytuje ogród z mapą i zdjęciami, akceptuje/odrzuca rezerwacje (z refundem), widzi harmonogram i zarobki; testy: formularz ogrodu (walidacja, location picker), tabela rezerwacji (akcje per status), reorder zdjęć.
 
-### F7 — Czat (mockup 7)
+### F7 — Czat (mockup 7 z projekt.pdf — poza handoffem Claude Design; trzymaj design system)
 **Cel:** wiadomości na żywo dla klienta i hosta. **Zależności:** F0, B8.
 **Zakres:** dwupanelowy widok (lista konwersacji + wątek), wspólny komponent osadzony w obu dashboardach (`/panel/wiadomosci`, `/gospodarz/wiadomosci`).
 - **Lista konwersacji**: avatar rozmówcy, nazwa, podgląd ostatniej wiadomości, czas, **badge nieprzeczytanych**, filtr „Wszystkie/Nieprzeczytane/Archiwum", szukajka. Sort po `last_message_at`.
