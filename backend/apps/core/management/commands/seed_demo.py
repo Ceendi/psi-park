@@ -27,6 +27,7 @@ class Command(BaseCommand):
         self._seed_admin()
         self._seed_dogs()
         self._seed_gardens()
+        self._seed_reservations()
         self.stdout.write(self.style.SUCCESS("Seed complete."))
 
     def _seed_admin(self) -> None:
@@ -262,3 +263,83 @@ class Command(BaseCommand):
             created_count += int(created)
         if created_count:
             self.stdout.write(self.style.SUCCESS(f"Created {created_count} demo gardens."))
+
+    def _seed_reservations(self) -> None:
+        """B4: bookings for the demo client across all panel states (PLAN 14).
+
+        Reuses Katarzyna's dogs and Magda's approved gardens (seeded above). Start times
+        are anchored to today at whole hours so re-running the same day is idempotent
+        (``get_or_create`` keyed on client+garden+start). Windows are spread across two
+        gardens and distinct hours so no two committed bookings overlap (PLAN 7.4.2).
+        """
+        from datetime import timedelta
+        from decimal import ROUND_HALF_UP, Decimal
+
+        from django.utils import timezone
+
+        from apps.dogs.models import Dog
+        from apps.gardens.models import Garden
+        from apps.reservations.models import Reservation
+
+        user_model = get_user_model()
+        try:
+            client = user_model.objects.get(email="katarzyna@psipark.local")
+        except user_model.DoesNotExist:
+            return
+
+        dogs = {dog.name: dog for dog in Dog.objects.filter(owner=client)}
+        gardens = list(
+            Garden.objects.filter(
+                host__email="magda@psipark.local",
+                verification_status=Garden.Verification.APPROVED,
+            ).order_by("id")
+        )
+        if not (dogs.get("Łata") and dogs.get("Borys") and len(gardens) >= 2):
+            return
+        garden_a, garden_b = gardens[0], gardens[1]
+        now = timezone.now()
+
+        def at(days: int, hour: int):
+            anchor = timezone.localtime(now).replace(hour=hour, minute=0, second=0, microsecond=0)
+            return anchor + timedelta(days=days)
+
+        def amounts(garden: Garden):
+            subtotal = (garden.price_per_hour * Decimal(2)).quantize(Decimal("0.01"))
+            fee = (subtotal * Decimal(10) / Decimal(100)).quantize(
+                Decimal("0.01"), rounding=ROUND_HALF_UP
+            )
+            return garden.price_per_hour, subtotal, fee, subtotal + fee
+
+        status = Reservation.Status
+        # (garden, dog, days, hour, status, paid, decided, cancelled)
+        specs = [
+            (garden_a, dogs["Łata"], 5, 10, status.CONFIRMED, True, True, False),
+            (garden_b, dogs["Borys"], 7, 14, status.AWAITING_HOST, True, False, False),
+            (garden_a, dogs["Łata"], -10, 10, status.CONFIRMED, True, True, False),
+            (garden_b, dogs["Borys"], -3, 11, status.CANCELLED, True, False, True),
+        ]
+        created = 0
+        for garden, dog, days, hour, state, paid, decided, cancelled in specs:
+            start = at(days, hour)
+            snapshot, subtotal, fee, total = amounts(garden)
+            _, was_created = Reservation.objects.get_or_create(
+                client=client,
+                garden=garden,
+                start_time=start,
+                defaults={
+                    "dog": dog,
+                    "end_time": start + timedelta(hours=2),
+                    "status": state,
+                    "price_per_hour_snapshot": snapshot,
+                    "subtotal": subtotal,
+                    "service_fee": fee,
+                    "total_price": total,
+                    "paid_at": now if paid else None,
+                    "decided_at": now if decided else None,
+                    "cancelled_at": now if cancelled else None,
+                    "message_to_host": "Spokojny pies, lubi aportować.",
+                },
+            )
+            created += int(was_created)
+        if created:
+            self.stdout.write(self.style.SUCCESS(f"Created {created} demo reservations."))
