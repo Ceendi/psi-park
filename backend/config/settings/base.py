@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Postgres-specific features (btree_gist + ExclusionConstraint, B4 reservations).
+    "django.contrib.postgres",
     # Third party
     "rest_framework",
     "rest_framework_simplejwt",
@@ -50,6 +52,7 @@ INSTALLED_APPS = [
     "apps.accounts",
     "apps.dogs",
     "apps.gardens",
+    "apps.reservations",
     "apps.notifications",
 ]
 

@@ -724,6 +724,168 @@ paths:
                 items:
                   $ref: '#/components/schemas/GardenPhoto'
           description: ''
+  /api/v1/host/reservations/:
+    get:
+      operationId: host_reservations_list
+      description: GET /host/reservations/ — reservations on the host's gardens (paid
+        only).
+      parameters:
+      - in: query
+        name: garden
+        schema:
+          type: integer
+        description: Restrict to one of the host's gardens.
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status_group
+        schema:
+          type: string
+          enum:
+          - accepted
+          - cancelled
+          - completed
+          - pending
+        description: Panel tab filter.
+      tags:
+      - host
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedReservationListList'
+          description: ''
+  /api/v1/host/reservations/{id}/accept/:
+    post:
+      operationId: host_reservations_accept_create
+      description: POST /host/reservations/{id}/accept/ — ``awaiting_host → confirmed``
+        + e-mail.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - host
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservationDetail'
+          description: ''
+  /api/v1/host/reservations/{id}/reject/:
+    post:
+      operationId: host_reservations_reject_create
+      description: POST /host/reservations/{id}/reject/ — ``awaiting_host → rejected``
+        + refund + e-mail.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - host
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservationReject'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReservationReject'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReservationReject'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservationDetail'
+          description: ''
+  /api/v1/host/schedule/:
+    get:
+      operationId: host_schedule_list
+      description: GET /host/schedule/?from=&to=&garden= — committed reservations
+        as calendar events.
+      parameters:
+      - in: query
+        name: from
+        schema:
+          type: string
+        description: YYYY-MM-DD (inclusive).
+        required: true
+      - in: query
+        name: garden
+        schema:
+          type: integer
+        description: Restrict to one of the host's gardens.
+      - in: query
+        name: to
+        schema:
+          type: string
+        description: YYYY-MM-DD (inclusive).
+        required: true
+      tags:
+      - host
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScheduleEvent'
+          description: ''
+  /api/v1/host/stats/:
+    get:
+      operationId: host_stats_retrieve
+      description: GET /host/stats/ — dashboard tiles (counts, earnings, average rating).
+      tags:
+      - host
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HostStats'
+          description: ''
   /api/v1/me/:
     get:
       operationId: me_retrieve
@@ -800,6 +962,144 @@ paths:
               schema:
                 $ref: '#/components/schemas/Detail'
           description: ''
+  /api/v1/reservations/:
+    get:
+      operationId: reservations_list
+      description: GET /reservations/ — the client's own bookings; POST — create one
+        (pending_payment).
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status_group
+        schema:
+          type: string
+          enum:
+          - cancelled
+          - completed
+          - upcoming
+        description: Panel tab filter.
+      tags:
+      - reservations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedReservationListList'
+          description: ''
+    post:
+      operationId: reservations_create
+      description: GET /reservations/ — the client's own bookings; POST — create one
+        (pending_payment).
+      tags:
+      - reservations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservationCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReservationCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReservationCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservationDetail'
+          description: ''
+  /api/v1/reservations/{id}/:
+    get:
+      operationId: reservations_retrieve
+      description: GET /reservations/{id}/ — detail for a participant (client or the
+        garden's host).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - reservations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservationDetail'
+          description: ''
+  /api/v1/reservations/{id}/cancel/:
+    post:
+      operationId: reservations_cancel_create
+      description: POST /reservations/{id}/cancel/ — client cancels; response carries
+        ``refunded``.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - reservations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancelResult'
+          description: ''
+  /api/v1/reservations/export.csv:
+    get:
+      operationId: reservations_export.csv_retrieve
+      description: GET /reservations/export.csv — the client's reservations as a CSV
+        download.
+      tags:
+      - reservations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+          description: ''
 components:
   schemas:
     AmenitiesEnum:
@@ -869,6 +1169,31 @@ components:
     BlankEnum:
       enum:
       - ''
+    CancelResult:
+      type: object
+      description: 'Cancel response: the refund outcome plus the updated reservation
+        (PLAN 8.2).'
+      properties:
+        refunded:
+          type: boolean
+        reservation:
+          $ref: '#/components/schemas/ReservationDetail'
+      required:
+      - refunded
+      - reservation
+    ClientMini:
+      type: object
+      description: Public-facing client identity shown to the host on a reservation.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+      required:
+      - full_name
+      - id
     Detail:
       type: object
       description: 'Generic ``{"detail": "..."}`` response.'
@@ -1024,6 +1349,23 @@ components:
       - sex
       - vaccinations_status
       - weight_kg
+    DogMini:
+      type: object
+      description: Compact dog card embedded in a reservation.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        breed:
+          type: string
+          readOnly: true
+      required:
+      - breed
+      - id
+      - name
     DogPhoto:
       type: object
       description: Multipart photo upload for a dog (PLAN 8.2). Heavy validation happens
@@ -1281,6 +1623,34 @@ components:
       - rating_count
       - surface_type
       - title
+    GardenMini:
+      type: object
+      description: Compact garden card embedded in a reservation (PLAN 8.3).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        city:
+          type: string
+          readOnly: true
+        price_per_hour:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          readOnly: true
+        cover_image:
+          type: string
+          nullable: true
+          readOnly: true
+      required:
+      - city
+      - cover_image
+      - id
+      - price_per_hour
+      - title
     GardenPhoto:
       type: object
       description: Read shape of a gallery photo (URLs are absolute when a request
@@ -1422,6 +1792,30 @@ components:
       - full_name
       - id
       - is_verified_host
+    HostStats:
+      type: object
+      description: Host dashboard tiles (PLAN 8.2).
+      properties:
+        pending_count:
+          type: integer
+        upcoming_count:
+          type: integer
+        completed_count:
+          type: integer
+        total_earnings:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        rating_avg:
+          type: number
+          format: double
+          nullable: true
+      required:
+      - completed_count
+      - pending_count
+      - rating_avg
+      - total_earnings
+      - upcoming_count
     Login:
       type: object
       description: E-mail + password login; embeds the user profile and a ``role``
@@ -1491,6 +1885,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/GardenList'
+    PaginatedReservationListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReservationList'
     PasswordResetConfirm:
       type: object
       description: Set a new password using the token from the reset e-mail.
@@ -1708,6 +2125,301 @@ components:
       description: |-
         * `client` - client
         * `host` - host
+    ReservationCreate:
+      type: object
+      description: Booking request body (PLAN 8.3). Domain validation happens in the
+        service.
+      properties:
+        garden:
+          type: integer
+          minimum: 1
+        dog:
+          type: integer
+          minimum: 1
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+        dogs_count:
+          type: integer
+          minimum: 1
+          default: 1
+        message_to_host:
+          type: string
+          default: ''
+          maxLength: 2000
+      required:
+      - dog
+      - end_time
+      - garden
+      - start_time
+    ReservationDetail:
+      type: object
+      description: 'Full reservation view: price breakdown, message and all audit
+        timestamps.'
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          readOnly: true
+        status_display:
+          type: string
+          readOnly: true
+        garden:
+          allOf:
+          - $ref: '#/components/schemas/GardenMini'
+          readOnly: true
+        dog:
+          allOf:
+          - $ref: '#/components/schemas/DogMini'
+          readOnly: true
+        client:
+          allOf:
+          - $ref: '#/components/schemas/ClientMini'
+          readOnly: true
+        dogs_count:
+          type: integer
+          readOnly: true
+        start_time:
+          type: string
+          format: date-time
+          readOnly: true
+        end_time:
+          type: string
+          format: date-time
+          readOnly: true
+        total_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        can_cancel:
+          type: boolean
+          readOnly: true
+        can_pay:
+          type: boolean
+          readOnly: true
+        can_accept:
+          type: boolean
+          readOnly: true
+        can_reject:
+          type: boolean
+          readOnly: true
+        refund_on_cancel:
+          type: boolean
+          description: Whether cancelling right now would be refunded (the 24h policy,
+            AD-5).
+          readOnly: true
+        price_per_hour_snapshot:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          readOnly: true
+        subtotal:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          readOnly: true
+        service_fee:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          readOnly: true
+        message_to_host:
+          type: string
+          readOnly: true
+        expires_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        paid_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        decided_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        cancelled_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - can_accept
+      - can_cancel
+      - can_pay
+      - can_reject
+      - cancelled_at
+      - client
+      - created_at
+      - decided_at
+      - dog
+      - dogs_count
+      - end_time
+      - expires_at
+      - garden
+      - id
+      - message_to_host
+      - paid_at
+      - price_per_hour_snapshot
+      - refund_on_cancel
+      - service_fee
+      - start_time
+      - status
+      - status_display
+      - subtotal
+      - total_price
+      - updated_at
+    ReservationList:
+      type: object
+      description: Light row for the client/host panels (PLAN 8.2).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          readOnly: true
+        status_display:
+          type: string
+          readOnly: true
+        garden:
+          allOf:
+          - $ref: '#/components/schemas/GardenMini'
+          readOnly: true
+        dog:
+          allOf:
+          - $ref: '#/components/schemas/DogMini'
+          readOnly: true
+        client:
+          allOf:
+          - $ref: '#/components/schemas/ClientMini'
+          readOnly: true
+        dogs_count:
+          type: integer
+          readOnly: true
+        start_time:
+          type: string
+          format: date-time
+          readOnly: true
+        end_time:
+          type: string
+          format: date-time
+          readOnly: true
+        total_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        can_cancel:
+          type: boolean
+          readOnly: true
+        can_pay:
+          type: boolean
+          readOnly: true
+        can_accept:
+          type: boolean
+          readOnly: true
+        can_reject:
+          type: boolean
+          readOnly: true
+        refund_on_cancel:
+          type: boolean
+          description: Whether cancelling right now would be refunded (the 24h policy,
+            AD-5).
+          readOnly: true
+      required:
+      - can_accept
+      - can_cancel
+      - can_pay
+      - can_reject
+      - client
+      - created_at
+      - dog
+      - dogs_count
+      - end_time
+      - garden
+      - id
+      - refund_on_cancel
+      - start_time
+      - status
+      - status_display
+      - total_price
+    ReservationReject:
+      type: object
+      description: Optional rejection reason forwarded to the client e-mail (PLAN
+        8.2).
+      properties:
+        reason:
+          type: string
+          default: ''
+          maxLength: 300
+    ScheduleEvent:
+      type: object
+      description: One calendar event in the host schedule (PLAN 8.2).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        garden_id:
+          type: integer
+          readOnly: true
+        garden_title:
+          type: string
+          readOnly: true
+        dog_name:
+          type: string
+          readOnly: true
+        client_name:
+          type: string
+          readOnly: true
+        start_time:
+          type: string
+          format: date-time
+          readOnly: true
+        end_time:
+          type: string
+          format: date-time
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          readOnly: true
+        status_display:
+          type: string
+          readOnly: true
+      required:
+      - client_name
+      - dog_name
+      - end_time
+      - garden_id
+      - garden_title
+      - id
+      - start_time
+      - status
+      - status_display
     SexEnum:
       enum:
       - male
@@ -1727,6 +2439,20 @@ components:
       required:
       - available
       - hour
+    StatusEnum:
+      enum:
+      - pending_payment
+      - awaiting_host
+      - confirmed
+      - rejected
+      - cancelled
+      type: string
+      description: |-
+        * `pending_payment` - Oczekuje na płatność
+        * `awaiting_host` - Oczekuje na decyzję gospodarza
+        * `confirmed` - Potwierdzona
+        * `rejected` - Odrzucona
+        * `cancelled` - Anulowana
     SurfaceTypeEnum:
       enum:
       - grass
