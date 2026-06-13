@@ -16,7 +16,10 @@ known-first-party = ["apps", "config"]
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "config.settings.test"
 python_files = ["test_*.py", "tests.py"]
-addopts = "--reuse-db --cov=apps --cov-report=term-missing --cov-fail-under=70"
+# --ds pins test settings even inside the dev container, whose .env exports
+# DJANGO_SETTINGS_MODULE=config.settings.dev (an env var would otherwise shadow the
+# line above). This keeps a local `pytest` run identical to CI.
+addopts = "--ds=config.settings.test --reuse-db --cov=apps --cov-report=term-missing --cov-fail-under=70"
 testpaths = ["apps"]
 
 [tool.coverage.run]

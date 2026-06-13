@@ -1,0 +1,13 @@
+Cześć {{ user.first_name }}!
+
+Dziękujemy za założenie konta w PsiPark — serwisie wynajmu prywatnych,
+ogrodzonych ogrodów dla psów.
+{% if is_host %}
+Jako gospodarz możesz teraz dodać swój pierwszy ogród i zacząć przyjmować rezerwacje.
+{% else %}
+Możesz już przeglądać ogrody w okolicy i zarezerwować bezpieczny teren dla swojego pupila.
+{% endif %}
+Zaczynamy: {{ frontend_base_url }}
+
+Do zobaczenia,
+Zespół PsiPark

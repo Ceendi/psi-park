@@ -4,6 +4,168 @@ info:
   version: 1.0.0
   description: Marketplace wynajmu prywatnych ogrodów dla psów.
 paths:
+  /api/v1/auth/login/:
+    post:
+      operationId: auth_login_create
+      description: POST /auth/login/ — e-mail + password to a token pair (anti-bruteforce
+        throttled).
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Login'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Login'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokens'
+          description: ''
+  /api/v1/auth/logout/:
+    post:
+      operationId: auth_logout_create
+      description: POST /auth/logout/ — blacklist the supplied refresh token.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Logout'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Logout'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Logout'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '205':
+          description: No response body
+  /api/v1/auth/password/reset/:
+    post:
+      operationId: auth_password_reset_create
+      description: POST /auth/password/reset/ — e-mail a reset link (always 200, no
+        enumeration).
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detail'
+          description: ''
+  /api/v1/auth/password/reset/confirm/:
+    post:
+      operationId: auth_password_reset_confirm_create
+      description: POST /auth/password/reset/confirm/ — set a new password from a
+        reset token.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirm'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirm'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirm'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detail'
+          description: ''
+  /api/v1/auth/refresh/:
+    post:
+      operationId: auth_refresh_create
+      description: |-
+        POST /auth/refresh/ — rotate the refresh token and issue a new access token.
+
+        Rotation + blacklist-after-rotation are configured in ``SIMPLE_JWT`` (PLAN AD-3),
+        so a rotated (old) refresh token is rejected on reuse.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/v1/auth/register/:
+    post:
+      operationId: auth_register_create
+      description: POST /auth/register/ — create a client/host account and return
+        tokens + profile.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Register'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Register'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Register'
+        required: true
+      security:
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokens'
+          description: ''
   /api/v1/health/:
     get:
       operationId: health_retrieve
@@ -22,8 +184,111 @@ paths:
               schema:
                 $ref: '#/components/schemas/HealthResponse'
           description: ''
+  /api/v1/me/:
+    get:
+      operationId: me_retrieve
+      description: /me/ — read, update, or deactivate (GDPR) the logged-in account.
+      tags:
+      - me
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: me_partial_update
+      description: /me/ — read, update, or deactivate (GDPR) the logged-in account.
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMeUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMeUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMeUpdate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    delete:
+      operationId: me_destroy
+      description: /me/ — read, update, or deactivate (GDPR) the logged-in account.
+      tags:
+      - me
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/me/password/:
+    patch:
+      operationId: me_password_partial_update
+      description: PATCH /me/password/ — change password while authenticated.
+      tags:
+      - me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPasswordChange'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPasswordChange'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPasswordChange'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detail'
+          description: ''
 components:
   schemas:
+    AuthTokens:
+      type: object
+      description: 'Response shape for register/login: token pair plus the user profile.'
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+        user:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+      required:
+      - access
+      - refresh
+      - user
+    Detail:
+      type: object
+      description: 'Generic ``{"detail": "..."}`` response.'
+      properties:
+        detail:
+          type: string
+          readOnly: true
+      required:
+      - detail
     HealthResponse:
       type: object
       properties:
@@ -37,3 +302,217 @@ components:
       - db
       - redis
       - status
+    Login:
+      type: object
+      description: E-mail + password login; embeds the user profile and a ``role``
+        claim in the token.
+      properties:
+        email:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - email
+      - password
+    Logout:
+      type: object
+      description: Refresh token to blacklist on logout.
+      properties:
+        refresh:
+          type: string
+          writeOnly: true
+      required:
+      - refresh
+    PasswordResetConfirm:
+      type: object
+      description: Set a new password using the token from the reset e-mail.
+      properties:
+        uid:
+          type: string
+        token:
+          type: string
+        new_password:
+          type: string
+          writeOnly: true
+        new_password_confirm:
+          type: string
+          writeOnly: true
+      required:
+      - new_password
+      - new_password_confirm
+      - token
+      - uid
+    PasswordResetRequest:
+      type: object
+      description: Request a reset link for an e-mail address.
+      properties:
+        email:
+          type: string
+          format: email
+      required:
+      - email
+    PatchedMeUpdate:
+      type: object
+      description: Editable profile fields (PATCH /me/). ``role``/``email`` are intentionally
+        excluded.
+      properties:
+        first_name:
+          type: string
+          maxLength: 60
+        last_name:
+          type: string
+          maxLength: 60
+        phone:
+          type: string
+          maxLength: 20
+        marketing_consent:
+          type: boolean
+    PatchedPasswordChange:
+      type: object
+      description: Change password while authenticated (old + new + confirmation).
+      properties:
+        old_password:
+          type: string
+          writeOnly: true
+        new_password:
+          type: string
+          writeOnly: true
+        new_password_confirm:
+          type: string
+          writeOnly: true
+    Register:
+      type: object
+      description: Validate a new client/host account (role limited, terms required,
+        password confirmed).
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 60
+        last_name:
+          type: string
+          maxLength: 60
+        phone:
+          type: string
+          maxLength: 20
+        role:
+          $ref: '#/components/schemas/RegisterRoleEnum'
+        marketing_consent:
+          type: boolean
+        password:
+          type: string
+          writeOnly: true
+        password_confirm:
+          type: string
+          writeOnly: true
+        terms_accepted:
+          type: boolean
+          writeOnly: true
+      required:
+      - email
+      - first_name
+      - last_name
+      - password
+      - password_confirm
+      - role
+      - terms_accepted
+    RegisterRoleEnum:
+      enum:
+      - client
+      - host
+      type: string
+      description: |-
+        * `client` - client
+        * `host` - host
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    User:
+      type: object
+      description: Public shape of the logged-in user returned by ``/me/`` and auth
+        responses.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+        first_name:
+          type: string
+          readOnly: true
+        last_name:
+          type: string
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        phone:
+          type: string
+          readOnly: true
+        role:
+          allOf:
+          - $ref: '#/components/schemas/UserRoleEnum'
+          readOnly: true
+        is_verified_host:
+          type: boolean
+          readOnly: true
+        verified_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        terms_accepted_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        marketing_consent:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - email
+      - first_name
+      - full_name
+      - id
+      - is_verified_host
+      - last_name
+      - marketing_consent
+      - phone
+      - role
+      - terms_accepted_at
+      - verified_at
+    UserRoleEnum:
+      enum:
+      - client
+      - host
+      - admin
+      type: string
+      description: |-
+        * `client` - Klient
+        * `host` - Gospodarz
+        * `admin` - Administrator
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
