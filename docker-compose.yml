@@ -1,0 +1,78 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-psipark}
+      POSTGRES_USER: ${POSTGRES_USER:-psipark}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-psipark}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-psipark}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "8025:8025"  # web UI
+      - "1025:1025"  # SMTP
+
+  backend:
+    build: ./backend
+    env_file: .env
+    volumes:
+      - ./backend:/app
+      - media:/app/media
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/api/v1/health/').status==200 else 1)\""]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+  # Frontend is owned by part F0; behind a profile so the backend stack comes up alone in B0.
+  # Start later with: docker compose --profile frontend up
+  frontend:
+    image: node:22-alpine
+    profiles: ["frontend"]
+    working_dir: /app
+    command: sh -c "npm ci && npm run dev -- --host 0.0.0.0"
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+  # Stripe webhook forwarder is used from part B5; needs STRIPE_SECRET_KEY in .env.
+  # Start later with: docker compose --profile stripe up
+  stripe-cli:
+    image: stripe/stripe-cli:latest
+    profiles: ["stripe"]
+    env_file: .env
+    command: listen --forward-to backend:8000/api/v1/payments/webhook/
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  media:
