@@ -40,7 +40,9 @@ Każdą część zleca się agentowi promptem według wzoru:
 ```
 Pracujesz w repozytorium PsiPark. Przeczytaj plik docs/PLAN.md — w całości sekcje 1–6
 oraz sekcje wskazane w Twojej części. Zaimplementuj część <ID> (np. B3) dokładnie
-według docs/PLAN.md, sekcja 15.x / 16.x. Nie wykraczaj poza zakres części. Po skończeniu
+według docs/PLAN.md, sekcja 15.x / 16.x. Nie wykraczaj poza zakres części.
+Dla części frontendowych (F): odwzoruj wskazany ekran z docs/design/ piksel-w-piksel
+(kolory/typografia/komponenty wyłącznie wg tokenów z sekcji 16.0–16.1.1). Po skończeniu
 uruchom testy i lint zgodnie z Definition of Done tej części i zraportuj wynik.
 ```
 
@@ -1173,12 +1175,12 @@ Ochrona tras: `RequireAuth` i `RequireRole` (czyta `AuthContext`), przekierowani
 ---
 
 ### F0 — Szkielet FE, design system, routing, auth, API client
-**Cel:** fundament, na którym budują F1–F8. **Zależności:** B0 (schema.yaml istnieje). 
+**Cel:** fundament, na którym budują F1–F8. **Zależności:** B0 (schema.yaml istnieje). **Sekcje:** 16.0, 16.1, 16.1.1 (`Design System.html`), 16.2, 16.3.
 **Zakres:** init Vite+React19+TS strict; Tailwind v4 + tokeny (16.1); `shared/ui` (16.1) z testami render i Storybook-free demo stroną `/_ui` (tylko dev); `shared/api` (client+interceptory+typy); `shared/auth` (context+guards+tokens); `shared/lib`; layouty (Public z navbarem jak w mockupie: logo PsiPark, miasto, „Zostań gospodarzem", „Zaloguj się/Zarejestruj"; Auth split-screen; trzy Dashboard z sidebarami wg `Client Panel.html`/`Host Panel.html`); router z lazy; providers; `EmptyState`/error boundary/404; `vite.config` (proxy /api,/ws; vitest); ESLint/Prettier/tsconfig; `npm run gen:api`.
 **DoD:** `npm run dev` pokazuje Home placeholder + `/_ui` z komponentami; lint/typecheck/test/build zielone; interceptor JWT przetestowany (mock 401→refresh→retry).
 
 ### F1 — Uwierzytelnianie (Logowanie, Rejestracja, Reset)
-**Cel:** ekrany auth (`Login.html`, `Register.html`; sek. 16.1.1). **Zależności:** F0, B1.
+**Cel:** ekrany auth (`Login.html`, `Register.html`). **Zależności:** F0, B1. **Sekcje:** 16.0, 16.1, 16.1.1 (`Login.html`, `Register.html`).
 **Zakres / strony:**
 - **AuthLayout** split: lewa kolumna pastelowa ilustracja (wzgórza+pies+chmury, SVG/obraz) z kartką-testimonialem na dole; prawa kolumna formularz. „Wróć do strony głównej" u góry.
 - **Rejestracja** (`/rejestracja`): toggle **Klient / Gospodarz** (segmenty z mockupu), pola Imię, Nazwisko, E-mail, Telefon, Hasło (siła), Powtórz hasło; checkboxy: akceptacja Regulaminu+Polityki (wymagana), zgoda marketingowa (opcjonalna); przycisk „Załóż konto"; przyciski Google/Apple (wizualnie, disabled z tooltipem „wkrótce" — poza zakresem auth społ.); link „Masz już konto? Zaloguj się". Walidacja zod, mapowanie błędów 400 z API na pola. Po sukcesie: zapis tokenów, redirect (klient→`/panel`, host→`/gospodarz`).
@@ -1187,7 +1189,7 @@ Ochrona tras: `RequireAuth` i `RequireRole` (czyta `AuthContext`), przekierowani
 **DoD:** pełny cykl rejestracja→logowanie→reset działa na żywym backendzie; walidacje i błędy API po polsku; testy render+walidacja formularzy.
 
 ### F2 — Strona główna: katalog + wyszukiwarka + mapa (`Home Page.html`)
-**Cel:** publiczny katalog z filtrami i mapą split-view. **Zależności:** F0, B3.
+**Cel:** publiczny katalog z filtrami i mapą split-view. **Zależności:** F0, B3. **Sekcje:** 16.0, 16.1, 16.1.1 (`Home Page.html`), 16.2.
 **Zakres / sekcje strony:**
 - **Hero**: nagłówek „Znajdź **idealny ogród** dla swojego psa" (akcent zielony), podtytuł, **SearchBar**: Miasto (autouzupełnianie z dostępnych miast), Kiedy (DatePicker), Godziny (TimeRangePicker), liczba psów (stepper), przycisk „Szukaj". Pasek statystyk (liczba ogrodów, średnia cena, średnia ocena) — z lekkiego endpointu agregatów lub policzone z listy.
 - **FiltersBar** (sticky pod hero): chipy/dropdowny — Dostępność (data), zakres godzin, liczba psów, cena (slider min/max), powierzchnia, udogodnienia (multi), nawierzchnia, sort („Polecane/Najtańsze/Najwyżej oceniane"), toggle widoku lista/mapa. Stan filtrów w URL (query params) — udostępnialny link, działający wstecz/naprzód.
@@ -1197,7 +1199,7 @@ Ochrona tras: `RequireAuth` i `RequireRole` (czyta `AuthContext`), przekierowani
 **DoD:** filtry+sort+mapa+paginacja działają z API, stan w URL; budżet renderu płynny; testy: FiltersBar (zmiana filtra → query), GardenCard, mapowanie listy.
 
 ### F3 — Szczegóły ogrodu + widget rezerwacji (`Garden Detail.html`)
-**Cel:** strona oferty z bookingiem. **Zależności:** F0, B3 (B4 dla dostępności realnej, B8 dla „napisz do gospodarza").
+**Cel:** strona oferty z bookingiem. **Zależności:** F0, B3 (B4 dla dostępności realnej, B8 dla „napisz do gospodarza"). **Sekcje:** 16.0, 16.1, 16.1.1 (`Garden Detail.html`).
 **Zakres / sekcje:**
 - **Galeria** (mozaika zdjęć, lightbox „Pokaż wszystkie zdjęcia"), breadcrumb, tytuł, ocena+liczba recenzji, lokalizacja, akcje „Udostępnij/Zapisz".
 - **Lewa kolumna**: „Ogród prowadzony przez {host}" (avatar, od kiedy, liczba rezerwacji), parametry (powierzchnia, nawierzchnia, max psów, ogrodzenie — ikonki jak w mockupie), „O tym ogrodzie" (opis), **„Co oferuje ten ogród"** (siatka udogodnień z ikonami, „Pokaż wszystkie N udogodnień"), **„Zasady gospodarza"** (lista), **„Poznaj gospodarza"** (karta + „Napisz do Magdy" → otwiera/zakłada konwersację F7; „Zobacz profil"), **sekcja recenzji** („★ 4,8 · 23 recenzje", siatka recenzji z avatarami, „Pokaż wszystkie recenzje" → paginacja).
@@ -1206,7 +1208,7 @@ Ochrona tras: `RequireAuth` i `RequireRole` (czyta `AuthContext`), przekierowani
 **DoD:** dostępność i ceny zgadzają się z API; przejście do wizardu z poprawnym kontekstem; „napisz do gospodarza" tworzy konwersację; testy: kalkulacja ceny, blokada zajętych slotów, gość→login.
 
 ### F4 — Wizard rezerwacji + płatność Stripe (`Booking Form.html` + `Payment.html`)
-**Cel:** dwukrokowy checkout. **Zależności:** F3, B4, B5, B6.
+**Cel:** dwukrokowy checkout. **Zależności:** F3, B4, B5, B6. **Sekcje:** 16.0, 16.1, 16.1.1 (`Booking Form.html`, `Payment.html` — płatność tylko kartą).
 **Zakres:**
 - **Stepper**: 1 „Szczegóły rezerwacji" · 2 „Płatność" · 3 „Potwierdzenie".
 - **Krok 1** (`/rezerwacja/:gardenId`): „Kiedy przyjedziesz?" (edycja daty/godzin z F3), „Z którym psem przyjedziesz?" (lista psów klienta z F5/B2, radio + „Dodaj kolejnego psa" → szybki modal dodania psa), „Wiadomość dla gospodarza" (textarea), „Akceptacja regulaminu" (checkboxy wymagane). **Sidebar podsumowania** (sticky): miniatura+tytuł ogrodu, data, godziny, pies, rozbicie kwot, Razem. Przycisk „Przejdź do płatności" → `POST /reservations/` (tworzy `pending_payment`) → `POST /reservations/:id/payment-intent/`.
@@ -1216,7 +1218,7 @@ Ochrona tras: `RequireAuth` i `RequireRole` (czyta `AuthContext`), przekierowani
 **DoD:** pełna płatność testową kartą Stripe kończy się rezerwacją `awaiting_host` i fakturą; stany błędów obsłużone; testy: walidacja kroku 1, kalkulacja, mock potwierdzenia płatności, polling statusu.
 
 ### F5 — Panel klienta: rezerwacje, pupile, recenzje, ustawienia (`Client Panel.html`)
-**Cel:** dashboard klienta. **Zależności:** F0, B4, B2, B7, B6.
+**Cel:** dashboard klienta. **Zależności:** F0, B4, B2, B7, B6. **Sekcje:** 16.0, 16.1, 16.1.1 (`Client Panel.html`).
 **Zakres / strony (DashboardClient layout — sidebar wg `Client Panel.html`: avatar+„Klient", Moje rezerwacje, Moi pupile, Recenzje, Wiadomości[F7], Ustawienia konta, Centrum pomocy, „Wyloguj się"):**
 - **Moje rezerwacje** (`/panel`): nagłówek „Witaj z powrotem, {imię}", 4 **StatCard** (Wszystkich rezerwacji, Spędzonego w ogrodach (h), Wystawionych recenzji, Wydane zł), przyciski „Eksport CSV", „Znajdź ogród". **Tabs**: Nadchodzące / Zakończone / Anulowane (liczniki). **Karta rezerwacji**: miniatura, tytuł ogrodu, badge statusu („POTWIERDZONA" itd.), miasto+gospodarz, data, godziny, liczba godzin, pies, kwota; akcje wg statusu: „Szczegóły", „Faktura" (download), „Anuluj" (modal z polityką 24h → pokazuje czy refund), dla zakończonych „Wystaw recenzję" (modal Rating+komentarz → B7).
 - **Moi pupile** (`/panel/pupile`): nagłówek + „Dodaj psa". **Karta psa**: avatar/inicjał, imię, badge „AKTYWNY", rasa/wiek/waga/płeć/sterylizacja, „w PsiPark od…", statystyki (Rezerwacje, Łącznie h, Ulubiony ogród), **statusy zdrowia** z kolorowymi kropkami (Szczepienia „Ważne do…", Odrobaczanie, Książeczka zdrowia — `success/warning/danger` z `health_status`), akcje „Edytuj profil", „Dodaj zdjęcia", „Dokumenty". Kafelek „+ Dodaj kolejnego psa". Formularz psa (modal/strona) z polami z 7.2 + upload.
@@ -1225,7 +1227,7 @@ Ochrona tras: `RequireAuth` i `RequireRole` (czyta `AuthContext`), przekierowani
 **DoD:** wszystkie akcje (anuluj/refund, recenzja, CRUD psa, faktura, edycja profilu) działają z API; statusy zdrowia poprawne; testy: karty rezerwacji per status, health status, formularz psa.
 
 ### F6 — Panel gospodarza: ogrody, rezerwacje, harmonogram, zarobki (`Host Panel.html`)
-**Cel:** dashboard hosta. **Zależności:** F0, B3, B4, (B5 dla zarobków).
+**Cel:** dashboard hosta. **Zależności:** F0, B3, B4, (B5 dla zarobków). **Sekcje:** 16.0, 16.1, 16.1.1 (`Host Panel.html`).
 **Zakres / strony (DashboardHost layout — sidebar wg `Host Panel.html`: „Gospodarz", Moje ogrody, Rezerwacje, Harmonogram, Wiadomości[F7], Zarobki, Ustawienia; widget salda „1 847 zł"):**
 - **Moje ogrody** (`/gospodarz`): siatka **kart ogrodu** z badge statusu („AKTYWNY"/„OCZEKUJE WERYFIKACJI"/„ODRZUCONY" z powodem), miniatura, tytuł, lokalizacja, statystyki (rezerwacje, ocena, przychód), cena/h, akcje „Edytuj", „Statystyki", przełącznik aktywności; kafelek „+ Dodaj nowy ogród".
 - **Formularz ogrodu** (`/gospodarz/ogrody/nowy` i `/:id/edycja`): pola z 7.3 (tytuł, opis, miasto, adres, powierzchnia, nawierzchnia, ogrodzenie+wysokość, max psów, cena/h, godziny otwarcia, min. godziny), **udogodnienia** (multi-checkbox z `Amenity`), **zasady** (lista edytowalna), **LocationPicker** (Leaflet — klik ustawia lat/lng, marker przeciągalny), **upload zdjęć** (FileDropzone, sortowanie, okładka, max 12). Walidacja zod. Po zapisie info „ogród oczekuje na weryfikację".
@@ -1235,7 +1237,7 @@ Ochrona tras: `RequireAuth` i `RequireRole` (czyta `AuthContext`), przekierowani
 **DoD:** host tworzy/edytuje ogród z mapą i zdjęciami, akceptuje/odrzuca rezerwacje (z refundem), widzi harmonogram i zarobki; testy: formularz ogrodu (walidacja, location picker), tabela rezerwacji (akcje per status), reorder zdjęć.
 
 ### F7 — Czat (mockup 7 z projekt.pdf — poza handoffem Claude Design; trzymaj design system)
-**Cel:** wiadomości na żywo dla klienta i hosta. **Zależności:** F0, B8.
+**Cel:** wiadomości na żywo dla klienta i hosta. **Zależności:** F0, B8. **Sekcje:** 16.0, 16.1 (brak prototypu w handoffie — trzymaj design system).
 **Zakres:** dwupanelowy widok (lista konwersacji + wątek), wspólny komponent osadzony w obu dashboardach (`/panel/wiadomosci`, `/gospodarz/wiadomosci`).
 - **Lista konwersacji**: avatar rozmówcy, nazwa, podgląd ostatniej wiadomości, czas, **badge nieprzeczytanych**, filtr „Wszystkie/Nieprzeczytane/Archiwum", szukajka. Sort po `last_message_at`.
 - **Wątek**: nagłówek (rozmówca + kontekst ogrodu/rezerwacji + „Zobacz rezerwację"), lista wiadomości (bąbelki: swoje zielone po prawej, cudze po lewej — jak w mockupie), separatory dat, **wskaźnik pisania**, „przeczytano", lazy-load historii w górę (kursor), **input** z wysyłaniem (Enter), auto-scroll na nową.
@@ -1243,7 +1245,7 @@ Ochrona tras: `RequireAuth` i `RequireRole` (czyta `AuthContext`), przekierowani
 **DoD:** dwóch użytkowników rozmawia na żywo (manual + test z mock socketem), nieprzeczytane i „przeczytano" działają; historia doładowuje; testy: render wątku, wysyłka (mock ws), unread badge.
 
 ### F8 — Panel admina + strony statyczne
-**Cel:** narzędzia admina i treści prawne. **Zależności:** F0, B9.
+**Cel:** narzędzia admina i treści prawne. **Zależności:** F0, B9. **Sekcje:** 16.0, 16.1 (panel admina poza handoffem — trzymaj design system).
 **Zakres:**
 - **DashboardAdmin** (`/admin`): **Kolejka weryfikacji ogrodów** (lista pending z podglądem: zdjęcia, dane, mapa; akcje Zatwierdź / Odrzuć+powód → B9), **Użytkownicy** (tabela, filtr rola/status, akcje Zweryfikuj hosta / Zablokuj / Odblokuj), **Moderacja recenzji** (lista, usuń). Proste, funkcjonalne (mockupy nie definiują UI admina — trzymać estetykę systemu, bez fantazji). Guard `RequireRole admin`.
 - **Strony statyczne** (Public layout): Regulamin, Polityka prywatności, Centrum pomocy/FAQ, „Świadczenie usług drogą elektroniczną" — treść z plików MD/HTML (placeholder prawniczy + disclaimer o braku odpowiedzialności za szkody pupila). Linki w stopce i przy rejestracji.
