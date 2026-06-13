@@ -1,0 +1,17 @@
+{% autoescape on %}
+{# Recipient: host. Context: user (host), garden{title}. #}
+<div style="font-family: Inter, Arial, sans-serif; color: #14211a; line-height: 1.6;">
+  <h1 style="color: #2f9e44;">Ogród zatwierdzony</h1>
+  <p>Cześć {{ user.first_name }}!</p>
+  <p>
+    Twój ogród <strong>„{{ garden.title }}”</strong> przeszedł weryfikację i jest już
+    widoczny publicznie. Klienci mogą go znaleźć i rezerwować.
+  </p>
+  <p>
+    <a href="{{ frontend_base_url }}/gospodarz"
+       style="display: inline-block; padding: 10px 20px; background: #2f9e44; color: #ffffff;
+              border-radius: 10px; text-decoration: none;">Przejdź do panelu</a>
+  </p>
+  {% include "emails/_footer.html" %}
+</div>
+{% endautoescape %}

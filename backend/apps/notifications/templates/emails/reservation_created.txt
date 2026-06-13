@@ -1,0 +1,11 @@
+{# Recipient: host. Context: user (host), reservation{garden.title, start_time, end_time, dog.name, dogs_count, client.first_name}. #}Cześć {{ user.first_name }}!
+
+Klient {{ reservation.client.first_name }} opłacił rezerwację Twojego ogrodu
+„{{ reservation.garden.title }}” i czeka na Twoją akceptację.
+
+Termin: {{ reservation.start_time|date:"j E Y, H:i" }}–{{ reservation.end_time|date:"H:i" }}
+Pies: {{ reservation.dog.name }} ({{ reservation.dogs_count }})
+
+Przejdź do rezerwacji: {{ frontend_base_url }}/gospodarz/rezerwacje
+
+{% include "emails/_footer.txt" %}

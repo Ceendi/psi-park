@@ -1,0 +1,22 @@
+{% autoescape on %}
+{# Recipient: client. Context: user (client), reservation{garden.title, garden.city, start_time, end_time}. #}
+<div style="font-family: Inter, Arial, sans-serif; color: #14211a; line-height: 1.6;">
+  <h1 style="color: #2f9e44;">Rezerwacja potwierdzona</h1>
+  <p>Cześć {{ user.first_name }}!</p>
+  <p>
+    Świetna wiadomość — gospodarz potwierdził Twoją rezerwację ogrodu
+    <strong>„{{ reservation.garden.title }}”</strong>{% if reservation.garden.city %} w {{ reservation.garden.city }}{% endif %}.
+  </p>
+  <table style="border-collapse: collapse; margin: 8px 0;">
+    <tr><td style="color: #6b7c70; padding: 2px 12px 2px 0;">Termin</td>
+        <td>{{ reservation.start_time|date:"j E Y, H:i" }}–{{ reservation.end_time|date:"H:i" }}</td></tr>
+  </table>
+  <p>Udanego spaceru! Po zakończonym pobycie poprosimy Cię o recenzję.</p>
+  <p>
+    <a href="{{ frontend_base_url }}/panel"
+       style="display: inline-block; padding: 10px 20px; background: #2f9e44; color: #ffffff;
+              border-radius: 10px; text-decoration: none;">Zobacz szczegóły</a>
+  </p>
+  {% include "emails/_footer.html" %}
+</div>
+{% endautoescape %}

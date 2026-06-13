@@ -1,0 +1,12 @@
+{# Recipient: client. Context: user (client), reservation{garden.title, start_time, end_time}, reason (optional). #}Cześć {{ user.first_name }}!
+
+Niestety gospodarz nie mógł przyjąć Twojej rezerwacji ogrodu
+„{{ reservation.garden.title }}”
+({{ reservation.start_time|date:"j E Y, H:i" }}–{{ reservation.end_time|date:"H:i" }}).
+{% if reason %}
+Powód: {{ reason }}
+{% endif %}
+Pełna kwota płatności została zwrócona na Twój rachunek. Znajdź inny termin lub ogród:
+{{ frontend_base_url }}/
+
+{% include "emails/_footer.txt" %}

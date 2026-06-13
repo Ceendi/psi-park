@@ -1,0 +1,24 @@
+{% autoescape on %}
+{# Recipient: client. Context: user (client), reservation{garden.title, start_time, end_time}, reason (optional). #}
+<div style="font-family: Inter, Arial, sans-serif; color: #14211a; line-height: 1.6;">
+  <h1 style="color: #14211a;">Rezerwacja odrzucona</h1>
+  <p>Cześć {{ user.first_name }}!</p>
+  <p>
+    Niestety gospodarz nie mógł przyjąć Twojej rezerwacji ogrodu
+    <strong>„{{ reservation.garden.title }}”</strong>
+    ({{ reservation.start_time|date:"j E Y, H:i" }}–{{ reservation.end_time|date:"H:i" }}).
+  </p>
+  {% if reason %}
+  <p style="background: #f6faf6; border-left: 3px solid #e4ece5; padding: 8px 12px; color: #3a4a40;">
+    Powód: {{ reason }}
+  </p>
+  {% endif %}
+  <p>Pełna kwota płatności została zwrócona na Twój rachunek. Znajdź inny termin lub ogród:</p>
+  <p>
+    <a href="{{ frontend_base_url }}/"
+       style="display: inline-block; padding: 10px 20px; background: #2f9e44; color: #ffffff;
+              border-radius: 10px; text-decoration: none;">Przeglądaj ogrody</a>
+  </p>
+  {% include "emails/_footer.html" %}
+</div>
+{% endautoescape %}

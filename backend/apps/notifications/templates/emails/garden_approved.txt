@@ -1,0 +1,8 @@
+{# Recipient: host. Context: user (host), garden{title}. #}Cześć {{ user.first_name }}!
+
+Twój ogród „{{ garden.title }}” przeszedł weryfikację i jest już widoczny publicznie.
+Klienci mogą go znaleźć i rezerwować.
+
+Przejdź do panelu: {{ frontend_base_url }}/gospodarz
+
+{% include "emails/_footer.txt" %}

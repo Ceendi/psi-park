@@ -1,0 +1,12 @@
+{# Recipient: client. Context: user (client), reservation{garden.title, garden.city, start_time, end_time}. #}Cześć {{ user.first_name }}!
+
+Świetna wiadomość — gospodarz potwierdził Twoją rezerwację ogrodu
+„{{ reservation.garden.title }}”{% if reservation.garden.city %} w {{ reservation.garden.city }}{% endif %}.
+
+Termin: {{ reservation.start_time|date:"j E Y, H:i" }}–{{ reservation.end_time|date:"H:i" }}
+
+Udanego spaceru! Po zakończonym pobycie poprosimy Cię o recenzję.
+
+Zobacz szczegóły: {{ frontend_base_url }}/panel
+
+{% include "emails/_footer.txt" %}

@@ -1,0 +1,23 @@
+{% autoescape on %}
+{# Recipient: host. Context: user (host), garden{title}, reason. #}
+<div style="font-family: Inter, Arial, sans-serif; color: #14211a; line-height: 1.6;">
+  <h1 style="color: #14211a;">Ogród wymaga poprawek</h1>
+  <p>Cześć {{ user.first_name }}!</p>
+  <p>
+    Twój ogród <strong>„{{ garden.title }}”</strong> nie został jeszcze zatwierdzony —
+    wymaga poprawek przed publikacją.
+  </p>
+  {% if reason %}
+  <p style="background: #f6faf6; border-left: 3px solid #e4ece5; padding: 8px 12px; color: #3a4a40;">
+    Uwagi administratora: {{ reason }}
+  </p>
+  {% endif %}
+  <p>Po wprowadzeniu zmian ogród trafi ponownie do weryfikacji.</p>
+  <p>
+    <a href="{{ frontend_base_url }}/gospodarz"
+       style="display: inline-block; padding: 10px 20px; background: #2f9e44; color: #ffffff;
+              border-radius: 10px; text-decoration: none;">Edytuj ogród</a>
+  </p>
+  {% include "emails/_footer.html" %}
+</div>
+{% endautoescape %}
