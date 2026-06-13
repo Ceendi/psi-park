@@ -1,0 +1,19 @@
+{% autoescape on %}
+<div style="font-family: Inter, Arial, sans-serif; color: #14211a; line-height: 1.6;">
+  <h1 style="color: #2f9e44;">Witamy w PsiPark!</h1>
+  <p>Cześć {{ user.first_name }}!</p>
+  <p>
+    Dziękujemy za założenie konta w PsiPark — serwisie wynajmu prywatnych,
+    ogrodzonych ogrodów dla psów.
+  </p>
+  {% if is_host %}
+  <p>Jako gospodarz możesz teraz dodać swój pierwszy ogród i zacząć przyjmować rezerwacje.</p>
+  {% else %}
+  <p>Możesz już przeglądać ogrody w okolicy i zarezerwować bezpieczny teren dla swojego pupila.</p>
+  {% endif %}
+  <p>
+    <a href="{{ frontend_base_url }}" style="color: #2f9e44;">Przejdź do PsiPark</a>
+  </p>
+  <p style="color: #6b7c70; font-size: 13px;">Do zobaczenia,<br>Zespół PsiPark</p>
+</div>
+{% endautoescape %}

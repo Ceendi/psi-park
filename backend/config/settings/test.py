@@ -13,6 +13,12 @@ EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 # In-process channel layer so unit tests don't require a running Redis.
 CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
 
-# Disable throttling so tests are deterministic (auth throttling is tested explicitly in B1).
+# Effectively disable throttling so tests are deterministic. Rates stay defined (not
+# emptied) because ScopedRateThrottle raises ImproperlyConfigured on an unknown scope;
+# the auth-throttle test lowers the "auth" rate locally by patching the throttle (B1).
 REST_FRAMEWORK["DEFAULT_THROTTLE_CLASSES"] = ()  # noqa: F405
-REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {}  # noqa: F405
+REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {  # noqa: F405
+    "anon": "100000/min",
+    "user": "100000/min",
+    "auth": "100000/min",
+}
