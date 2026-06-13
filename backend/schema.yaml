@@ -1,0 +1,39 @@
+openapi: 3.0.3
+info:
+  title: PsiPark API
+  version: 1.0.0
+  description: Marketplace wynajmu prywatnych ogrodów dla psów.
+paths:
+  /api/v1/health/:
+    get:
+      operationId: health_retrieve
+      description: |-
+        Liveness/readiness probe used by the Docker healthcheck.
+
+        Returns 200 only when the database and Redis are reachable, 503 otherwise.
+      tags:
+      - health
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+          description: ''
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        db:
+          type: boolean
+        redis:
+          type: boolean
+      required:
+      - db
+      - redis
+      - status
