@@ -1,0 +1,84 @@
+# ===== Secrets / environment =====
+.env
+.env.*
+!.env.example
+
+# ===== Backend: Python / Django =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+.Python
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Django runtime / collected assets
+*.log
+*.pot
+*.sqlite3
+*.sqlite3-journal
+/backend/media/
+/backend/mediafiles/
+/backend/staticfiles/
+/backend/static_root/
+local_settings.py
+
+# Testing / linting caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+nosetests.xml
+
+# NOTE: backend/schema.yaml is intentionally tracked (OpenAPI source of truth)
+
+# ===== Frontend: Node / Vite / React =====
+node_modules/
+/frontend/dist/
+/frontend/build/
+.vite/
+*.local
+.eslintcache
+.npm/
+.pnpm-store/
+yarn-error.log
+npm-debug.log*
+pnpm-debug.log*
+vitest-result.json
+/frontend/coverage/
+
+# NOTE: frontend/src/shared/api/schema.d.ts is intentionally tracked (generated, committed)
+
+# ===== Docker =====
+*.pid
+docker-compose.override.yml
+
+# ===== Editors / IDE =====
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
+*.swp
+*.swo
+*~
+
+# ===== OS =====
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
