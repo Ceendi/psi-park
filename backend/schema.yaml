@@ -333,6 +333,151 @@ paths:
               schema:
                 $ref: '#/components/schemas/DogDetail'
           description: ''
+  /api/v1/gardens/:
+    get:
+      operationId: gardens_list
+      description: GET /gardens/ — public catalogue of approved, active gardens with
+        filters/sort.
+      parameters:
+      - in: query
+        name: amenities
+        schema:
+          type: string
+      - in: query
+        name: city
+        schema:
+          type: string
+      - in: query
+        name: date
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: in_bbox
+        schema:
+          type: string
+      - in: query
+        name: max_dogs
+        schema:
+          type: integer
+      - in: query
+        name: max_price
+        schema:
+          type: number
+      - in: query
+        name: min_area
+        schema:
+          type: integer
+      - in: query
+        name: min_price
+        schema:
+          type: number
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: surface_type
+        schema:
+          type: string
+          enum:
+          - grass
+          - mixed
+          - paved
+          - sand
+        description: |-
+          * `grass` - Trawa
+          * `sand` - Piasek
+          * `paved` - Utwardzona
+          * `mixed` - Mieszana
+      - in: query
+        name: time_from
+        schema:
+          type: string
+          format: time
+      - in: query
+        name: time_to
+        schema:
+          type: string
+          format: time
+      tags:
+      - gardens
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGardenListList'
+          description: ''
+  /api/v1/gardens/{id}/:
+    get:
+      operationId: gardens_retrieve
+      description: GET /gardens/{id}/ — public detail; owner/admin may also open their
+        pending garden.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - gardens
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GardenDetail'
+          description: ''
+  /api/v1/gardens/{id}/availability/:
+    get:
+      operationId: gardens_availability_retrieve
+      description: GET /gardens/{id}/availability/?date=YYYY-MM-DD — hourly slot map
+        for a day.
+      parameters:
+      - in: query
+        name: date
+        schema:
+          type: string
+        description: YYYY-MM-DD
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - gardens
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Availability'
+          description: ''
   /api/v1/health/:
     get:
       operationId: health_retrieve
@@ -350,6 +495,234 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HealthResponse'
+          description: ''
+  /api/v1/host/gardens/:
+    get:
+      operationId: host_gardens_list
+      description: GET /host/gardens/ — the host's gardens (any status); POST — create
+        one (pending).
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - host
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGardenListList'
+          description: ''
+    post:
+      operationId: host_gardens_create
+      description: GET /host/gardens/ — the host's gardens (any status); POST — create
+        one (pending).
+      tags:
+      - host
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GardenWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GardenWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GardenWrite'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GardenDetail'
+          description: ''
+  /api/v1/host/gardens/{id}/:
+    get:
+      operationId: host_gardens_retrieve
+      description: GET/PATCH/DELETE /host/gardens/{id}/ — manage one of the host's
+        own gardens.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - host
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GardenDetail'
+          description: ''
+    patch:
+      operationId: host_gardens_partial_update
+      description: GET/PATCH/DELETE /host/gardens/{id}/ — manage one of the host's
+        own gardens.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - host
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedGardenWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedGardenWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedGardenWrite'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GardenDetail'
+          description: ''
+    delete:
+      operationId: host_gardens_destroy
+      description: GET/PATCH/DELETE /host/gardens/{id}/ — manage one of the host's
+        own gardens.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - host
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/host/gardens/{id}/photos/:
+    post:
+      operationId: host_gardens_photos_create
+      description: POST /host/gardens/{id}/photos/ — upload (compress + store) a gallery
+        photo.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - host
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GardenPhotoUpload'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GardenPhotoUpload'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GardenPhoto'
+          description: ''
+  /api/v1/host/gardens/{id}/photos/{photo_id}/:
+    delete:
+      operationId: host_gardens_photos_destroy
+      description: DELETE /host/gardens/{id}/photos/{photoId}/ — remove a gallery
+        photo.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: photo_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - host
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/host/gardens/{id}/photos/reorder/:
+    patch:
+      operationId: host_gardens_photos_reorder_partial_update
+      description: PATCH /host/gardens/{id}/photos/reorder/ — set gallery order (cover
+        first).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - host
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPhotoReorder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPhotoReorder'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPhotoReorder'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GardenPhoto'
           description: ''
   /api/v1/me/:
     get:
@@ -429,6 +802,30 @@ paths:
           description: ''
 components:
   schemas:
+    AmenitiesEnum:
+      enum:
+      - pool
+      - water
+      - shelter
+      - lighting
+      - parking
+      - agility
+      - bench
+      - bin
+      - fenced_secure
+      - shade
+      type: string
+      description: |-
+        * `pool` - Basen dla psów
+        * `water` - Woda i miski
+        * `shelter` - Wiata / schronienie
+        * `lighting` - Oświetlenie wieczorne
+        * `parking` - Parking
+        * `agility` - Tor agility
+        * `bench` - Ławki dla opiekuna
+        * `bin` - Kosze na odchody
+        * `fenced_secure` - Pełne ogrodzenie 1,8 m
+        * `shade` - Naturalny cień / drzewa
     AuthTokens:
       type: object
       description: 'Response shape for register/login: token pair plus the user profile.'
@@ -447,6 +844,28 @@ components:
       - access
       - refresh
       - user
+    Availability:
+      type: object
+      description: Daily availability map for a garden (PLAN 8.3).
+      properties:
+        date:
+          type: string
+          format: date
+        open_from:
+          type: string
+          format: time
+        open_to:
+          type: string
+          format: time
+        slots:
+          type: array
+          items:
+            $ref: '#/components/schemas/Slot'
+      required:
+      - date
+      - open_from
+      - open_to
+      - slots
     BlankEnum:
       enum:
       - ''
@@ -654,6 +1073,325 @@ components:
           type: string
       required:
       - name
+    GardenDetail:
+      type: object
+      description: 'Full garden view: gallery, public host, amenity labels, rules,
+        rating.'
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        description:
+          type: string
+          readOnly: true
+        city:
+          type: string
+          readOnly: true
+        address:
+          type: string
+          readOnly: true
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          readOnly: true
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          readOnly: true
+        area_m2:
+          type: integer
+          readOnly: true
+        surface_type:
+          allOf:
+          - $ref: '#/components/schemas/SurfaceTypeEnum'
+          readOnly: true
+        is_fenced:
+          type: boolean
+          readOnly: true
+        fence_height_m:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,2}(?:\.\d{0,1})?$
+          readOnly: true
+          nullable: true
+        max_dogs:
+          type: integer
+          readOnly: true
+        price_per_hour:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          readOnly: true
+        open_from:
+          type: string
+          format: time
+          readOnly: true
+        open_to:
+          type: string
+          format: time
+          readOnly: true
+        min_booking_hours:
+          type: integer
+          readOnly: true
+        amenities:
+          readOnly: true
+        amenities_display:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          description: Resolve stored amenity codes to ``{code, label}`` (label catalogue
+            lives in BE).
+          readOnly: true
+        rules:
+          readOnly: true
+        verification_status:
+          allOf:
+          - $ref: '#/components/schemas/VerificationStatusEnum'
+          readOnly: true
+        rejection_reason:
+          type: string
+          readOnly: true
+        is_active:
+          type: boolean
+          readOnly: true
+        host:
+          allOf:
+          - $ref: '#/components/schemas/HostPublic'
+          readOnly: true
+        photos:
+          type: array
+          items:
+            $ref: '#/components/schemas/GardenPhoto'
+          readOnly: true
+        rating_avg:
+          type: number
+          format: double
+          nullable: true
+          readOnly: true
+        rating_count:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - address
+      - amenities
+      - amenities_display
+      - area_m2
+      - city
+      - created_at
+      - description
+      - fence_height_m
+      - host
+      - id
+      - is_active
+      - is_fenced
+      - latitude
+      - longitude
+      - max_dogs
+      - min_booking_hours
+      - open_from
+      - open_to
+      - photos
+      - price_per_hour
+      - rating_avg
+      - rating_count
+      - rejection_reason
+      - rules
+      - surface_type
+      - title
+      - updated_at
+      - verification_status
+    GardenList:
+      type: object
+      description: 'Light catalogue/map card: cover thumbnail, location, price, rating.'
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        city:
+          type: string
+          readOnly: true
+        address:
+          type: string
+          readOnly: true
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          readOnly: true
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          readOnly: true
+        area_m2:
+          type: integer
+          readOnly: true
+        surface_type:
+          allOf:
+          - $ref: '#/components/schemas/SurfaceTypeEnum'
+          readOnly: true
+        max_dogs:
+          type: integer
+          readOnly: true
+        price_per_hour:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          readOnly: true
+        cover_image:
+          type: string
+          nullable: true
+          readOnly: true
+        rating_avg:
+          type: number
+          format: double
+          nullable: true
+          readOnly: true
+        rating_count:
+          type: integer
+          readOnly: true
+      required:
+      - address
+      - area_m2
+      - city
+      - cover_image
+      - id
+      - latitude
+      - longitude
+      - max_dogs
+      - price_per_hour
+      - rating_avg
+      - rating_count
+      - surface_type
+      - title
+    GardenPhoto:
+      type: object
+      description: Read shape of a gallery photo (URLs are absolute when a request
+        is in context).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        image:
+          type: string
+          format: uri
+          readOnly: true
+        thumbnail:
+          type: string
+          format: uri
+          readOnly: true
+        position:
+          type: integer
+          readOnly: true
+      required:
+      - id
+      - image
+      - position
+      - thumbnail
+    GardenPhotoUpload:
+      type: object
+      description: Multipart photo upload for a garden (PLAN 8.2). Heavy validation
+        happens on processing.
+      properties:
+        image:
+          type: string
+          format: uri
+          writeOnly: true
+      required:
+      - image
+    GardenWrite:
+      type: object
+      description: Validate garden create/update. ``host``/status/photos are set elsewhere
+        (PLAN 8.2).
+      properties:
+        title:
+          type: string
+          maxLength: 120
+        description:
+          type: string
+        city:
+          type: string
+          maxLength: 80
+        address:
+          type: string
+          maxLength: 200
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+        area_m2:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        surface_type:
+          oneOf:
+          - $ref: '#/components/schemas/SurfaceTypeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        is_fenced:
+          type: boolean
+        fence_height_m:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,2}(?:\.\d{0,1})?$
+          nullable: true
+        max_dogs:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        price_per_hour:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+        open_from:
+          type: string
+          format: time
+        open_to:
+          type: string
+          format: time
+        min_booking_hours:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        amenities:
+          type: array
+          items:
+            $ref: '#/components/schemas/AmenitiesEnum'
+        rules:
+          type: array
+          items:
+            type: string
+            maxLength: 200
+        is_active:
+          type: boolean
+      required:
+      - address
+      - area_m2
+      - city
+      - latitude
+      - longitude
+      - price_per_hour
+      - title
     HealthResponse:
       type: object
       properties:
@@ -667,6 +1405,23 @@ components:
       - db
       - redis
       - status
+    HostPublic:
+      type: object
+      description: Public-facing host identity shown on a garden detail page.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        is_verified_host:
+          type: boolean
+          readOnly: true
+      required:
+      - full_name
+      - id
+      - is_verified_host
     Login:
       type: object
       description: E-mail + password login; embeds the user profile and a ``role``
@@ -713,6 +1468,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DogList'
+    PaginatedGardenListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/GardenList'
     PasswordResetConfirm:
       type: object
       description: Set a new password using the token from the reset e-mail.
@@ -777,6 +1555,74 @@ components:
           nullable: true
         notes:
           type: string
+    PatchedGardenWrite:
+      type: object
+      description: Validate garden create/update. ``host``/status/photos are set elsewhere
+        (PLAN 8.2).
+      properties:
+        title:
+          type: string
+          maxLength: 120
+        description:
+          type: string
+        city:
+          type: string
+          maxLength: 80
+        address:
+          type: string
+          maxLength: 200
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+        area_m2:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        surface_type:
+          oneOf:
+          - $ref: '#/components/schemas/SurfaceTypeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        is_fenced:
+          type: boolean
+        fence_height_m:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,2}(?:\.\d{0,1})?$
+          nullable: true
+        max_dogs:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        price_per_hour:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+        open_from:
+          type: string
+          format: time
+        open_to:
+          type: string
+          format: time
+        min_booking_hours:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        amenities:
+          type: array
+          items:
+            $ref: '#/components/schemas/AmenitiesEnum'
+        rules:
+          type: array
+          items:
+            type: string
+            maxLength: 200
+        is_active:
+          type: boolean
     PatchedMeUpdate:
       type: object
       description: Editable profile fields (PATCH /me/). ``role``/``email`` are intentionally
@@ -806,6 +1652,15 @@ components:
         new_password_confirm:
           type: string
           writeOnly: true
+    PatchedPhotoReorder:
+      type: object
+      description: 'New gallery order: the full list of this garden''s photo ids,
+        cover first.'
+      properties:
+        photo_ids:
+          type: array
+          items:
+            type: integer
     Register:
       type: object
       description: Validate a new client/host account (role limited, terms required,
@@ -861,6 +1716,29 @@ components:
       description: |-
         * `male` - Samiec
         * `female` - Suka
+    Slot:
+      type: object
+      description: One hourly availability slot (PLAN 8.3).
+      properties:
+        hour:
+          type: string
+        available:
+          type: boolean
+      required:
+      - available
+      - hour
+    SurfaceTypeEnum:
+      enum:
+      - grass
+      - sand
+      - paved
+      - mixed
+      type: string
+      description: |-
+        * `grass` - Trawa
+        * `sand` - Piasek
+        * `paved` - Utwardzona
+        * `mixed` - Mieszana
     TokenRefresh:
       type: object
       properties:
@@ -943,6 +1821,16 @@ components:
         * `client` - Klient
         * `host` - Gospodarz
         * `admin` - Administrator
+    VerificationStatusEnum:
+      enum:
+      - pending
+      - approved
+      - rejected
+      type: string
+      description: |-
+        * `pending` - Oczekuje weryfikacji
+        * `approved` - Zatwierdzony
+        * `rejected` - Odrzucony
   securitySchemes:
     jwtAuth:
       type: http
