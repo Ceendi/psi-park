@@ -18,6 +18,11 @@ concurrency:
 permissions:
   contents: read
 
+# Node 20 action runtime is forced to Node 24 from 2026-06-16; opt in now so the
+# transition is validated by CI rather than surprising us on the cutover date.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   backend:
     name: Backend (Django)
