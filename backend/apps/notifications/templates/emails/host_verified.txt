@@ -1,0 +1,8 @@
+{# Recipient: host. Context: user (host). #}Cześć {{ user.first_name }}!
+
+Twoje konto gospodarza zostało zweryfikowane. Przy Twoich ogrodach pojawi się odznaka
+„Zweryfikowany gospodarz”, która buduje zaufanie klientów.
+
+Przejdź do panelu: {{ frontend_base_url }}/gospodarz
+
+{% include "emails/_footer.txt" %}

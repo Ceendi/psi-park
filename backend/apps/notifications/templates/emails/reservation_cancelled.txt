@@ -1,0 +1,11 @@
+{# Recipient: the other party (host when client cancels). Context: user (recipient), reservation{garden.title, start_time, end_time}, refunded (optional bool). #}Cześć {{ user.first_name }}!
+
+Rezerwacja ogrodu „{{ reservation.garden.title }}”
+({{ reservation.start_time|date:"j E Y, H:i" }}–{{ reservation.end_time|date:"H:i" }})
+została anulowana.
+{% if refunded %}
+Pełna kwota płatności została zwrócona klientowi.
+{% endif %}
+Moje rezerwacje: {{ frontend_base_url }}/panel
+
+{% include "emails/_footer.txt" %}

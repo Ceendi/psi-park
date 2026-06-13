@@ -1,0 +1,23 @@
+{% autoescape on %}
+{# Recipient: host. Context: user (host), reservation{garden.title, start_time, end_time, dog.name, dogs_count, client.first_name}. #}
+<div style="font-family: Inter, Arial, sans-serif; color: #14211a; line-height: 1.6;">
+  <h1 style="color: #2f9e44;">Nowa rezerwacja oczekuje na decyzję</h1>
+  <p>Cześć {{ user.first_name }}!</p>
+  <p>
+    Klient {{ reservation.client.first_name }} opłacił rezerwację Twojego ogrodu
+    <strong>„{{ reservation.garden.title }}”</strong> i czeka na Twoją akceptację.
+  </p>
+  <table style="border-collapse: collapse; margin: 8px 0;">
+    <tr><td style="color: #6b7c70; padding: 2px 12px 2px 0;">Termin</td>
+        <td>{{ reservation.start_time|date:"j E Y, H:i" }}–{{ reservation.end_time|date:"H:i" }}</td></tr>
+    <tr><td style="color: #6b7c70; padding: 2px 12px 2px 0;">Pies</td>
+        <td>{{ reservation.dog.name }} ({{ reservation.dogs_count }})</td></tr>
+  </table>
+  <p>
+    <a href="{{ frontend_base_url }}/gospodarz/rezerwacje"
+       style="display: inline-block; padding: 10px 20px; background: #2f9e44; color: #ffffff;
+              border-radius: 10px; text-decoration: none;">Przejdź do rezerwacji</a>
+  </p>
+  {% include "emails/_footer.html" %}
+</div>
+{% endautoescape %}

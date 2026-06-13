@@ -1,0 +1,13 @@
+{# Recipient: client. Context: user (client), reservation{garden.title, start_time, end_time, total_price}, invoice_number (optional). Invoice PDF attached via send(attachments=...). #}Cześć {{ user.first_name }}!
+
+Otrzymaliśmy Twoją płatność za rezerwację ogrodu „{{ reservation.garden.title }}”.
+Gospodarz potwierdzi ją wkrótce.
+
+Termin: {{ reservation.start_time|date:"j E Y, H:i" }}–{{ reservation.end_time|date:"H:i" }}
+Zapłacono: {{ reservation.total_price }} zł
+{% if invoice_number %}
+Fakturę nr {{ invoice_number }} znajdziesz w załączniku do tej wiadomości.
+{% endif %}
+Moje rezerwacje: {{ frontend_base_url }}/panel
+
+{% include "emails/_footer.txt" %}

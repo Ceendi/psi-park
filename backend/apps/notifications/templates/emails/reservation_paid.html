@@ -1,0 +1,26 @@
+{% autoescape on %}
+{# Recipient: client. Context: user (client), reservation{garden.title, start_time, end_time, total_price}, invoice_number (optional). Invoice PDF attached via send(attachments=...). #}
+<div style="font-family: Inter, Arial, sans-serif; color: #14211a; line-height: 1.6;">
+  <h1 style="color: #2f9e44;">Płatność potwierdzona</h1>
+  <p>Cześć {{ user.first_name }}!</p>
+  <p>
+    Otrzymaliśmy Twoją płatność za rezerwację ogrodu
+    <strong>„{{ reservation.garden.title }}”</strong>. Gospodarz potwierdzi ją wkrótce.
+  </p>
+  <table style="border-collapse: collapse; margin: 8px 0;">
+    <tr><td style="color: #6b7c70; padding: 2px 12px 2px 0;">Termin</td>
+        <td>{{ reservation.start_time|date:"j E Y, H:i" }}–{{ reservation.end_time|date:"H:i" }}</td></tr>
+    <tr><td style="color: #6b7c70; padding: 2px 12px 2px 0;">Zapłacono</td>
+        <td>{{ reservation.total_price }} zł</td></tr>
+  </table>
+  {% if invoice_number %}
+  <p>Fakturę nr <strong>{{ invoice_number }}</strong> znajdziesz w załączniku do tej wiadomości.</p>
+  {% endif %}
+  <p>
+    <a href="{{ frontend_base_url }}/panel"
+       style="display: inline-block; padding: 10px 20px; background: #2f9e44; color: #ffffff;
+              border-radius: 10px; text-decoration: none;">Moje rezerwacje</a>
+  </p>
+  {% include "emails/_footer.html" %}
+</div>
+{% endautoescape %}

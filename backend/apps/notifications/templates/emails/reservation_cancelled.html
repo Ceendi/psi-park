@@ -1,0 +1,21 @@
+{% autoescape on %}
+{# Recipient: the other party (host when client cancels). Context: user (recipient), reservation{garden.title, start_time, end_time}, refunded (optional bool). #}
+<div style="font-family: Inter, Arial, sans-serif; color: #14211a; line-height: 1.6;">
+  <h1 style="color: #14211a;">Rezerwacja anulowana</h1>
+  <p>Cześć {{ user.first_name }}!</p>
+  <p>
+    Rezerwacja ogrodu <strong>„{{ reservation.garden.title }}”</strong>
+    ({{ reservation.start_time|date:"j E Y, H:i" }}–{{ reservation.end_time|date:"H:i" }})
+    została anulowana.
+  </p>
+  {% if refunded %}
+  <p>Pełna kwota płatności została zwrócona klientowi.</p>
+  {% endif %}
+  <p>
+    <a href="{{ frontend_base_url }}/panel"
+       style="display: inline-block; padding: 10px 20px; background: #2f9e44; color: #ffffff;
+              border-radius: 10px; text-decoration: none;">Moje rezerwacje</a>
+  </p>
+  {% include "emails/_footer.html" %}
+</div>
+{% endautoescape %}

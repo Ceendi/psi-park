@@ -1,0 +1,5 @@
+--
+PsiPark — wynajem prywatnych, ogrodzonych ogrodów dla psów.
+Platforma pośredniczy w rezerwacjach i nie odpowiada za szkody wyrządzone pupilowi
+(szczegóły w Regulaminie: {{ frontend_base_url }}/regulamin).
+Ta wiadomość została wysłana automatycznie — prosimy na nią nie odpowiadać.

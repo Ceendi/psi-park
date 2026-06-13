@@ -1,0 +1,12 @@
+{# Recipient: host. Context: user (host), garden{title}, reason. #}Cześć {{ user.first_name }}!
+
+Twój ogród „{{ garden.title }}” nie został jeszcze zatwierdzony — wymaga poprawek
+przed publikacją.
+{% if reason %}
+Uwagi administratora: {{ reason }}
+{% endif %}
+Po wprowadzeniu zmian ogród trafi ponownie do weryfikacji.
+
+Edytuj ogród: {{ frontend_base_url }}/gospodarz
+
+{% include "emails/_footer.txt" %}
