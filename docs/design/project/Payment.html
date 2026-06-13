@@ -1,0 +1,1162 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Płatność · PsiPark</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-900: #0F3D14;
+    --green-800: #1B5E20;
+    --green-700: #2E7D32;
+    --green-600: #43A047;
+    --green-500: #66BB6A;
+    --green-300: #A5D6A7;
+    --green-100: #DCEFD8;
+    --green-50:  #F0F8EE;
+
+    --ink-900: #1B1B1B;
+    --ink-700: #3A3A3A;
+    --ink-500: #6B6B6B;
+    --ink-300: #B5B5B5;
+    --ink-200: #D8D8D8;
+    --ink-100: #ECECEC;
+    --ink-50:  #F5F5F4;
+
+    --bone:    #FAFFFA;
+    --surface: #FFFFFF;
+
+    --warning: #E2A03F;
+    --danger:  #C5443A;
+    --sun:     #E8B84A;
+
+    --stripe-purple: #635BFF;
+    --stripe-dark:   #0A2540;
+
+    --r-sm: 10px;
+    --r-md: 14px;
+    --r-lg: 20px;
+    --r-pill: 999px;
+
+    --shadow-1: 0 1px 2px rgba(20,30,20,.06), 0 1px 1px rgba(20,30,20,.04);
+    --shadow-2: 0 4px 12px rgba(20,30,20,.06), 0 2px 4px rgba(20,30,20,.04);
+    --shadow-3: 0 12px 28px rgba(20,30,20,.10), 0 4px 10px rgba(20,30,20,.05);
+
+    --type-sans: 'Inter', -apple-system, system-ui, 'Segoe UI', sans-serif;
+    --type-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+
+    --container: 1240px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: var(--type-sans);
+    color: var(--ink-900);
+    background: var(--bone);
+    -webkit-font-smoothing: antialiased;
+  }
+  button { font: inherit; cursor: pointer; }
+  a { color: inherit; text-decoration: none; }
+
+  /* ============ NAV ============ */
+  .nav-wrap {
+    background: var(--surface);
+    border-bottom: 1px solid var(--ink-100);
+  }
+  .nav {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 18px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 700; font-size: 19px; letter-spacing: -0.02em;
+  }
+  .logo .mark {
+    width: 34px; height: 34px;
+    background: var(--green-700);
+    border-radius: 10px;
+    display: grid; place-items: center;
+    color: var(--bone);
+    box-shadow: var(--shadow-1);
+  }
+  .nav-secure {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px;
+    color: var(--ink-500);
+    padding: 8px 14px;
+    border-radius: var(--r-pill);
+    background: var(--ink-50);
+  }
+  .nav-secure svg { color: var(--green-700); }
+
+  /* ============ TITLE ============ */
+  .page-title {
+    max-width: var(--container);
+    margin: 36px auto 0;
+    padding: 0 32px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .back-btn {
+    width: 40px; height: 40px;
+    border-radius: 999px;
+    border: 1px solid var(--ink-200);
+    background: var(--surface);
+    display: grid; place-items: center;
+    color: var(--ink-700);
+    transition: border-color .15s, color .15s;
+  }
+  .back-btn:hover { border-color: var(--ink-900); color: var(--ink-900); }
+  .page-title h1 {
+    margin: 0;
+    font-size: 28px; font-weight: 700; letter-spacing: -0.025em;
+  }
+
+  /* ============ LAYOUT ============ */
+  .layout {
+    max-width: var(--container);
+    margin: 28px auto 0;
+    padding: 0 32px;
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 64px;
+    align-items: start;
+  }
+
+  /* ============ STEPPER ============ */
+  .stepper {
+    display: flex; align-items: center;
+    margin-bottom: 36px;
+    padding: 16px 24px;
+    background: var(--surface);
+    border: 1px solid var(--ink-100);
+    border-radius: var(--r-lg);
+  }
+  .step {
+    display: flex; align-items: center; gap: 12px;
+    flex: 1; min-width: 0;
+  }
+  .step .ring {
+    width: 32px; height: 32px;
+    border-radius: 999px;
+    background: var(--ink-100);
+    color: var(--ink-500);
+    display: grid; place-items: center;
+    font-weight: 700; font-size: 13px;
+    flex-shrink: 0;
+    transition: background .15s, color .15s;
+  }
+  .step.done .ring { background: var(--green-700); color: var(--bone); }
+  .step.active .ring { background: var(--ink-900); color: var(--bone); }
+  .step .info { min-width: 0; }
+  .step .step-k {
+    font-size: 10px; color: var(--ink-500);
+    text-transform: uppercase; letter-spacing: .1em;
+    font-family: var(--type-mono);
+  }
+  .step .step-v {
+    font-size: 14px; font-weight: 600;
+    margin-top: 1px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .step:not(.active):not(.done) .step-v { color: var(--ink-500); }
+  .step-divider {
+    flex: 0 0 36px;
+    height: 1px;
+    background: var(--ink-200);
+    margin: 0 12px;
+  }
+  .step.done + .step-divider { background: var(--green-300); }
+
+  /* ============ FORM SECTIONS ============ */
+  .form-section {
+    background: var(--surface);
+    border: 1px solid var(--ink-100);
+    border-radius: var(--r-lg);
+    padding: 28px;
+    margin-bottom: 24px;
+  }
+  .section-head {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+  }
+  .section-head h2 {
+    margin: 0 0 4px;
+    font-size: 18px; font-weight: 600; letter-spacing: -.01em;
+  }
+  .section-head .section-sub {
+    margin: 0;
+    font-size: 13px; color: var(--ink-500);
+  }
+  .section-step {
+    font-family: var(--type-mono);
+    font-size: 11px;
+    color: var(--ink-300);
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    margin-top: 4px;
+  }
+
+  /* ============ PAYMENT METHODS ============ */
+  .pm-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .pm {
+    border: 1.5px solid var(--ink-200);
+    border-radius: var(--r-md);
+    padding: 16px 18px;
+    cursor: pointer;
+    background: var(--surface);
+    transition: border-color .15s, background .15s;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+  }
+  .pm:hover { border-color: var(--ink-900); }
+  .pm.selected {
+    border-color: var(--green-700);
+    background: var(--green-50);
+  }
+  .pm-label {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .pm-label .nm {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .pm-label .meta {
+    font-size: 12px;
+    color: var(--ink-500);
+    margin-top: 1px;
+    font-family: var(--type-mono);
+  }
+  .pm-radio {
+    width: 22px; height: 22px;
+    border-radius: 999px;
+    border: 2px solid var(--ink-300);
+    flex-shrink: 0;
+    display: grid; place-items: center;
+    transition: border-color .15s;
+  }
+  .pm.selected .pm-radio { border-color: var(--green-700); }
+  .pm.selected .pm-radio::after {
+    content: "";
+    width: 10px; height: 10px;
+    border-radius: 999px;
+    background: var(--green-700);
+  }
+
+  .pm-logo {
+    height: 28px; min-width: 44px;
+    border-radius: 6px;
+    display: grid; place-items: center;
+    background: var(--ink-50);
+    padding: 0 6px;
+    font-weight: 800;
+    font-size: 11px;
+    letter-spacing: -0.02em;
+  }
+  .pm-logo.card { background: linear-gradient(135deg, #5a5a5a, #1a1a1a); color: white; }
+  .pm-logo.blik { background: #1A56DB; color: white; }
+  .pm-logo.p24  { background: #B3001E; color: white; font-size: 10px; }
+  .pm-logo.apple { background: #000; color: white; font-size: 14px; }
+  .pm-logo.google { background: white; border: 1px solid var(--ink-200); color: #4285F4; font-size: 12px; }
+  .pm-logo.transfer { background: var(--green-700); color: var(--bone); }
+  .pm-logo svg { display: block; }
+
+  /* ============ ACCEPTED CARDS STRIP ============ */
+  .accepted-cards {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px;
+    background: var(--ink-50);
+    border-radius: var(--r-md);
+    margin-bottom: 22px;
+  }
+  .accepted-cards .accepted-label {
+    font-size: 11px;
+    color: var(--ink-500);
+    font-family: var(--type-mono);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    margin-right: 4px;
+  }
+  .accepted-cards .card-brand {
+    width: 36px; height: 24px;
+    border-radius: 5px;
+    font-size: 10px;
+  }
+  .accepted-cards .card-brand.mc::after { width: 14px; height: 14px; }
+
+  /* ============ STRIPE-LIKE CARD INPUT ============ */
+  .stripe-block {
+    margin-top: 22px;
+    padding-top: 22px;
+    border-top: 1px solid var(--ink-100);
+  }
+  .stripe-block .stripe-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .stripe-block .stripe-head .lbl {
+    font-size: 12px;
+    color: var(--ink-500);
+    font-family: var(--type-mono);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+  .stripe-block .stripe-head .powered {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px;
+    color: var(--ink-500);
+    font-family: var(--type-mono);
+  }
+  .stripe-block .stripe-head .powered b {
+    color: var(--stripe-purple);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .stripe-field-wrap {
+    border: 1px solid var(--ink-200);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    background: var(--surface);
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .stripe-field-wrap:focus-within {
+    border-color: var(--stripe-purple);
+    box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.12);
+  }
+  .stripe-field-wrap.has-error {
+    border-color: var(--danger);
+  }
+  .stripe-field {
+    display: flex; align-items: center;
+    padding: 14px 16px;
+    gap: 12px;
+    border-bottom: 1px solid var(--ink-100);
+  }
+  .stripe-field:last-child { border-bottom: 0; }
+  .stripe-field .lbl {
+    width: 110px;
+    font-size: 13px;
+    color: var(--ink-700);
+    flex-shrink: 0;
+  }
+  .stripe-field input {
+    flex: 1;
+    border: 0;
+    outline: 0;
+    font: inherit;
+    font-size: 15px;
+    color: var(--ink-900);
+    background: transparent;
+    letter-spacing: 0.02em;
+    min-width: 0;
+  }
+  .stripe-field input::placeholder { color: var(--ink-300); }
+  .stripe-field input.mono {
+    font-family: var(--type-mono);
+    font-size: 14px;
+  }
+  .card-brand {
+    width: 30px;
+    height: 20px;
+    border-radius: 4px;
+    background: var(--ink-200);
+    display: grid; place-items: center;
+    color: white;
+    font-size: 9px;
+    font-weight: 800;
+    flex-shrink: 0;
+    transition: background .15s;
+  }
+  .card-brand.visa { background: #1A1F71; }
+  .card-brand.mc { background: linear-gradient(90deg, #EB001B 50%, #F79E1B 50%); color: transparent; position: relative; }
+  .card-brand.mc::after { content: ""; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px; border-radius: 999px; background: rgba(255,255,255,.5); }
+  .card-brand.amex { background: #006FCF; }
+
+  .stripe-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .stripe-row .stripe-field {
+    border-right: 1px solid var(--ink-100);
+  }
+  .stripe-row .stripe-field:last-child { border-right: 0; }
+
+  .field-error {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--danger);
+    display: none;
+    align-items: center;
+    gap: 6px;
+  }
+  .field-error.show { display: flex; }
+
+  .save-row {
+    margin-top: 14px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px;
+    color: var(--ink-700);
+    cursor: pointer;
+  }
+  .save-row input { display: none; }
+  .save-row .box {
+    width: 18px; height: 18px;
+    border-radius: 5px;
+    border: 1.5px solid var(--ink-300);
+    background: var(--surface);
+    display: grid; place-items: center;
+    flex-shrink: 0;
+    transition: all .15s;
+  }
+  .save-row input:checked + .box {
+    background: var(--green-700);
+    border-color: var(--green-700);
+  }
+  .save-row input:checked + .box::after {
+    content: ""; width: 9px; height: 5px;
+    border-left: 2px solid var(--bone);
+    border-bottom: 2px solid var(--bone);
+    transform: rotate(-45deg) translate(1px, -1px);
+  }
+
+  /* ============ BLIK ============ */
+  .blik-block {
+    margin-top: 22px;
+    padding-top: 22px;
+    border-top: 1px solid var(--ink-100);
+    display: none;
+  }
+  .blik-block.active { display: block; }
+  .blik-input {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    max-width: 360px;
+    margin-top: 12px;
+  }
+  .blik-input input {
+    min-width: 0;
+    width: 100%;
+    aspect-ratio: 1 / 1.1;
+    border: 1.5px solid var(--ink-200);
+    border-radius: var(--r-md);
+    background: var(--surface);
+    text-align: center;
+    font-family: var(--type-mono);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink-900);
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .blik-input input:focus {
+    border-color: #1A56DB;
+    box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.15);
+  }
+  .blik-help {
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--ink-500);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .blik-help svg { color: #1A56DB; flex-shrink: 0; }
+
+  /* ============ BILLING ============ */
+  .billing-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .field {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .field.full { grid-column: 1 / -1; }
+  .field label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-700);
+  }
+  .field input,
+  .field select {
+    appearance: none;
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--ink-200);
+    border-radius: var(--r-md);
+    padding: 12px 14px;
+    font: inherit;
+    font-size: 14px;
+    color: var(--ink-900);
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .field input::placeholder { color: var(--ink-300); }
+  .field input:focus,
+  .field select:focus {
+    outline: none;
+    border-color: var(--green-700);
+    box-shadow: 0 0 0 3px var(--green-100);
+  }
+  .field select {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B6B6B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
+  .invoice-toggle {
+    margin-top: 14px;
+    padding: 12px 16px;
+    background: var(--ink-50);
+    border-radius: var(--r-md);
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px;
+    color: var(--ink-700);
+    cursor: pointer;
+    border: 1px dashed var(--ink-200);
+  }
+  .invoice-toggle:hover { border-color: var(--green-700); color: var(--green-800); }
+  .invoice-toggle svg { color: var(--green-700); }
+
+  /* ============ BUTTONS ============ */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 8px;
+    border-radius: var(--r-pill);
+    border: 1px solid transparent;
+    font-family: var(--type-sans);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s, border-color .15s, transform .08s;
+    white-space: nowrap;
+    line-height: 1;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-sm { padding: 9px 16px; font-size: 13px; }
+  .btn-md { padding: 13px 22px; font-size: 14px; }
+  .btn-lg { padding: 17px 24px; font-size: 16px; }
+  .btn-primary {
+    background: var(--green-700);
+    color: var(--bone);
+    box-shadow: var(--shadow-2);
+  }
+  .btn-primary:hover { background: var(--green-800); }
+  .btn-primary[disabled] {
+    opacity: .45; cursor: not-allowed;
+    box-shadow: none;
+  }
+  .btn-block { width: 100%; }
+
+  .trust-bar {
+    display: flex; align-items: center; justify-content: center;
+    gap: 24px;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--ink-100);
+    font-size: 11px;
+    color: var(--ink-500);
+    font-family: var(--type-mono);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    flex-wrap: wrap;
+  }
+  .trust-bar > span {
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .trust-bar svg { color: var(--green-700); }
+
+  /* ============ RIGHT: SUMMARY ============ */
+  .summary-wrap {
+    position: sticky;
+    top: 24px;
+  }
+  .summary {
+    background: var(--surface);
+    border: 1px solid var(--ink-100);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-2);
+    overflow: hidden;
+  }
+  .summary .garden-head {
+    display: flex; gap: 14px;
+    padding: 20px 20px 0;
+  }
+  .summary .garden-thumb {
+    width: 110px; height: 88px;
+    border-radius: var(--r-md);
+    overflow: hidden; flex-shrink: 0;
+    background:
+      repeating-linear-gradient(45deg, transparent 0 14px, rgba(46,125,50,.06) 14px 15px),
+      linear-gradient(160deg, #DCEFD8 0%, #88BD8D 100%);
+  }
+  .summary .garden-info { padding: 2px 0; min-width: 0; }
+  .summary .garden-info .t {
+    font-size: 15px; font-weight: 600;
+    margin: 0 0 4px;
+    letter-spacing: -.01em; line-height: 1.3;
+  }
+  .summary .garden-info .l {
+    font-size: 12px; color: var(--ink-500);
+    display: flex; align-items: center; gap: 4px;
+    margin-bottom: 6px;
+  }
+  .summary .garden-info .r {
+    font-size: 12px; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .summary .garden-info .r svg { color: var(--ink-900); }
+  .summary .garden-info .r .rc { color: var(--ink-500); font-weight: 500; }
+
+  .summary-details {
+    padding: 18px 20px 0;
+    margin-top: 18px;
+    border-top: 1px solid var(--ink-100);
+  }
+  .summary-details h3 {
+    margin: 0 0 12px;
+    font-size: 11px;
+    font-family: var(--type-mono);
+    color: var(--ink-500);
+    text-transform: uppercase; letter-spacing: .12em;
+    font-weight: 500;
+  }
+  .summary-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 0;
+    font-size: 14px;
+  }
+  .summary-row .ico {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--green-50);
+    color: var(--green-800);
+    display: grid; place-items: center;
+    flex-shrink: 0;
+  }
+  .summary-row .v { font-weight: 600; }
+  .summary-row .vk {
+    font-size: 11px; color: var(--ink-500);
+    margin-bottom: 1px;
+    font-family: var(--type-mono);
+    text-transform: uppercase; letter-spacing: .08em;
+  }
+
+  .summary-cost {
+    padding: 18px 20px 0;
+    margin-top: 18px;
+    border-top: 1px solid var(--ink-100);
+  }
+  .summary-cost h3 {
+    margin: 0 0 14px;
+    font-size: 11px;
+    font-family: var(--type-mono);
+    color: var(--ink-500);
+    text-transform: uppercase; letter-spacing: .12em;
+    font-weight: 500;
+  }
+  .cost-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: var(--ink-700);
+  }
+  .cost-row .lk {
+    text-decoration: underline;
+    text-decoration-color: var(--ink-200);
+    text-underline-offset: 3px;
+  }
+  .cost-row.discount { color: var(--green-700); }
+  .cost-row.discount .lk { text-decoration: none; }
+
+  .cost-total {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-top: 14px;
+    padding: 16px 0 18px;
+    border-top: 2px solid var(--ink-900);
+    border-bottom: 1px solid var(--ink-100);
+    margin-bottom: 18px;
+  }
+  .cost-total .lbl { font-size: 15px; font-weight: 700; }
+  .cost-total .amt {
+    font-size: 22px; font-weight: 700; letter-spacing: -.02em;
+  }
+  .cost-total .amt-sub {
+    font-size: 11px; color: var(--ink-500);
+    font-family: var(--type-mono);
+    margin-top: 2px;
+    text-align: right;
+  }
+
+  .summary-cta { padding: 0 20px 20px; }
+  .summary-cta .stripe-note {
+    margin-top: 12px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--ink-500);
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .summary-cta .stripe-note svg { color: var(--green-700); }
+
+  .summary-cancel {
+    padding: 14px 20px;
+    background: var(--ink-50);
+    border-top: 1px solid var(--ink-100);
+    font-size: 12px;
+    color: var(--ink-700);
+    display: flex; align-items: flex-start; gap: 10px;
+    line-height: 1.5;
+  }
+  .summary-cancel svg { color: var(--green-700); flex-shrink: 0; margin-top: 1px; }
+  .summary-cancel strong { color: var(--ink-900); font-weight: 600; }
+
+  /* ============ FOOTER ============ */
+  footer.mini {
+    margin-top: 80px;
+    border-top: 1px solid var(--ink-100);
+    padding: 24px 0;
+  }
+  .footer-mini-inner {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 32px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 12px;
+    font-size: 12px;
+    color: var(--ink-500);
+    font-family: var(--type-mono);
+  }
+  .footer-mini-inner .links { display: flex; gap: 18px; }
+  .footer-mini-inner .links a:hover { color: var(--green-800); }
+
+  /* ============ PROCESSING MODAL ============ */
+  .processing-overlay {
+    position: fixed; inset: 0;
+    background: rgba(15, 30, 15, 0.55);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 100;
+    padding: 24px;
+  }
+  .processing-overlay.show { display: flex; }
+  .processing-card {
+    background: var(--surface);
+    border-radius: var(--r-lg);
+    padding: 36px 40px;
+    text-align: center;
+    max-width: 380px;
+    width: 100%;
+    box-shadow: 0 24px 60px rgba(0,0,0,.25);
+  }
+  .processing-card .spinner {
+    width: 56px; height: 56px;
+    border-radius: 999px;
+    border: 4px solid var(--green-100);
+    border-top-color: var(--green-700);
+    margin: 0 auto 20px;
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  .processing-card h3 {
+    margin: 0 0 6px;
+    font-size: 18px; font-weight: 600;
+  }
+  .processing-card p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--ink-500);
+    line-height: 1.5;
+  }
+  .processing-card .powered {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--ink-100);
+    font-size: 11px;
+    color: var(--ink-500);
+    font-family: var(--type-mono);
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .processing-card .powered b {
+    color: var(--stripe-purple);
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<div class="nav-wrap">
+  <nav class="nav">
+    <a class="logo" href="#">
+      <span class="mark" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 32 32" fill="currentColor">
+          <ellipse cx="9" cy="11" rx="3" ry="4"/>
+          <ellipse cx="23" cy="11" rx="3" ry="4"/>
+          <ellipse cx="4" cy="18" rx="2.5" ry="3.5"/>
+          <ellipse cx="28" cy="18" rx="2.5" ry="3.5"/>
+          <path d="M16 16c-5 0-8 3.5-8 7 0 3 2.5 5 5.5 4.5 1.4-.2 1.7-.8 2.5-.8s1.1.6 2.5.8c3 .5 5.5-1.5 5.5-4.5 0-3.5-3-7-8-7z"/>
+        </svg>
+      </span>
+      PsiPark
+    </a>
+    <div class="nav-secure">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      Bezpieczna płatność · szyfrowanie SSL
+    </div>
+  </nav>
+</div>
+
+<!-- ============ TITLE ============ -->
+<div class="page-title">
+  <button class="back-btn" aria-label="Wróć do szczegółów rezerwacji">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>
+  </button>
+  <h1>Płatność</h1>
+</div>
+
+<!-- ============ LAYOUT ============ -->
+<div class="layout">
+
+  <!-- ===== LEFT ===== -->
+  <main>
+
+    <!-- Stepper -->
+    <div class="stepper">
+      <div class="step done">
+        <div class="ring">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+        </div>
+        <div class="info">
+          <div class="step-k">Krok 1</div>
+          <div class="step-v">Szczegóły rezerwacji</div>
+        </div>
+      </div>
+      <div class="step-divider"></div>
+      <div class="step active">
+        <div class="ring">2</div>
+        <div class="info">
+          <div class="step-k">Krok 2</div>
+          <div class="step-v">Płatność</div>
+        </div>
+      </div>
+      <div class="step-divider"></div>
+      <div class="step">
+        <div class="ring">3</div>
+        <div class="info">
+          <div class="step-k">Krok 3</div>
+          <div class="step-v">Potwierdzenie</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment method (only card via Stripe) -->
+    <section class="form-section">
+      <div class="section-head">
+        <div>
+          <h2>Dane karty</h2>
+          <p class="section-sub">Płatność kartą Visa, Mastercard lub American Express. Obsługiwane przez Stripe.</p>
+        </div>
+        <div class="section-step">01 / 02</div>
+      </div>
+
+      <!-- Accepted cards strip -->
+      <div class="accepted-cards">
+        <span class="accepted-label">Akceptujemy</span>
+        <span class="card-brand visa">VISA</span>
+        <span class="card-brand mc"></span>
+        <span class="card-brand amex">AMEX</span>
+      </div>
+
+      <!-- Card form (Stripe-style) -->
+      <div class="stripe-block" id="stripe-block">
+        <div class="stripe-head">
+          <span class="lbl">Wprowadź dane karty</span>
+          <span class="powered">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="color: var(--green-700)"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            obsługiwane przez <b>stripe</b>
+          </span>
+        </div>
+
+        <div class="stripe-field-wrap" id="card-wrap">
+          <div class="stripe-field">
+            <span class="lbl">Numer karty</span>
+            <input type="text" id="card-number" class="mono" placeholder="1234 1234 1234 1234" inputmode="numeric" maxlength="19" value="4242 4242 4242 4242">
+            <span class="card-brand visa" id="card-brand">VISA</span>
+          </div>
+          <div class="stripe-row">
+            <div class="stripe-field">
+              <span class="lbl">Wygasa</span>
+              <input type="text" id="card-exp" class="mono" placeholder="MM / RR" inputmode="numeric" maxlength="7" value="08 / 28">
+            </div>
+            <div class="stripe-field">
+              <span class="lbl">CVC</span>
+              <input type="text" id="card-cvc" class="mono" placeholder="123" inputmode="numeric" maxlength="4" value="424">
+            </div>
+          </div>
+          <div class="stripe-field">
+            <span class="lbl">Właściciel</span>
+            <input type="text" id="card-name" placeholder="Imię i nazwisko z karty" value="KATARZYNA NOWAK">
+          </div>
+        </div>
+        <div class="field-error" id="card-error">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          Numer karty wygląda na nieprawidłowy
+        </div>
+
+        <label class="save-row">
+          <input type="checkbox" checked>
+          <span class="box"></span>
+          Zapisz tę kartę dla przyszłych rezerwacji (Stripe Saved Cards)
+        </label>
+      </div>
+
+    </section>
+
+    <!-- Billing -->
+    <section class="form-section">
+      <div class="section-head">
+        <div>
+          <h2>Dane do rozliczenia</h2>
+          <p class="section-sub">Wymagane do faktury i potwierdzenia płatności.</p>
+        </div>
+        <div class="section-step">02 / 02</div>
+      </div>
+
+      <div class="billing-grid">
+        <div class="field full">
+          <label for="b-email">E-mail</label>
+          <input type="email" id="b-email" placeholder="ty@example.com" value="kasia.nowak@example.com">
+        </div>
+        <div class="field">
+          <label for="b-first">Imię</label>
+          <input type="text" id="b-first" value="Katarzyna">
+        </div>
+        <div class="field">
+          <label for="b-last">Nazwisko</label>
+          <input type="text" id="b-last" value="Nowak">
+        </div>
+        <div class="field full">
+          <label for="b-addr">Adres</label>
+          <input type="text" id="b-addr" placeholder="Ulica i numer" value="ul. Krakowska 27/4">
+        </div>
+        <div class="field">
+          <label for="b-zip">Kod pocztowy</label>
+          <input type="text" id="b-zip" placeholder="00-000" value="30-552">
+        </div>
+        <div class="field">
+          <label for="b-city">Miasto</label>
+          <input type="text" id="b-city" value="Kraków">
+        </div>
+        <div class="field full">
+          <label for="b-country">Kraj</label>
+          <select id="b-country">
+            <option>Polska</option>
+            <option>Niemcy</option>
+            <option>Czechy</option>
+            <option>Słowacja</option>
+            <option>Litwa</option>
+          </select>
+        </div>
+      </div>
+
+      <label class="invoice-toggle">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg>
+        Chcę otrzymać fakturę na firmę
+        <span style="margin-left:auto; color: var(--ink-300);">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+        </span>
+      </label>
+    </section>
+
+  </main>
+
+  <!-- ===== RIGHT: SUMMARY ===== -->
+  <aside>
+    <div class="summary-wrap">
+      <div class="summary">
+        <div class="garden-head">
+          <div class="garden-thumb" aria-hidden="true"></div>
+          <div class="garden-info">
+            <h3 class="t">Ogród z basenem i wiatą</h3>
+            <div class="l">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Kraków, Wola Justowska
+            </div>
+            <div class="r">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 6.5 7 .8-5.2 4.7 1.5 7L12 17.5 5.7 21l1.5-7L2 9.3l7-.8z"/></svg>
+              4,8 <span class="rc">(23)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="summary-details">
+          <h3>Szczegóły</h3>
+          <div class="summary-row">
+            <div class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div>
+            <div>
+              <div class="vk">Data</div>
+              <div class="v">sob, 24 maja 2026</div>
+            </div>
+          </div>
+          <div class="summary-row">
+            <div class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+            <div>
+              <div class="vk">Godziny</div>
+              <div class="v">15:00 – 17:00 · <span style="color:var(--ink-500);font-weight:500;">2 godz.</span></div>
+            </div>
+          </div>
+          <div class="summary-row">
+            <div class="ico">
+              <svg width="16" height="16" viewBox="0 0 32 32" fill="currentColor">
+                <ellipse cx="9" cy="11" rx="2.2" ry="3"/>
+                <ellipse cx="23" cy="11" rx="2.2" ry="3"/>
+                <ellipse cx="4.5" cy="16" rx="2" ry="2.6"/>
+                <ellipse cx="27.5" cy="16" rx="2" ry="2.6"/>
+                <path d="M16 15c-3.5 0-6 2.5-6 5.5C10 23 11.7 24.5 14 24.2c1-.1 1.4-.7 2-.7s1 .6 2 .7c2.3.3 4-1.2 4-3.7 0-3-2.5-5.5-6-5.5z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="vk">Pies</div>
+              <div class="v">Łata · 18 kg</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="summary-cost">
+          <h3>Koszty</h3>
+          <div class="cost-row">
+            <span class="lk">45 zł × 2 godziny</span>
+            <span>90 zł</span>
+          </div>
+          <div class="cost-row">
+            <span class="lk">Prowizja platformy</span>
+            <span>9 zł</span>
+          </div>
+          <div class="cost-row discount">
+            <span class="lk">Kod „PIES10"</span>
+            <span>−10 zł</span>
+          </div>
+          <div class="cost-total">
+            <div class="lbl">Razem</div>
+            <div>
+              <div class="amt">89 zł</div>
+              <div class="amt-sub">w tym 23% VAT</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="summary-cta">
+          <button class="btn btn-primary btn-lg btn-block" id="pay-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            Zapłać 89 zł
+          </button>
+          <div class="stripe-note">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            Płatność obsługiwana przez Stripe
+          </div>
+
+          <div class="trust-bar">
+            <span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4l4 4-4 4M20 8H10a6 6 0 0 0-6 6v6"/></svg>
+              3-D Secure
+            </span>
+            <span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 6.5 7 .8-5.2 4.7 1.5 7L12 17.5 5.7 21l1.5-7L2 9.3l7-.8z"/></svg>
+              PCI DSS
+            </span>
+          </div>
+        </div>
+
+        <div class="summary-cancel">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4l4 4-4 4M20 8H10a6 6 0 0 0-6 6v6"/></svg>
+          <div>
+            <strong>Bezpłatna anulacja</strong> do 24 godz. przed rezerwacją. Pieniądze pobierane dopiero po potwierdzeniu przez gospodarza.
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer class="mini">
+  <div class="footer-mini-inner">
+    <span>© 2026 PsiPark sp. z o.o. · Płatności PCI-DSS · Stripe Payments Europe</span>
+    <div class="links">
+      <a href="#">Regulamin</a>
+      <a href="#">RODO</a>
+      <a href="#">Pomoc</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ============ PROCESSING MODAL ============ -->
+<div class="processing-overlay" id="processing">
+  <div class="processing-card">
+    <div class="spinner"></div>
+    <h3>Autoryzacja płatności…</h3>
+    <p>Łączymy się z Twoim bankiem przez 3-D Secure. Nie zamykaj tej strony.</p>
+    <div class="powered">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="color: var(--green-700)"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      obsługiwane przez <b>stripe</b>
+    </div>
+  </div>
+</div>
+
+<!-- ============ JS ============ -->
+<script>
+  // ====== card formatting ======
+  const numEl = document.getElementById("card-number");
+  const expEl = document.getElementById("card-exp");
+  const cvcEl = document.getElementById("card-cvc");
+  const brandEl = document.getElementById("card-brand");
+
+  function detectBrand(num) {
+    const n = num.replace(/\D/g, "");
+    if (/^4/.test(n)) return "visa";
+    if (/^5[1-5]|^2[2-7]/.test(n)) return "mc";
+    if (/^3[47]/.test(n)) return "amex";
+    return "";
+  }
+
+  numEl.addEventListener("input", e => {
+    let v = e.target.value.replace(/\D/g, "").slice(0, 19);
+    v = v.match(/.{1,4}/g)?.join(" ") || "";
+    e.target.value = v;
+    const brand = detectBrand(v);
+    brandEl.className = "card-brand " + brand;
+    brandEl.textContent = brand === "visa" ? "VISA" : brand === "mc" ? "" : brand === "amex" ? "AMEX" : "";
+  });
+
+  expEl.addEventListener("input", e => {
+    let v = e.target.value.replace(/\D/g, "").slice(0, 4);
+    if (v.length >= 2) v = v.slice(0, 2) + " / " + v.slice(2);
+    e.target.value = v;
+  });
+
+  cvcEl.addEventListener("input", e => {
+    e.target.value = e.target.value.replace(/\D/g, "").slice(0, 4);
+  });
+
+  // ====== pay button → show processing ======
+  document.getElementById("pay-btn").addEventListener("click", () => {
+    document.getElementById("processing").classList.add("show");
+    setTimeout(() => {
+      document.getElementById("processing").classList.remove("show");
+    }, 3500);
+  });
+</script>
+
+</body>
+</html>

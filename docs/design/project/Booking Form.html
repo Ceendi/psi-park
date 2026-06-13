@@ -1,0 +1,1034 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Rezerwacja · PsiPark</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-900: #0F3D14;
+    --green-800: #1B5E20;
+    --green-700: #2E7D32;
+    --green-600: #43A047;
+    --green-500: #66BB6A;
+    --green-300: #A5D6A7;
+    --green-100: #DCEFD8;
+    --green-50:  #F0F8EE;
+
+    --ink-900: #1B1B1B;
+    --ink-700: #3A3A3A;
+    --ink-500: #6B6B6B;
+    --ink-300: #B5B5B5;
+    --ink-200: #D8D8D8;
+    --ink-100: #ECECEC;
+    --ink-50:  #F5F5F4;
+
+    --bone:    #FAFFFA;
+    --surface: #FFFFFF;
+
+    --warning: #E2A03F;
+    --danger:  #C5443A;
+    --sun:     #E8B84A;
+
+    --r-sm: 10px;
+    --r-md: 14px;
+    --r-lg: 20px;
+    --r-pill: 999px;
+
+    --shadow-1: 0 1px 2px rgba(20,30,20,.06), 0 1px 1px rgba(20,30,20,.04);
+    --shadow-2: 0 4px 12px rgba(20,30,20,.06), 0 2px 4px rgba(20,30,20,.04);
+    --shadow-3: 0 12px 28px rgba(20,30,20,.10), 0 4px 10px rgba(20,30,20,.05);
+
+    --type-sans: 'Inter', -apple-system, system-ui, 'Segoe UI', sans-serif;
+    --type-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+
+    --container: 1240px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: var(--type-sans);
+    color: var(--ink-900);
+    background: var(--bone);
+    -webkit-font-smoothing: antialiased;
+  }
+  button { font: inherit; cursor: pointer; }
+  a { color: inherit; text-decoration: none; }
+
+  /* ============ NAV (minimal — checkout style) ============ */
+  .nav-wrap {
+    background: var(--surface);
+    border-bottom: 1px solid var(--ink-100);
+  }
+  .nav {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 18px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 700; font-size: 19px; letter-spacing: -0.02em;
+  }
+  .logo .mark {
+    width: 34px; height: 34px;
+    background: var(--green-700);
+    border-radius: 10px;
+    display: grid; place-items: center;
+    color: var(--bone);
+    box-shadow: var(--shadow-1);
+  }
+  .nav-secure {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px;
+    color: var(--ink-500);
+    padding: 8px 14px;
+    border-radius: var(--r-pill);
+    background: var(--ink-50);
+  }
+  .nav-secure svg { color: var(--green-700); }
+
+  /* ============ TITLE ============ */
+  .page-title {
+    max-width: var(--container);
+    margin: 36px auto 0;
+    padding: 0 32px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .back-btn {
+    width: 40px; height: 40px;
+    border-radius: 999px;
+    border: 1px solid var(--ink-200);
+    background: var(--surface);
+    display: grid; place-items: center;
+    color: var(--ink-700);
+    transition: border-color .15s, color .15s;
+  }
+  .back-btn:hover { border-color: var(--ink-900); color: var(--ink-900); }
+  .page-title h1 {
+    margin: 0;
+    font-size: 28px; font-weight: 700; letter-spacing: -0.025em;
+  }
+
+  /* ============ LAYOUT ============ */
+  .layout {
+    max-width: var(--container);
+    margin: 28px auto 0;
+    padding: 0 32px;
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 64px;
+    align-items: start;
+  }
+
+  /* ============ STEPPER ============ */
+  .stepper {
+    display: flex; align-items: center;
+    gap: 0;
+    margin-bottom: 36px;
+    padding: 16px 24px;
+    background: var(--surface);
+    border: 1px solid var(--ink-100);
+    border-radius: var(--r-lg);
+  }
+  .step {
+    display: flex; align-items: center; gap: 12px;
+    flex: 1;
+    min-width: 0;
+  }
+  .step .ring {
+    width: 32px; height: 32px;
+    border-radius: 999px;
+    background: var(--ink-100);
+    color: var(--ink-500);
+    display: grid; place-items: center;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+    transition: background .15s, color .15s;
+  }
+  .step.done .ring { background: var(--green-700); color: var(--bone); }
+  .step.active .ring { background: var(--ink-900); color: var(--bone); }
+  .step .info { min-width: 0; }
+  .step .step-k {
+    font-size: 10px; color: var(--ink-500);
+    text-transform: uppercase; letter-spacing: .1em;
+    font-family: var(--type-mono);
+  }
+  .step .step-v {
+    font-size: 14px; font-weight: 600;
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .step.active .step-v { color: var(--ink-900); }
+  .step:not(.active):not(.done) .step-v { color: var(--ink-500); }
+  .step-divider {
+    flex: 0 0 36px;
+    height: 1px;
+    background: var(--ink-200);
+    margin: 0 12px;
+  }
+  .step.done + .step-divider { background: var(--green-300); }
+
+  /* ============ FORM ============ */
+  .form-section {
+    background: var(--surface);
+    border: 1px solid var(--ink-100);
+    border-radius: var(--r-lg);
+    padding: 28px;
+    margin-bottom: 24px;
+  }
+  .form-section h2 {
+    margin: 0 0 4px;
+    font-size: 18px; font-weight: 600; letter-spacing: -.01em;
+  }
+  .form-section .section-sub {
+    margin: 0 0 22px;
+    font-size: 13px; color: var(--ink-500);
+  }
+  .form-section .section-head {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+  }
+  .form-section .section-head h2 { margin-bottom: 4px; }
+  .form-section .section-head .section-sub { margin: 0; }
+  .form-section .section-step {
+    font-family: var(--type-mono);
+    font-size: 11px;
+    color: var(--ink-300);
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    margin-top: 4px;
+  }
+
+  /* Date + time row */
+  .dt-row {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 10px;
+  }
+  .field-pill {
+    border: 1px solid var(--ink-200);
+    border-radius: var(--r-md);
+    padding: 12px 16px;
+    transition: border-color .15s, box-shadow .15s;
+    cursor: pointer;
+    background: var(--surface);
+  }
+  .field-pill:hover { border-color: var(--ink-900); }
+  .field-pill.focused {
+    border-color: var(--green-700);
+    box-shadow: 0 0 0 3px var(--green-100);
+  }
+  .field-pill .k {
+    font-size: 10px;
+    color: var(--ink-500);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    font-family: var(--type-mono);
+    margin-bottom: 4px;
+  }
+  .field-pill .v {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-900);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .field-pill .v svg { color: var(--ink-500); }
+
+  /* Duration pill (read-only) */
+  .duration-info {
+    margin-top: 14px;
+    padding: 14px 16px;
+    background: var(--green-50);
+    border-radius: var(--r-md);
+    display: flex; align-items: center; gap: 12px;
+    font-size: 13px;
+    color: var(--green-800);
+  }
+  .duration-info svg { color: var(--green-700); flex-shrink: 0; }
+  .duration-info .lbl strong { font-weight: 700; }
+  .duration-info .lbl span { color: var(--green-800); opacity: .8; margin-left: 4px; }
+
+  /* Dog picker */
+  .dog-picker {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .dog-card {
+    border: 1.5px solid var(--ink-200);
+    border-radius: var(--r-md);
+    padding: 14px 16px;
+    display: flex; align-items: center; gap: 14px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+    background: var(--surface);
+  }
+  .dog-card:hover { border-color: var(--ink-900); }
+  .dog-card.selected {
+    border-color: var(--green-700);
+    background: var(--green-50);
+  }
+  .dog-card .av {
+    width: 44px; height: 44px;
+    border-radius: 999px;
+    display: grid; place-items: center;
+    color: var(--bone);
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .dog-card .av.a1 { background: linear-gradient(135deg, #66BB6A, #2E7D32); }
+  .dog-card .av.a2 { background: linear-gradient(135deg, #C97B5A, #8a4a2c); }
+  .dog-card .av.a3 { background: linear-gradient(135deg, #E8B84A, #b88a1e); }
+  .dog-card .info {
+    flex: 1;
+    min-width: 0;
+  }
+  .dog-card .nm {
+    font-size: 14px;
+    font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .dog-card .vacc {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 2px 8px;
+    background: var(--green-100);
+    color: var(--green-800);
+    border-radius: var(--r-pill);
+    font-size: 10px;
+    font-weight: 600;
+    font-family: var(--type-mono);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .dog-card .meta {
+    margin-top: 2px;
+    font-size: 12px;
+    color: var(--ink-500);
+  }
+  .dog-card .radio {
+    width: 22px; height: 22px;
+    border-radius: 999px;
+    border: 2px solid var(--ink-300);
+    flex-shrink: 0;
+    display: grid; place-items: center;
+    transition: border-color .15s;
+  }
+  .dog-card.selected .radio { border-color: var(--green-700); }
+  .dog-card.selected .radio::after {
+    content: "";
+    width: 10px; height: 10px;
+    border-radius: 999px;
+    background: var(--green-700);
+  }
+
+  .add-dog {
+    display: flex; align-items: center; gap: 10px;
+    border: 1px dashed var(--ink-300);
+    background: transparent;
+    border-radius: var(--r-md);
+    padding: 14px 16px;
+    color: var(--ink-700);
+    font-size: 13px;
+    font-weight: 500;
+    transition: border-color .15s, color .15s;
+  }
+  .add-dog:hover { border-color: var(--green-700); color: var(--green-800); }
+
+  /* Note */
+  .note-field {
+    position: relative;
+  }
+  .note-field textarea {
+    width: 100%;
+    appearance: none;
+    background: var(--surface);
+    border: 1px solid var(--ink-200);
+    border-radius: var(--r-md);
+    padding: 14px 16px;
+    font: inherit;
+    font-size: 14px;
+    color: var(--ink-900);
+    resize: vertical;
+    min-height: 100px;
+    transition: border-color .15s, box-shadow .15s;
+    line-height: 1.5;
+  }
+  .note-field textarea::placeholder { color: var(--ink-300); }
+  .note-field textarea:focus {
+    outline: none;
+    border-color: var(--green-700);
+    box-shadow: 0 0 0 3px var(--green-100);
+  }
+  .note-counter {
+    position: absolute;
+    bottom: 10px; right: 12px;
+    font-size: 11px;
+    color: var(--ink-300);
+    font-family: var(--type-mono);
+  }
+
+  /* Terms */
+  .terms-list {
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .check {
+    display: flex; align-items: flex-start; gap: 12px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--ink-700);
+    line-height: 1.5;
+  }
+  .check input { display: none; }
+  .check .box {
+    width: 20px; height: 20px;
+    border-radius: 6px;
+    border: 1.5px solid var(--ink-300);
+    background: var(--surface);
+    display: grid; place-items: center;
+    transition: all .15s ease;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .check input:checked + .box {
+    background: var(--green-700);
+    border-color: var(--green-700);
+  }
+  .check input:checked + .box::after {
+    content: "";
+    width: 10px; height: 6px;
+    border-left: 2px solid var(--bone);
+    border-bottom: 2px solid var(--bone);
+    transform: rotate(-45deg) translate(1px, -1px);
+  }
+  .check a { color: var(--green-800); text-decoration: underline; text-underline-offset: 2px; }
+  .check .req { color: var(--danger); font-weight: 600; }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 8px;
+    border-radius: var(--r-pill);
+    border: 1px solid transparent;
+    font-family: var(--type-sans);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s, border-color .15s, transform .08s, color .15s;
+    white-space: nowrap;
+    line-height: 1;
+    text-decoration: none;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-sm { padding: 9px 16px; font-size: 13px; }
+  .btn-md { padding: 13px 22px; font-size: 14px; }
+  .btn-lg { padding: 17px 24px; font-size: 16px; }
+  .btn-primary {
+    background: var(--green-700);
+    color: var(--bone);
+    box-shadow: var(--shadow-2);
+  }
+  .btn-primary:hover { background: var(--green-800); }
+  .btn-primary[disabled] {
+    opacity: .45; cursor: not-allowed;
+    box-shadow: none;
+  }
+  .btn-secondary {
+    background: var(--surface); color: var(--ink-900);
+    border-color: var(--ink-200);
+  }
+  .btn-secondary:hover { border-color: var(--ink-900); }
+  .btn-block { width: 100%; }
+
+  /* Help row */
+  .help-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 18px;
+    border: 1px solid var(--ink-100);
+    border-radius: var(--r-md);
+    font-size: 13px;
+    color: var(--ink-700);
+    background: var(--surface);
+    margin-top: 12px;
+  }
+  .help-row svg { color: var(--green-700); flex-shrink: 0; }
+  .help-row a {
+    color: var(--green-800); font-weight: 600;
+    text-decoration: underline; text-underline-offset: 2px;
+    margin-left: auto;
+  }
+
+  /* ============ RIGHT: SUMMARY ============ */
+  .summary-wrap {
+    position: sticky;
+    top: 24px;
+  }
+  .summary {
+    background: var(--surface);
+    border: 1px solid var(--ink-100);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-2);
+    overflow: hidden;
+  }
+  .summary .garden-head {
+    display: flex; gap: 14px;
+    padding: 20px 20px 0;
+  }
+  .summary .garden-thumb {
+    width: 110px;
+    height: 88px;
+    border-radius: var(--r-md);
+    overflow: hidden;
+    flex-shrink: 0;
+    position: relative;
+    background:
+      repeating-linear-gradient(45deg, transparent 0 14px, rgba(46,125,50,.06) 14px 15px),
+      linear-gradient(160deg, #DCEFD8 0%, #88BD8D 100%);
+  }
+  .summary .garden-info {
+    padding: 2px 0;
+    min-width: 0;
+  }
+  .summary .garden-info .t {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 4px;
+    letter-spacing: -.01em;
+    line-height: 1.3;
+  }
+  .summary .garden-info .l {
+    font-size: 12px;
+    color: var(--ink-500);
+    display: flex; align-items: center; gap: 4px;
+    margin-bottom: 6px;
+  }
+  .summary .garden-info .l svg { color: var(--ink-500); }
+  .summary .garden-info .r {
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .summary .garden-info .r svg { color: var(--ink-900); }
+  .summary .garden-info .r .rc { color: var(--ink-500); font-weight: 500; }
+
+  .summary-details {
+    padding: 18px 20px 0;
+    margin-top: 18px;
+    border-top: 1px solid var(--ink-100);
+  }
+  .summary-details h3 {
+    margin: 0 0 12px;
+    font-size: 11px;
+    font-family: var(--type-mono);
+    color: var(--ink-500);
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    font-weight: 500;
+  }
+  .summary-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 0;
+    font-size: 14px;
+  }
+  .summary-row .ico {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--green-50);
+    color: var(--green-800);
+    display: grid; place-items: center;
+    flex-shrink: 0;
+  }
+  .summary-row .v {
+    font-weight: 600;
+  }
+  .summary-row .vk {
+    font-size: 11px;
+    color: var(--ink-500);
+    margin-bottom: 1px;
+    font-family: var(--type-mono);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+
+  .summary-cost {
+    padding: 18px 20px 0;
+    margin-top: 18px;
+    border-top: 1px solid var(--ink-100);
+  }
+  .summary-cost h3 {
+    margin: 0 0 14px;
+    font-size: 11px;
+    font-family: var(--type-mono);
+    color: var(--ink-500);
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    font-weight: 500;
+  }
+  .cost-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: var(--ink-700);
+  }
+  .cost-row .lk {
+    text-decoration: underline;
+    text-decoration-color: var(--ink-200);
+    text-underline-offset: 3px;
+  }
+  .cost-row.discount { color: var(--green-700); }
+  .cost-row.discount .lk { text-decoration: none; }
+
+  .cost-total {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-top: 14px;
+    padding: 16px 0 18px;
+    border-top: 2px solid var(--ink-900);
+    border-bottom: 1px solid var(--ink-100);
+    margin-bottom: 18px;
+  }
+  .cost-total .lbl {
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .cost-total .amt {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -.02em;
+  }
+  .cost-total .amt-sub {
+    font-size: 11px;
+    color: var(--ink-500);
+    font-family: var(--type-mono);
+    margin-top: 2px;
+    text-align: right;
+  }
+
+  .summary-cta {
+    padding: 0 20px 20px;
+  }
+  .summary-cta .stripe-note {
+    margin-top: 12px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--ink-500);
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .summary-cta .stripe-note svg { color: var(--green-700); }
+
+  .summary-cancel {
+    padding: 14px 20px;
+    background: var(--ink-50);
+    border-top: 1px solid var(--ink-100);
+    font-size: 12px;
+    color: var(--ink-700);
+    display: flex; align-items: flex-start; gap: 10px;
+    line-height: 1.5;
+  }
+  .summary-cancel svg { color: var(--green-700); flex-shrink: 0; margin-top: 1px; }
+  .summary-cancel strong { color: var(--ink-900); font-weight: 600; }
+
+  /* ============ FOOTER ============ */
+  footer.mini {
+    margin-top: 80px;
+    border-top: 1px solid var(--ink-100);
+    padding: 24px 0;
+  }
+  .footer-mini-inner {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 32px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 12px;
+    font-size: 12px;
+    color: var(--ink-500);
+    font-family: var(--type-mono);
+  }
+  .footer-mini-inner .links { display: flex; gap: 18px; }
+  .footer-mini-inner .links a:hover { color: var(--green-800); }
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<div class="nav-wrap">
+  <nav class="nav">
+    <a class="logo" href="#">
+      <span class="mark" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 32 32" fill="currentColor">
+          <ellipse cx="9" cy="11" rx="3" ry="4"/>
+          <ellipse cx="23" cy="11" rx="3" ry="4"/>
+          <ellipse cx="4" cy="18" rx="2.5" ry="3.5"/>
+          <ellipse cx="28" cy="18" rx="2.5" ry="3.5"/>
+          <path d="M16 16c-5 0-8 3.5-8 7 0 3 2.5 5 5.5 4.5 1.4-.2 1.7-.8 2.5-.8s1.1.6 2.5.8c3 .5 5.5-1.5 5.5-4.5 0-3.5-3-7-8-7z"/>
+        </svg>
+      </span>
+      PsiPark
+    </a>
+    <div class="nav-secure">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      Bezpieczna rezerwacja · szyfrowanie SSL
+    </div>
+  </nav>
+</div>
+
+<!-- ============ TITLE ============ -->
+<div class="page-title">
+  <button class="back-btn" aria-label="Wróć do ogrodu">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>
+  </button>
+  <h1>Twoja rezerwacja</h1>
+</div>
+
+<!-- ============ LAYOUT ============ -->
+<div class="layout">
+
+  <!-- ===== LEFT ===== -->
+  <main>
+
+    <!-- Stepper -->
+    <div class="stepper" aria-label="Etapy rezerwacji">
+      <div class="step active">
+        <div class="ring">1</div>
+        <div class="info">
+          <div class="step-k">Krok 1</div>
+          <div class="step-v">Szczegóły rezerwacji</div>
+        </div>
+      </div>
+      <div class="step-divider"></div>
+      <div class="step">
+        <div class="ring">2</div>
+        <div class="info">
+          <div class="step-k">Krok 2</div>
+          <div class="step-v">Płatność</div>
+        </div>
+      </div>
+      <div class="step-divider"></div>
+      <div class="step">
+        <div class="ring">3</div>
+        <div class="info">
+          <div class="step-k">Krok 3</div>
+          <div class="step-v">Potwierdzenie</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Date & Time -->
+    <section class="form-section">
+      <div class="section-head">
+        <div>
+          <h2>Kiedy przyjedziesz?</h2>
+          <p class="section-sub">Możesz zmienić datę i godziny przed potwierdzeniem płatności.</p>
+        </div>
+        <div class="section-step">01 / 04</div>
+      </div>
+
+      <div class="dt-row">
+        <div class="field-pill focused">
+          <div class="k">Data</div>
+          <div class="v">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+            sob, 24 maja 2026
+          </div>
+        </div>
+        <div class="field-pill">
+          <div class="k">Od</div>
+          <div class="v">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            15:00
+          </div>
+        </div>
+        <div class="field-pill">
+          <div class="k">Do</div>
+          <div class="v">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            17:00
+          </div>
+        </div>
+      </div>
+
+      <div class="duration-info">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M5 19l3-3M16 8l3-3"/><circle cx="12" cy="12" r="3"/></svg>
+        <div class="lbl">
+          <strong>2 godziny</strong>
+          <span>· wolna pora idealnie pasuje do harmonogramu Magdy</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dog -->
+    <section class="form-section">
+      <div class="section-head">
+        <div>
+          <h2>Z którym psem przyjedziesz?</h2>
+          <p class="section-sub">Wybór z Twojego profilu. Gospodarz zobaczy tylko imię i wagę.</p>
+        </div>
+        <div class="section-step">02 / 04</div>
+      </div>
+
+      <div class="dog-picker" role="radiogroup">
+        <label class="dog-card selected">
+          <input type="radio" name="dog" checked hidden>
+          <div class="av a1">Ł</div>
+          <div class="info">
+            <div class="nm">
+              Łata
+              <span class="vacc">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+                Szczepienia
+              </span>
+            </div>
+            <div class="meta">Mieszaniec · 18 kg · 4 lata · suka, sterylizowana</div>
+          </div>
+          <div class="radio"></div>
+        </label>
+
+        <label class="dog-card">
+          <input type="radio" name="dog" hidden>
+          <div class="av a2">B</div>
+          <div class="info">
+            <div class="nm">
+              Borys
+              <span class="vacc">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+                Szczepienia
+              </span>
+            </div>
+            <div class="meta">Beagle · 12 kg · 2 lata · pies, niewykastrowany</div>
+          </div>
+          <div class="radio"></div>
+        </label>
+
+        <button class="add-dog" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          Dodaj kolejnego psa do profilu
+        </button>
+      </div>
+    </section>
+
+    <!-- Note -->
+    <section class="form-section">
+      <div class="section-head">
+        <div>
+          <h2>Wiadomość dla Magdy</h2>
+          <p class="section-sub">Opcjonalnie. Napisz, jeśli pies jest lękowy, reaktywny, ma alergie lub coś, o czym warto wiedzieć.</p>
+        </div>
+        <div class="section-step">03 / 04</div>
+      </div>
+
+      <div class="note-field">
+        <textarea maxlength="500" placeholder="Np. Łata jest spokojna, ale nie lubi małych psów na sąsiednim podwórku. Proszę o zamknięcie furtki na klucz po naszym przyjściu."></textarea>
+        <div class="note-counter"><span id="note-len">0</span> / 500</div>
+      </div>
+    </section>
+
+    <!-- Terms -->
+    <section class="form-section">
+      <div class="section-head">
+        <div>
+          <h2>Akceptacja regulaminu</h2>
+          <p class="section-sub">Zaznacz wszystkie zgody, żeby przejść do płatności.</p>
+        </div>
+        <div class="section-step">04 / 04</div>
+      </div>
+
+      <div class="terms-list">
+        <label class="check">
+          <input type="checkbox" id="t1">
+          <span class="box"></span>
+          <span>Potwierdzam, że Łata jest <strong>zaszczepiona, odrobaczona</strong> i nie ma objawów chorób zakaźnych. <span class="req">·  wymagane</span></span>
+        </label>
+        <label class="check">
+          <input type="checkbox" id="t2">
+          <span class="box"></span>
+          <span>Akceptuję <a href="#">zasady gospodarza</a> oraz <a href="#">regulamin PsiPark</a>. <span class="req">·  wymagane</span></span>
+        </label>
+        <label class="check">
+          <input type="checkbox" id="t3">
+          <span class="box"></span>
+          <span>Wyrażam zgodę na przetwarzanie danych osobowych zgodnie z <a href="#">Polityką prywatności (RODO)</a>. <span class="req">·  wymagane</span></span>
+        </label>
+        <label class="check">
+          <input type="checkbox" id="t4">
+          <span class="box"></span>
+          <span>Chcę otrzymywać przypomnienia o rezerwacji SMS-em (opcjonalnie).</span>
+        </label>
+      </div>
+
+      <div class="help-row">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        Masz pytania o ogród Magdy?
+        <a href="#">Napisz do gospodarza</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== RIGHT: SUMMARY ===== -->
+  <aside>
+    <div class="summary-wrap">
+      <div class="summary">
+        <!-- Garden -->
+        <div class="garden-head">
+          <div class="garden-thumb" aria-hidden="true"></div>
+          <div class="garden-info">
+            <h3 class="t">Ogród z basenem i wiatą</h3>
+            <div class="l">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Kraków, Wola Justowska
+            </div>
+            <div class="r">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 6.5 7 .8-5.2 4.7 1.5 7L12 17.5 5.7 21l1.5-7L2 9.3l7-.8z"/></svg>
+              4,8 <span class="rc">(23)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Details -->
+        <div class="summary-details">
+          <h3>Szczegóły</h3>
+
+          <div class="summary-row">
+            <div class="ico">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+            </div>
+            <div>
+              <div class="vk">Data</div>
+              <div class="v">sob, 24 maja 2026</div>
+            </div>
+          </div>
+
+          <div class="summary-row">
+            <div class="ico">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            </div>
+            <div>
+              <div class="vk">Godziny</div>
+              <div class="v">15:00 – 17:00 · <span style="color:var(--ink-500);font-weight:500;">2 godz.</span></div>
+            </div>
+          </div>
+
+          <div class="summary-row">
+            <div class="ico">
+              <svg width="16" height="16" viewBox="0 0 32 32" fill="currentColor">
+                <ellipse cx="9" cy="11" rx="2.2" ry="3"/>
+                <ellipse cx="23" cy="11" rx="2.2" ry="3"/>
+                <ellipse cx="4.5" cy="16" rx="2" ry="2.6"/>
+                <ellipse cx="27.5" cy="16" rx="2" ry="2.6"/>
+                <path d="M16 15c-3.5 0-6 2.5-6 5.5C10 23 11.7 24.5 14 24.2c1-.1 1.4-.7 2-.7s1 .6 2 .7c2.3.3 4-1.2 4-3.7 0-3-2.5-5.5-6-5.5z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="vk">Pies</div>
+              <div class="v">Łata · 18 kg</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cost -->
+        <div class="summary-cost">
+          <h3>Koszty</h3>
+          <div class="cost-row">
+            <span class="lk">45 zł × 2 godziny</span>
+            <span>90 zł</span>
+          </div>
+          <div class="cost-row">
+            <span class="lk">Prowizja platformy</span>
+            <span>9 zł</span>
+          </div>
+          <div class="cost-row discount">
+            <span class="lk">Kod „PIES10" · pierwsza rezerwacja</span>
+            <span>−10 zł</span>
+          </div>
+
+          <div class="cost-total">
+            <div class="lbl">Razem</div>
+            <div>
+              <div class="amt">89 zł</div>
+              <div class="amt-sub">w tym 23% VAT</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="summary-cta">
+          <button class="btn btn-primary btn-lg btn-block" id="pay-cta" disabled>
+            Przejdź do płatności
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </button>
+          <div class="stripe-note">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            Płatność obsługiwana przez Stripe
+          </div>
+        </div>
+
+        <!-- Cancel policy -->
+        <div class="summary-cancel">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4l4 4-4 4M20 8H10a6 6 0 0 0-6 6v6"/></svg>
+          <div>
+            <strong>Bezpłatna anulacja</strong> do 24 godz. przed rezerwacją. Pieniądze pobierane dopiero po potwierdzeniu przez gospodarza.
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer class="mini">
+  <div class="footer-mini-inner">
+    <span>© 2026 PsiPark sp. z o.o.</span>
+    <div class="links">
+      <a href="#">O nas</a>
+      <a href="#">Regulamin</a>
+      <a href="#">RODO</a>
+      <a href="#">Pomoc</a>
+      <a href="#">Kontakt</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ============ JS ============ -->
+<script>
+  // Dog picker
+  document.querySelectorAll(".dog-card").forEach(card => {
+    card.addEventListener("click", e => {
+      if (e.target.closest(".add-dog")) return;
+      document.querySelectorAll(".dog-card").forEach(c => c.classList.remove("selected"));
+      card.classList.add("selected");
+      const radio = card.querySelector("input[type=radio]");
+      if (radio) radio.checked = true;
+    });
+  });
+
+  // Note counter
+  const noteEl = document.querySelector(".note-field textarea");
+  const counter = document.getElementById("note-len");
+  noteEl.addEventListener("input", () => {
+    counter.textContent = noteEl.value.length;
+  });
+
+  // Enable CTA when required terms checked
+  const required = ["t1", "t2", "t3"].map(id => document.getElementById(id));
+  const cta = document.getElementById("pay-cta");
+  function updateCTA() {
+    cta.disabled = !required.every(c => c.checked);
+  }
+  required.forEach(c => c.addEventListener("change", updateCTA));
+  updateCTA();
+
+  // Field-pill focus toggle (visual demo only)
+  document.querySelectorAll(".field-pill").forEach(p => {
+    p.addEventListener("click", () => {
+      document.querySelectorAll(".field-pill").forEach(o => o.classList.remove("focused"));
+      p.classList.add("focused");
+    });
+  });
+</script>
+
+</body>
+</html>
