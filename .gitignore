@@ -82,3 +82,7 @@ Thumbs.db
 ehthumbs.db
 desktop.ini
 $RECYCLE.BIN/
+
+# ===== Local-only source design docs (kept out of the public repo) =====
+# Contain group members' personal data; not tracked. Keep local copies in docs/.
+/docs/*.pdf
