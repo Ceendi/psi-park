@@ -1,0 +1,22 @@
+# Normalize all text files to LF in the repo, regardless of contributor OS.
+# Prevents noisy CRLF/LF diffs and false-positive schema-drift checks in CI.
+* text=auto eol=lf
+
+# Shell scripts and entrypoints must stay LF (executed in Linux containers).
+*.sh text eol=lf
+
+# Windows-only scripts keep CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Treat binaries as binary (never touched / line-ending-normalized).
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
