@@ -1,4 +1,5 @@
-import { Button, useToast } from '@/shared/ui';
+import type { ReactNode } from 'react';
+import { useToast } from '@/shared/ui';
 
 // Brand marks ported 1:1 from the Claude Design handoff (Login.html / Register.html).
 function GoogleIcon() {
@@ -33,6 +34,35 @@ function AppleIcon() {
 }
 
 /**
+ * Secondary outline button matching `.btn-secondary.sso` in auth.css. Built as a
+ * plain element rather than the shared `Button` so the outline is reliable: the
+ * shared `Button`'s base `border-transparent` overrides the `secondary` variant's
+ * `border-ink-200` under plain clsx, leaving SSO buttons borderless on the bone bg.
+ */
+function SsoButton({
+  icon,
+  label,
+  onClick,
+}: {
+  icon: ReactNode;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-disabled="true"
+      title="Już wkrótce"
+      onClick={onClick}
+      className="inline-flex items-center justify-center gap-2 rounded-pill border border-ink-200 bg-surface px-[22px] py-[13px] text-sm font-medium text-ink-900 transition hover:border-ink-900 active:translate-y-px"
+    >
+      {icon}
+      {label}
+    </button>
+  );
+}
+
+/**
  * "lub" divider + Google/Apple buttons. Social sign-in is deliberately out of MVP
  * scope (PLAN §18) — the buttons stay visual-only and explain "wkrótce" on tap.
  */
@@ -53,28 +83,8 @@ export function SsoButtons() {
         <span className="h-px flex-1 bg-ink-100" />
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <Button
-          type="button"
-          variant="secondary"
-          size="md"
-          aria-disabled="true"
-          title="Już wkrótce"
-          onClick={notYet}
-          leftIcon={<GoogleIcon />}
-        >
-          Google
-        </Button>
-        <Button
-          type="button"
-          variant="secondary"
-          size="md"
-          aria-disabled="true"
-          title="Już wkrótce"
-          onClick={notYet}
-          leftIcon={<AppleIcon />}
-        >
-          Apple
-        </Button>
+        <SsoButton icon={<GoogleIcon />} label="Google" onClick={notYet} />
+        <SsoButton icon={<AppleIcon />} label="Apple" onClick={notYet} />
       </div>
     </>
   );

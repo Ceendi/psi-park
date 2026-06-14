@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowRight, File, Mail, Phone, User } from 'lucide-react';
+import { ArrowRight, IdCard, Mail, Phone, User } from 'lucide-react';
 import { Button, Checkbox, FormField, Input } from '@/shared/ui';
 import { AccountTypeToggle } from './components/AccountTypeToggle';
 import { AuthHeading } from './components/AuthHeading';
@@ -104,7 +104,7 @@ export function RegisterPage() {
               id="last_name"
               autoComplete="family-name"
               placeholder="Nowak"
-              leadingIcon={<File className="size-4" />}
+              leadingIcon={<IdCard className="size-4" />}
               invalid={!!errors.last_name}
               {...register('last_name')}
             />
