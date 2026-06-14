@@ -13,6 +13,12 @@ import { HomePlaceholder } from './pages/HomePlaceholder';
 import { NotFound } from './pages/NotFound';
 import { PlaceholderPage } from './pages/PlaceholderPage';
 
+// Auth screens (F1) — lazy per route; the top-level Suspense in AppProviders
+// renders the fallback while the chunk loads.
+const LoginPage = lazy(() => import('@/features/auth/LoginPage'));
+const RegisterPage = lazy(() => import('@/features/auth/RegisterPage'));
+const PasswordResetPage = lazy(() => import('@/features/auth/PasswordResetPage'));
+
 // Placeholders keep every route navigable on the F0 skeleton; later parts swap
 // in the real screens (the routing, layouts and guards stay).
 const ph = (title: string, part: string) => <PlaceholderPage title={title} part={part} />;
@@ -42,10 +48,12 @@ const routes: RouteObject[] = [
   {
     element: <AuthLayout />,
     children: [
-      { path: 'logowanie', element: ph('Logowanie', 'F1') },
-      { path: 'rejestracja', element: ph('Rejestracja', 'F1') },
-      { path: 'reset-hasla', element: ph('Reset hasła', 'F1') },
-      { path: 'reset-hasla/:token', element: ph('Ustaw nowe hasło', 'F1') },
+      { path: 'logowanie', element: <LoginPage /> },
+      { path: 'rejestracja', element: <RegisterPage /> },
+      // The reset e-mail links to `/reset-hasla?uid=…&token=…`; the `:token` path
+      // form is kept per PLAN §16.2 and resolves to the same screen.
+      { path: 'reset-hasla', element: <PasswordResetPage /> },
+      { path: 'reset-hasla/:token', element: <PasswordResetPage /> },
     ],
   },
   {
