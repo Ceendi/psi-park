@@ -14,6 +14,8 @@ const LABEL_COLOR = [
 
 /** Four-segment password strength meter (PLAN §16.1.1, Register.html). */
 export function PasswordStrengthMeter({ password }: { password: string }) {
+  // Only appear once typing starts — an empty meter with a lone "—" looks unfinished.
+  if (!password) return null;
   const score = scorePassword(password);
   return (
     <div>
