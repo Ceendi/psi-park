@@ -71,14 +71,16 @@ function ResetRequestForm() {
         />
         <p className="text-[13px] leading-relaxed text-ink-500">
           Nie widzisz wiadomości? Zajrzyj do folderu spam lub{' '}
-          <button
-            type="button"
-            onClick={() => setSentTo(null)}
-            className="font-medium text-green-800 underline underline-offset-2 hover:text-green-700"
-          >
-            spróbuj ponownie
-          </button>
-          .
+          <span className="whitespace-nowrap">
+            <button
+              type="button"
+              onClick={() => setSentTo(null)}
+              className="font-medium text-green-800 underline underline-offset-2 hover:text-green-700"
+            >
+              spróbuj ponownie
+            </button>
+            .
+          </span>
         </p>
         <BackToLogin />
       </>
