@@ -962,6 +962,37 @@ paths:
               schema:
                 $ref: '#/components/schemas/Detail'
           description: ''
+  /api/v1/payments/config/:
+    get:
+      operationId: payments_config_retrieve
+      description: GET /payments/config/ — public Stripe publishable key for the frontend.
+      tags:
+      - payments
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StripeConfig'
+          description: ''
+  /api/v1/payments/webhook/:
+    post:
+      operationId: payments_webhook_create
+      description: |-
+        POST /payments/webhook/ — Stripe event sink (PLAN 10.1).
+
+        Public route authenticated by the Stripe signature, not JWT: no auth class (so DRF
+        skips SessionAuthentication and therefore CSRF) and no throttling (Stripe may burst).
+        The raw request body must be verified before parsing, hence ``request.body``.
+      tags:
+      - payments
+      security:
+      - {}
+      responses:
+        '200':
+          description: Event acknowledged.
   /api/v1/reservations/:
     get:
       operationId: reservations_list
@@ -1083,6 +1114,40 @@ paths:
               schema:
                 $ref: '#/components/schemas/CancelResult'
           description: ''
+  /api/v1/reservations/{id}/payment-intent/:
+    post:
+      operationId: reservations_payment_intent_create
+      description: POST /reservations/{id}/payment-intent/ — start/refresh the client's
+        payment.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - reservations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Billing'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Billing'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Billing'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentIntentResponse'
+          description: ''
   /api/v1/reservations/export.csv:
     get:
       operationId: reservations_export.csv_retrieve
@@ -1166,6 +1231,47 @@ components:
       - open_from
       - open_to
       - slots
+    Billing:
+      type: object
+      description: |-
+        Billing details for the invoice buyer (PLAN 7.5 / Payment.html).
+
+        The core address block is required (it bills the invoice, B6); company name and NIP
+        are the optional "faktura na firmę" extension. ``billing_country`` defaults to PL.
+      properties:
+        billing_name:
+          type: string
+          maxLength: 120
+        billing_email:
+          type: string
+          format: email
+        billing_address:
+          type: string
+          maxLength: 200
+        billing_postal_code:
+          type: string
+          maxLength: 12
+        billing_city:
+          type: string
+          maxLength: 80
+        billing_country:
+          type: string
+          default: PL
+          maxLength: 2
+        billing_company:
+          type: string
+          default: ''
+          maxLength: 160
+        tax_id:
+          type: string
+          default: ''
+          maxLength: 15
+      required:
+      - billing_address
+      - billing_city
+      - billing_email
+      - billing_name
+      - billing_postal_code
     BlankEnum:
       enum:
       - ''
@@ -2078,6 +2184,32 @@ components:
           type: array
           items:
             type: integer
+    PaymentIntentResponse:
+      type: object
+      description: Payload returned to the frontend to mount the Stripe Payment Element
+        (PLAN 10.1).
+      properties:
+        client_secret:
+          type: string
+        payment_intent_id:
+          type: string
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+        currency:
+          type: string
+        status:
+          type: string
+        publishable_key:
+          type: string
+      required:
+      - amount
+      - client_secret
+      - currency
+      - payment_intent_id
+      - publishable_key
+      - status
     Register:
       type: object
       description: Validate a new client/host account (role limited, terms required,
@@ -2453,6 +2585,14 @@ components:
         * `confirmed` - Potwierdzona
         * `rejected` - Odrzucona
         * `cancelled` - Anulowana
+    StripeConfig:
+      type: object
+      description: Public Stripe configuration for the frontend (``GET /payments/config/``).
+      properties:
+        publishable_key:
+          type: string
+      required:
+      - publishable_key
     SurfaceTypeEnum:
       enum:
       - grass
