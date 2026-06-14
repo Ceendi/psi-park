@@ -28,6 +28,7 @@ class Command(BaseCommand):
         self._seed_dogs()
         self._seed_gardens()
         self._seed_reservations()
+        self._seed_payments()
         self.stdout.write(self.style.SUCCESS("Seed complete."))
 
     def _seed_admin(self) -> None:
@@ -343,3 +344,44 @@ class Command(BaseCommand):
             created += int(was_created)
         if created:
             self.stdout.write(self.style.SUCCESS(f"Created {created} demo reservations."))
+
+    def _seed_payments(self) -> None:
+        """B5: a Payment for every paid demo reservation (PLAN 14 — "1 opłacona rezerwacja").
+
+        Mirrors the reservation state — still-active bookings get a ``succeeded`` payment,
+        the paid-then-cancelled one a ``refunded`` payment. Stripe is never contacted: the
+        intent ids are synthetic, enough for the panels and Django Admin to show a coherent
+        billing history. The invoice for these is part B6.
+        """
+        from apps.payments.models import Payment
+        from apps.reservations.models import Reservation
+
+        user_model = get_user_model()
+        try:
+            client = user_model.objects.get(email="katarzyna@psipark.local")
+        except user_model.DoesNotExist:
+            return
+
+        created = 0
+        for reservation in Reservation.objects.filter(client=client, paid_at__isnull=False):
+            refunded = reservation.status == Reservation.Status.CANCELLED
+            _, was_created = Payment.objects.get_or_create(
+                reservation=reservation,
+                defaults={
+                    "stripe_payment_intent_id": f"pi_seed_{reservation.id}",
+                    "amount": reservation.total_price,
+                    "currency": "pln",
+                    "status": (Payment.Status.REFUNDED if refunded else Payment.Status.SUCCEEDED),
+                    "billing_name": client.full_name,
+                    "billing_email": client.email,
+                    "billing_address": "ul. Floriańska 1",
+                    "billing_postal_code": "31-019",
+                    "billing_city": "Kraków",
+                    "billing_country": "PL",
+                    "paid_at": reservation.paid_at,
+                    "refunded_at": reservation.cancelled_at if refunded else None,
+                },
+            )
+            created += int(was_created)
+        if created:
+            self.stdout.write(self.style.SUCCESS(f"Created {created} demo payments."))

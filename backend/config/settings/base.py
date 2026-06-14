@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "apps.dogs",
     "apps.gardens",
     "apps.reservations",
+    "apps.payments",
     "apps.notifications",
 ]
 
