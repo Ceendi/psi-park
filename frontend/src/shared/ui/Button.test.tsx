@@ -38,4 +38,32 @@ describe('Button', () => {
     render(<Button variant="primary">A</Button>);
     expect(screen.getByRole('button').className).toContain('bg-green-700');
   });
+
+  it('gives outline variants a visible border color (no transparent leak)', () => {
+    render(
+      <>
+        <Button variant="secondary">Secondary</Button>
+        <Button variant="danger">Danger</Button>
+      </>,
+    );
+    const [secondary, danger] = screen.getAllByRole('button');
+    // The variant's outline color is present...
+    expect(secondary.className).toContain('border-ink-200');
+    expect(danger.className).toContain('border-[color-mix');
+    // ...and BASE no longer leaks a `border-transparent` that would override it.
+    expect(secondary.className).not.toContain('border-transparent');
+    expect(danger.className).not.toContain('border-transparent');
+  });
+
+  it('keeps borderless variants explicitly transparent', () => {
+    render(
+      <>
+        <Button variant="primary">Primary</Button>
+        <Button variant="ghost">Ghost</Button>
+      </>,
+    );
+    const [primary, ghost] = screen.getAllByRole('button');
+    expect(primary.className).toContain('border-transparent');
+    expect(ghost.className).toContain('border-transparent');
+  });
 });
