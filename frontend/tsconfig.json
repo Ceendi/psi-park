@@ -23,8 +23,8 @@
     "noUncheckedSideEffectImports": true,
     "verbatimModuleSyntax": true,
 
-    /* Path alias */
-    "baseUrl": ".",
+    /* Path alias — no `baseUrl` (deprecated, removed in TS 7.0); `paths` resolve
+       relative to this tsconfig (TS 4.1+). Runtime alias lives in vite.config.ts. */
     "paths": {
       "@/*": ["./src/*"]
     },
