@@ -1,0 +1,61 @@
+// PsiPark design system (PLAN §16.1). Single import surface for all features.
+export * from './icons';
+export { Button } from './Button';
+export type { ButtonProps, ButtonVariant, ButtonSize } from './Button';
+export { Input, Textarea } from './Input';
+export type { InputProps, TextareaProps } from './Input';
+export { Select } from './Select';
+export type { SelectProps } from './Select';
+export { Checkbox } from './Checkbox';
+export type { CheckboxProps } from './Checkbox';
+export { RadioGroup } from './RadioGroup';
+export type { RadioGroupProps, RadioOption } from './RadioGroup';
+export { Toggle } from './Toggle';
+export type { ToggleProps } from './Toggle';
+export { FormField } from './FormField';
+export type { FormFieldProps } from './FormField';
+export { Badge } from './Badge';
+export type { BadgeProps, BadgeVariant } from './Badge';
+export { Avatar } from './Avatar';
+export type { AvatarProps } from './Avatar';
+export { Card } from './Card';
+export type { CardProps } from './Card';
+export { Spinner } from './Spinner';
+export type { SpinnerProps } from './Spinner';
+export { Skeleton } from './Skeleton';
+export { EmptyState } from './EmptyState';
+export type { EmptyStateProps } from './EmptyState';
+export { StatCard } from './StatCard';
+export type { StatCardProps } from './StatCard';
+export { PriceTag } from './PriceTag';
+export type { PriceTagProps } from './PriceTag';
+export { Rating } from './Rating';
+export type { RatingProps } from './Rating';
+export { Tabs } from './Tabs';
+export type { TabsProps, TabItem } from './Tabs';
+export { Pagination, getPageItems } from './Pagination';
+export type { PaginationProps } from './Pagination';
+export { Stepper } from './Stepper';
+export type { StepperProps } from './Stepper';
+export { Tooltip } from './Tooltip';
+export type { TooltipProps } from './Tooltip';
+export { Modal } from './Modal';
+export type { ModalProps } from './Modal';
+export { Drawer } from './Drawer';
+export type { DrawerProps } from './Drawer';
+export { ToastProvider, useToast } from './Toast';
+export type { ToastOptions, ToastVariant } from './Toast';
+export { Table } from './Table';
+export type { TableProps, Column, TableSort } from './Table';
+export { TimeRangePicker } from './TimeRangePicker';
+export type { TimeRangePickerProps, TimeSlot, TimeRange } from './TimeRangePicker';
+export { FileDropzone } from './FileDropzone';
+export type { FileDropzoneProps } from './FileDropzone';
+
+// Heavy, third-party-backed widgets are intentionally NOT re-exported here so
+// they stay out of the main chunk (PLAN §12 — map/calendar loaded on demand).
+// Import them directly and lazy-load:
+//   const MapView = lazy(() => import('@/shared/ui/MapView'));
+//   import { DatePicker } from '@/shared/ui/DatePicker';
+export type { DatePickerProps } from './DatePicker';
+export type { MapViewProps, MapMarker, LatLng } from './MapView';

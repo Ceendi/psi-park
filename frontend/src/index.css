@@ -1,0 +1,98 @@
+@import 'tailwindcss';
+
+/* Self-hosted variable fonts (PLAN §4.2) — Inter for UI, JetBrains Mono for
+   prices / IDs / metadata. */
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/jetbrains-mono';
+
+/* =========================================================================
+   Design tokens — 1:1 with Claude Design (docs/design/project/Design System.html
+   + assets/auth.css). Source of truth per PLAN §16.1. Do not change hues
+   without updating the handoff.
+   ========================================================================= */
+@theme {
+  /* Brand green — 700 = primary (#2E7D32, nature / gardens) */
+  --color-green-50: #f0f8ee;
+  --color-green-100: #dcefd8;
+  --color-green-300: #a5d6a7;
+  --color-green-500: #66bb6a;
+  --color-green-600: #43a047;
+  --color-green-700: #2e7d32;
+  --color-green-800: #1b5e20;
+  --color-green-900: #0f3d14;
+
+  /* Neutrals — primary text #1B1B1B */
+  --color-ink-50: #f5f5f4;
+  --color-ink-100: #ececec;
+  --color-ink-200: #d8d8d8;
+  --color-ink-300: #b5b5b5;
+  --color-ink-500: #6b6b6b;
+  --color-ink-700: #3a3a3a;
+  --color-ink-900: #1b1b1b;
+
+  /* Surfaces — warm white page background + white cards */
+  --color-bone: #fafffa;
+  --color-surface: #ffffff;
+
+  /* States */
+  --color-success: #2e7d32;
+  --color-warning: #e2a03f;
+  --color-danger: #c5443a;
+  --color-info: #3a6fb0;
+
+  /* Soft tints for badges (lifted from Design System.html badge styles) */
+  --color-warning-soft: #fbefd6;
+  --color-warning-ink: #8a5a12;
+  --color-danger-soft: #fae3e0;
+  --color-danger-ink: #8a271e;
+  --color-info-soft: #e1ecf8;
+  --color-info-ink: #1f4577;
+
+  /* Accents (paws / map pins) + Stripe purple focus for the card field */
+  --color-clay: #c97b5a;
+  --color-sun: #e8b84a;
+  --color-stripe: #635bff;
+
+  /* Radii (scale 6 → 28 + pill) */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+
+  /* Shadows (3 levels) */
+  --shadow-1: 0 1px 2px rgba(20, 30, 20, 0.06), 0 1px 1px rgba(20, 30, 20, 0.04);
+  --shadow-2: 0 4px 12px rgba(20, 30, 20, 0.06), 0 2px 4px rgba(20, 30, 20, 0.04);
+  --shadow-3: 0 12px 28px rgba(20, 30, 20, 0.1), 0 4px 10px rgba(20, 30, 20, 0.05);
+
+  /* Typography — Inter (UI) + JetBrains Mono (prices, IDs, metadata, tokens) */
+  --font-sans: 'Inter', 'Inter Variable', system-ui, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'JetBrains Mono Variable', ui-monospace, Menlo, monospace;
+}
+
+/* =========================================================================
+   Base layer
+   ========================================================================= */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--color-bone);
+    color: var(--color-ink-900);
+    font-family: var(--font-sans);
+    font-feature-settings: 'cv11', 'ss01';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Consistent, on-brand keyboard focus ring across the app (a11y, PLAN §6.5). */
+  :focus-visible {
+    outline: 2px solid var(--color-green-700);
+    outline-offset: 2px;
+  }
+}
