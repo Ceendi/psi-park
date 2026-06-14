@@ -13,8 +13,12 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   fullWidth?: boolean;
 }
 
+// `cn` is plain clsx (no tailwind-merge), so BASE sets the border *width* only —
+// each variant owns its border color (`border-transparent` for the borderless
+// ones). Setting a color here would leak onto secondary/danger and, because both
+// classes survive, win the cascade — hiding their outline.
 const BASE =
-  'inline-flex items-center justify-center gap-2 rounded-pill border border-transparent font-sans font-semibold leading-none whitespace-nowrap cursor-pointer transition active:translate-y-px disabled:opacity-45 disabled:pointer-events-none';
+  'inline-flex items-center justify-center gap-2 rounded-pill border font-sans font-semibold leading-none whitespace-nowrap cursor-pointer transition active:translate-y-px disabled:opacity-45 disabled:pointer-events-none';
 
 const SIZES: Record<ButtonSize, string> = {
   sm: 'px-4 py-2.5 text-[13px]',
@@ -27,9 +31,9 @@ const PRIMARY_SHADOW =
   'shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_4px_12px_rgba(20,30,20,0.06),0_2px_4px_rgba(20,30,20,0.04)]';
 
 const VARIANTS: Record<ButtonVariant, string> = {
-  primary: cn('bg-green-700 text-bone hover:bg-green-800', PRIMARY_SHADOW),
+  primary: cn('bg-green-700 text-bone border-transparent hover:bg-green-800', PRIMARY_SHADOW),
   secondary: 'bg-surface text-ink-900 border-ink-200 hover:border-ink-900',
-  ghost: 'bg-transparent text-green-800 hover:bg-green-50',
+  ghost: 'bg-transparent text-green-800 border-transparent hover:bg-green-50',
   danger:
     'bg-surface text-danger border-[color-mix(in_srgb,var(--color-danger)_30%,transparent)] hover:bg-[color-mix(in_srgb,var(--color-danger)_8%,transparent)]',
 };
