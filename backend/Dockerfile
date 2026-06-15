@@ -17,7 +17,12 @@ RUN pip install -r requirements-dev.txt
 
 COPY . .
 
-RUN useradd --create-home --uid 1000 appuser && chown -R appuser:appuser /app
+# Create the media dir in the image and own it as appuser, so the named `media` volume
+# (PLAN 13.1) initialises writable for the non-root user — invoice PDFs (B6) and uploaded
+# photos (B2/B3) are written there at runtime.
+RUN useradd --create-home --uid 1000 appuser \
+    && mkdir -p /app/media \
+    && chown -R appuser:appuser /app
 USER appuser
 
 EXPOSE 8000

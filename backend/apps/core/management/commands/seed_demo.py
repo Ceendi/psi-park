@@ -29,6 +29,7 @@ class Command(BaseCommand):
         self._seed_gardens()
         self._seed_reservations()
         self._seed_payments()
+        self._seed_invoices()
         self.stdout.write(self.style.SUCCESS("Seed complete."))
 
     def _seed_admin(self) -> None:
@@ -385,3 +386,25 @@ class Command(BaseCommand):
             created += int(was_created)
         if created:
             self.stdout.write(self.style.SUCCESS(f"Created {created} demo payments."))
+
+    def _seed_invoices(self) -> None:
+        """B6: issue a PDF invoice for every fully-paid demo reservation (PLAN 14).
+
+        Mirrors the production webhook (PLAN 10.3): a ``succeeded`` payment yields a
+        numbered PDF invoice. Idempotent — ``generate_invoice`` returns the existing
+        invoice on a re-run. Renders real PDFs into ``MEDIA_ROOT/invoices/`` (WeasyPrint),
+        so the client panel has something to download.
+        """
+        from apps.invoices.models import Invoice
+        from apps.invoices.services import generate_invoice
+        from apps.payments.models import Payment
+
+        before = Invoice.objects.count()
+        succeeded = Payment.objects.filter(status=Payment.Status.SUCCEEDED).select_related(
+            "reservation", "reservation__garden", "reservation__client"
+        )
+        for payment in succeeded:
+            generate_invoice(reservation=payment.reservation)
+        created = Invoice.objects.count() - before
+        if created:
+            self.stdout.write(self.style.SUCCESS(f"Created {created} demo invoices."))
