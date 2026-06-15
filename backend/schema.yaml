@@ -1114,6 +1114,51 @@ paths:
               schema:
                 $ref: '#/components/schemas/CancelResult'
           description: ''
+  /api/v1/reservations/{id}/invoice/:
+    get:
+      operationId: reservations_invoice_retrieve
+      description: GET /reservations/{id}/invoice/ — invoice metadata for the owning
+        client.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - reservations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+          description: ''
+  /api/v1/reservations/{id}/invoice/pdf/:
+    get:
+      operationId: reservations_invoice_pdf_retrieve
+      description: GET /reservations/{id}/invoice/pdf/ — download the PDF (attachment,
+        owner only).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - reservations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+          description: ''
   /api/v1/reservations/{id}/payment-intent/:
     post:
       operationId: reservations_payment_intent_create
@@ -1922,6 +1967,41 @@ components:
       - rating_avg
       - total_earnings
       - upcoming_count
+    Invoice:
+      type: object
+      description: Invoice metadata returned by ``GET /reservations/{id}/invoice/``
+        (PLAN 8.2).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        number:
+          type: string
+          readOnly: true
+        issued_at:
+          type: string
+          format: date-time
+          readOnly: true
+        total_gross:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          readOnly: true
+        reservation:
+          type: integer
+          readOnly: true
+        pdf_url:
+          type: string
+          description: Absolute URL of the PDF download endpoint for this invoice's
+            reservation.
+          readOnly: true
+      required:
+      - id
+      - issued_at
+      - number
+      - pdf_url
+      - reservation
+      - total_gross
     Login:
       type: object
       description: E-mail + password login; embeds the user profile and a ``role``

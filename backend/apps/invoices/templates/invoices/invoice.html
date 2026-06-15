@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <title>Faktura {{ invoice_number }}</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 1.8cm 1.8cm 2.2cm 1.8cm;
+      @bottom-center {
+        content: "PsiPark — marketplace wynajmu prywatnych ogrodów dla psów";
+        font-size: 8px;
+        color: #8a8f8a;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: "Liberation Sans", "DejaVu Sans", sans-serif;
+      color: #1B1B1B;
+      font-size: 11px;
+      line-height: 1.45;
+      margin: 0;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 3px solid #2E7D32;
+      padding-bottom: 14px;
+      margin-bottom: 22px;
+    }
+    .brand { font-size: 26px; font-weight: 700; color: #2E7D32; letter-spacing: -0.5px; }
+    .brand .paw { color: #E8B84A; }
+    .header .doc { text-align: right; }
+    .header h1 { margin: 0; font-size: 20px; font-weight: 700; text-transform: uppercase; }
+    .header .number {
+      font-family: "Liberation Mono", "DejaVu Sans Mono", monospace;
+      font-size: 13px;
+      color: #2E7D32;
+      margin-top: 2px;
+    }
+    .header .issued { font-size: 10px; color: #555; margin-top: 6px; }
+
+    .parties { display: flex; gap: 18px; margin-bottom: 22px; }
+    .party {
+      flex: 1;
+      border: 1px solid #e4e7e4;
+      border-radius: 10px;
+      padding: 12px 14px;
+      background: #FAFFFA;
+    }
+    .party h2 {
+      margin: 0 0 6px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #2E7D32;
+    }
+    .party p { margin: 1px 0; }
+    .party .name { font-weight: 700; font-size: 12px; }
+
+    table.items { width: 100%; border-collapse: collapse; margin-bottom: 18px; }
+    table.items th, table.items td { padding: 8px 10px; }
+    table.items thead th {
+      background: #2E7D32;
+      color: #fff;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      text-align: left;
+    }
+    table.items tbody td { border-bottom: 1px solid #e4e7e4; vertical-align: top; }
+    table.items .lp { width: 28px; text-align: center; }
+    table.items .num { text-align: right; white-space: nowrap; }
+    table.items .money {
+      font-family: "Liberation Mono", "DejaVu Sans Mono", monospace;
+    }
+    table.items tfoot td {
+      padding-top: 12px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    table.items tfoot .total-label { text-align: right; }
+    table.items tfoot .total {
+      text-align: right;
+      color: #2E7D32;
+      font-family: "Liberation Mono", "DejaVu Sans Mono", monospace;
+      white-space: nowrap;
+    }
+
+    .details {
+      border: 1px solid #e4e7e4;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 20px;
+    }
+    .details h2 {
+      margin: 0 0 6px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #2E7D32;
+    }
+    .details p { margin: 2px 0; }
+    .details .label { color: #555; }
+
+    .notes { font-size: 9.5px; color: #555; line-height: 1.5; }
+    .notes p { margin: 2px 0; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="brand">Psi<span class="paw">Park</span></div>
+    <div class="doc">
+      <h1>Faktura</h1>
+      <div class="number">{{ invoice_number }}</div>
+      <div class="issued">
+        Data wystawienia: {{ issued_at|date:"d.m.Y" }}<br />
+        Miejsce wystawienia: {{ seller.city }}
+      </div>
+    </div>
+  </div>
+
+  <div class="parties">
+    <div class="party">
+      <h2>Sprzedawca</h2>
+      <p class="name">{{ seller.name }}</p>
+      <p>{{ seller.address }}</p>
+      <p>{{ seller.postal_code }} {{ seller.city }}</p>
+      <p>{{ seller.country }}</p>
+      <p>NIP: {{ seller.tax_id }}</p>
+      <p>{{ seller.email }}</p>
+    </div>
+    <div class="party">
+      <h2>Nabywca</h2>
+      <p class="name">{{ buyer.name }}</p>
+      {% if buyer.company %}<p>{{ buyer.company }}</p>{% endif %}
+      {% if buyer.address %}<p>{{ buyer.address }}</p>{% endif %}
+      {% if buyer.postal_code or buyer.city %}<p>{{ buyer.postal_code }} {{ buyer.city }}</p>{% endif %}
+      {% if buyer.country %}<p>{{ buyer.country }}</p>{% endif %}
+      {% if buyer.tax_id %}<p>NIP: {{ buyer.tax_id }}</p>{% endif %}
+      {% if buyer.email %}<p>{{ buyer.email }}</p>{% endif %}
+    </div>
+  </div>
+
+  <table class="items">
+    <thead>
+      <tr>
+        <th class="lp">Lp.</th>
+        <th>Nazwa</th>
+        <th class="num">Ilość</th>
+        <th class="num">Cena</th>
+        <th class="num">Wartość</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td class="lp">{{ forloop.counter }}</td>
+        <td>{{ item.name }}</td>
+        <td class="num">{{ item.quantity }}</td>
+        <td class="num money">{{ item.unit_price }}</td>
+        <td class="num money">{{ item.amount }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="4" class="total-label">Razem do zapłaty (brutto)</td>
+        <td class="total">{{ total_gross }}</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <div class="details">
+    <h2>Czego dotyczy</h2>
+    <p><span class="label">Ogród:</span> {{ garden.title }}, {{ garden.city }}</p>
+    <p><span class="label">Termin pobytu:</span>
+      {{ start_time|date:"d.m.Y H:i" }} – {{ end_time|date:"H:i" }}</p>
+    <p><span class="label">Status:</span> opłacono dnia {{ reservation.paid_at|date:"d.m.Y" }}</p>
+  </div>
+
+  <div class="notes">
+    <p>Sprzedawca korzysta ze zwolnienia z VAT — wykazane kwoty są wartościami brutto.</p>
+    <p>Numer rachunku do płatności: {{ seller.bank_account }}</p>
+    <p>Dokument wygenerowany elektronicznie — jest ważny bez podpisu.</p>
+  </div>
+</body>
+</html>

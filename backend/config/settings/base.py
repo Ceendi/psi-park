@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "apps.gardens",
     "apps.reservations",
     "apps.payments",
+    "apps.invoices",
     "apps.notifications",
 ]
 
@@ -224,6 +225,22 @@ PLATFORM_FEE_PERCENT = env("PLATFORM_FEE_PERCENT")
 RESERVATION_PAYMENT_TTL_MINUTES = env("RESERVATION_PAYMENT_TTL_MINUTES")
 FREE_CANCELLATION_HOURS = env("FREE_CANCELLATION_HOURS")
 FRONTEND_BASE_URL = env("FRONTEND_BASE_URL", default="http://localhost:5173")
+
+# ---------------------------------------------------------------------------
+# Invoices (PLAN 10.3 / B6)
+# ---------------------------------------------------------------------------
+# Seller identity (the platform) printed on every invoice. Not a secret and not
+# environment-dependent, so it lives here as a plain constant rather than in env.
+INVOICE_SELLER = {
+    "name": "PsiPark sp. z o.o.",
+    "address": "ul. Wielicka 28",
+    "postal_code": "30-552",
+    "city": "Kraków",
+    "country": "Polska",
+    "tax_id": "6772468013",  # NIP
+    "email": "faktury@psipark.pl",
+    "bank_account": "PL27 1140 2004 0000 3002 0135 5387",
+}
 
 # ---------------------------------------------------------------------------
 # Security headers (hardened further behind a proxy in production)

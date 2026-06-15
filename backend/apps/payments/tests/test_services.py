@@ -148,8 +148,8 @@ def test_webhook_succeeded_is_idempotent(monkeypatch):
     assert len(mail.outbox) == 1  # second delivery sends nothing
 
 
-def test_webhook_succeeded_without_invoice_app_sends_plain_mail():
-    """B6 absent → the paid mail still goes out, just without the PDF attachment."""
+def test_webhook_succeeded_attaches_invoice_pdf():
+    """With B6 present, the paid mail carries the generated invoice PDF (PLAN 10.3, 17.3)."""
     reservation = ReservationFactory(status=_Status.PENDING_PAYMENT)
     PaymentFactory(
         reservation=reservation, status=_PStatus.PENDING, stripe_payment_intent_id="pi_ok"
@@ -158,7 +158,11 @@ def test_webhook_succeeded_without_invoice_app_sends_plain_mail():
     services.handle_webhook(event=_succeeded_event("pi_ok"))
 
     assert len(mail.outbox) == 1
-    assert mail.outbox[0].attachments == []
+    attachments = mail.outbox[0].attachments
+    assert len(attachments) == 1
+    filename, _content, mimetype = attachments[0]
+    assert filename.startswith("faktura-PSI_") and filename.endswith(".pdf")
+    assert mimetype == "application/pdf"
 
 
 # --- webhook: failed / refunded / unknown ---------------------------------------------
