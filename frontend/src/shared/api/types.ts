@@ -50,6 +50,9 @@ export type HostStats = Schemas['HostStats'];
 /** Panel-tab grouping accepted by `GET /reservations/?status_group=` (PLAN §8.2). */
 export type ReservationStatusGroup = 'upcoming' | 'completed' | 'cancelled';
 
+/** Host-panel tab grouping for `GET /host/reservations/?status_group=` (PLAN §8.2). */
+export type HostReservationStatusGroup = 'pending' | 'accepted' | 'completed' | 'cancelled';
+
 /* ----- Reviews ----- */
 export type Review = Schemas['Review'];
 export type ReviewWrite = Schemas['ReviewWrite'];

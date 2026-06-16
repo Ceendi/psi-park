@@ -31,6 +31,23 @@ const SettingsPage = lazy(() =>
   import('@/features/account').then((m) => ({ default: m.SettingsPage })),
 );
 
+// Host panel screens (F6) — lazy per route.
+const HostGardensPage = lazy(() =>
+  import('@/features/host').then((m) => ({ default: m.GardensPage })),
+);
+const GardenFormPage = lazy(() =>
+  import('@/features/host').then((m) => ({ default: m.GardenFormPage })),
+);
+const HostReservationsPage = lazy(() =>
+  import('@/features/host').then((m) => ({ default: m.HostReservationsPage })),
+);
+const HostSchedulePage = lazy(() =>
+  import('@/features/host').then((m) => ({ default: m.SchedulePage })),
+);
+const HostEarningsPage = lazy(() =>
+  import('@/features/host').then((m) => ({ default: m.EarningsPage })),
+);
+
 // Placeholders keep every route navigable on the F0 skeleton; later parts swap
 // in the real screens (the routing, layouts and guards stay).
 const ph = (title: string, part: string) => <PlaceholderPage title={title} part={part} />;
@@ -94,14 +111,14 @@ const routes: RouteObject[] = [
         path: 'gospodarz',
         element: <DashboardHostLayout />,
         children: [
-          { index: true, element: ph('Moje ogrody', 'F6') },
-          { path: 'ogrody/nowy', element: ph('Nowy ogród', 'F6') },
-          { path: 'ogrody/:id/edycja', element: ph('Edycja ogrodu', 'F6') },
-          { path: 'rezerwacje', element: ph('Rezerwacje', 'F6') },
-          { path: 'harmonogram', element: ph('Harmonogram', 'F6') },
+          { index: true, element: <HostGardensPage /> },
+          { path: 'ogrody/nowy', element: <GardenFormPage /> },
+          { path: 'ogrody/:id/edycja', element: <GardenFormPage /> },
+          { path: 'rezerwacje', element: <HostReservationsPage /> },
+          { path: 'harmonogram', element: <HostSchedulePage /> },
           { path: 'wiadomosci', element: ph('Wiadomości', 'F7') },
           { path: 'wiadomosci/:id', element: ph('Wiadomości', 'F7') },
-          { path: 'zarobki', element: ph('Zarobki', 'F6') },
+          { path: 'zarobki', element: <HostEarningsPage /> },
           { path: 'ustawienia', element: <SettingsPage /> },
         ],
       },
