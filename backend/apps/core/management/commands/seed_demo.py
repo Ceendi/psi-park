@@ -30,6 +30,7 @@ class Command(BaseCommand):
         self._seed_reservations()
         self._seed_payments()
         self._seed_invoices()
+        self._seed_reviews()
         self.stdout.write(self.style.SUCCESS("Seed complete."))
 
     def _seed_admin(self) -> None:
@@ -408,3 +409,49 @@ class Command(BaseCommand):
         created = Invoice.objects.count() - before
         if created:
             self.stdout.write(self.style.SUCCESS(f"Created {created} demo invoices."))
+
+    def _seed_reviews(self) -> None:
+        """B7: a review for each completed (confirmed, past) demo reservation (PLAN 14).
+
+        Raises the catalogue rating of the reviewed garden (smoke-test step 7). Idempotent:
+        keyed on the reservation (one review per stay) and capped at one review per garden
+        (the ``UniqueConstraint`` on author+garden — K-1).
+        """
+        from django.utils import timezone
+
+        from apps.reservations.models import Reservation
+        from apps.reviews.models import Review
+
+        user_model = get_user_model()
+        try:
+            client = user_model.objects.get(email="katarzyna@psipark.local")
+        except user_model.DoesNotExist:
+            return
+
+        completed = (
+            Reservation.objects.filter(
+                client=client,
+                status=Reservation.Status.CONFIRMED,
+                end_time__lt=timezone.now(),
+            )
+            .select_related("garden")
+            .order_by("end_time")
+        )
+        created = 0
+        reviewed_gardens: set[int] = set()
+        for reservation in completed:
+            if reservation.garden_id in reviewed_gardens:
+                continue
+            reviewed_gardens.add(reservation.garden_id)
+            _, was_created = Review.objects.get_or_create(
+                reservation=reservation,
+                defaults={
+                    "author": client,
+                    "garden": reservation.garden,
+                    "rating": 5,
+                    "comment": "Cudowny, bezpieczny teren — Łata była zachwycona. Wrócimy!",
+                },
+            )
+            created += int(was_created)
+        if created:
+            self.stdout.write(self.style.SUCCESS(f"Created {created} demo reviews."))

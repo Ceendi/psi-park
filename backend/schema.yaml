@@ -478,6 +478,53 @@ paths:
               schema:
                 $ref: '#/components/schemas/Availability'
           description: ''
+  /api/v1/gardens/{id}/reviews/:
+    get:
+      operationId: gardens_reviews_list
+      description: GET /gardens/{id}/reviews/ — a garden's public reviews, newest
+        first (PLAN 8.2).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - gardens
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedReviewList'
+          description: ''
   /api/v1/health/:
     get:
       operationId: health_retrieve
@@ -1193,6 +1240,40 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaymentIntentResponse'
           description: ''
+  /api/v1/reservations/{id}/review/:
+    post:
+      operationId: reservations_review_create
+      description: POST /reservations/{id}/review/ — the owning client reviews a completed
+        stay.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - reservations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReviewWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReviewWrite'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+          description: ''
   /api/v1/reservations/export.csv:
     get:
       operationId: reservations_export.csv_retrieve
@@ -1209,6 +1290,119 @@ paths:
               schema:
                 type: string
                 format: binary
+          description: ''
+  /api/v1/reviews/{id}/:
+    get:
+      operationId: reviews_retrieve
+      description: GET (public) / PATCH / DELETE /reviews/{id}/ — read any, edit/delete
+        only your own.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - reviews
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+          description: ''
+    patch:
+      operationId: reviews_partial_update
+      description: GET (public) / PATCH / DELETE /reviews/{id}/ — read any, edit/delete
+        only your own.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - reviews
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedReviewWrite'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedReviewWrite'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedReviewWrite'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+          description: ''
+    delete:
+      operationId: reviews_destroy
+      description: GET (public) / PATCH / DELETE /reviews/{id}/ — read any, edit/delete
+        only your own.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - reviews
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/reviews/eligible/:
+    get:
+      operationId: reviews_eligible_list
+      description: GET /reviews/eligible/ — the client's completed stays still awaiting
+        a review.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - reviews
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEligibleReservationList'
           description: ''
 components:
   schemas:
@@ -1566,6 +1760,31 @@ components:
           type: string
       required:
       - name
+    EligibleReservation:
+      type: object
+      description: A completed stay awaiting a review — the client-panel CTA card
+        (PLAN 8.2).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        garden:
+          allOf:
+          - $ref: '#/components/schemas/GardenMini'
+          readOnly: true
+        start_time:
+          type: string
+          format: date-time
+          readOnly: true
+        end_time:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - end_time
+      - garden
+      - id
+      - start_time
     GardenDetail:
       type: object
       description: 'Full garden view: gallery, public host, amenity labels, rules,
@@ -2048,6 +2267,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DogList'
+    PaginatedEligibleReservationList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/EligibleReservation'
     PaginatedGardenListList:
       type: object
       required:
@@ -2094,6 +2336,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ReservationList'
+    PaginatedReviewList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Review'
     PasswordResetConfirm:
       type: object
       description: Set a new password using the token from the reset e-mail.
@@ -2264,6 +2529,19 @@ components:
           type: array
           items:
             type: integer
+    PatchedReviewWrite:
+      type: object
+      description: Review input body (PLAN 8.2). Eligibility is enforced in the service,
+        not here.
+      properties:
+        rating:
+          type: integer
+          maximum: 5
+          minimum: 1
+        comment:
+          type: string
+          default: ''
+          maxLength: 2000
     PaymentIntentResponse:
       type: object
       description: Payload returned to the frontend to mount the Stripe Payment Element
@@ -2588,6 +2866,76 @@ components:
           type: string
           default: ''
           maxLength: 300
+    Review:
+      type: object
+      description: Read shape of a review (PLAN 8.2). ``garden``/``reservation`` serialise
+        as their ids.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        garden:
+          type: integer
+          readOnly: true
+        reservation:
+          type: integer
+          readOnly: true
+        author:
+          allOf:
+          - $ref: '#/components/schemas/ReviewAuthor'
+          readOnly: true
+        rating:
+          type: integer
+          readOnly: true
+        comment:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - author
+      - comment
+      - created_at
+      - garden
+      - id
+      - rating
+      - reservation
+      - updated_at
+    ReviewAuthor:
+      type: object
+      description: Public-facing identity of a review's author (shown on the catalogue
+        card).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+      required:
+      - full_name
+      - id
+    ReviewWrite:
+      type: object
+      description: Review input body (PLAN 8.2). Eligibility is enforced in the service,
+        not here.
+      properties:
+        rating:
+          type: integer
+          maximum: 5
+          minimum: 1
+        comment:
+          type: string
+          default: ''
+          maxLength: 2000
+      required:
+      - rating
     ScheduleEvent:
       type: object
       description: One calendar event in the host schedule (PLAN 8.2).
