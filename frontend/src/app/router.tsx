@@ -19,6 +19,18 @@ const LoginPage = lazy(() => import('@/features/auth/LoginPage'));
 const RegisterPage = lazy(() => import('@/features/auth/RegisterPage'));
 const PasswordResetPage = lazy(() => import('@/features/auth/PasswordResetPage'));
 
+// Client panel screens (F5) — lazy per route.
+const ReservationsPage = lazy(() =>
+  import('@/features/reservations').then((m) => ({ default: m.ReservationsPage })),
+);
+const PetsPage = lazy(() => import('@/features/dogs').then((m) => ({ default: m.PetsPage })));
+const ReviewsPage = lazy(() =>
+  import('@/features/reviews').then((m) => ({ default: m.ReviewsPage })),
+);
+const SettingsPage = lazy(() =>
+  import('@/features/account').then((m) => ({ default: m.SettingsPage })),
+);
+
 // Placeholders keep every route navigable on the F0 skeleton; later parts swap
 // in the real screens (the routing, layouts and guards stay).
 const ph = (title: string, part: string) => <PlaceholderPage title={title} part={part} />;
@@ -64,12 +76,12 @@ const routes: RouteObject[] = [
         path: 'panel',
         element: <DashboardClientLayout />,
         children: [
-          { index: true, element: ph('Moje rezerwacje', 'F5') },
-          { path: 'pupile', element: ph('Moi pupile', 'F5') },
-          { path: 'recenzje', element: ph('Moje recenzje', 'F5') },
+          { index: true, element: <ReservationsPage /> },
+          { path: 'pupile', element: <PetsPage /> },
+          { path: 'recenzje', element: <ReviewsPage /> },
           { path: 'wiadomosci', element: ph('Wiadomości', 'F7') },
           { path: 'wiadomosci/:id', element: ph('Wiadomości', 'F7') },
-          { path: 'ustawienia', element: ph('Ustawienia konta', 'F5') },
+          { path: 'ustawienia', element: <SettingsPage /> },
         ],
       },
     ],
@@ -90,7 +102,7 @@ const routes: RouteObject[] = [
           { path: 'wiadomosci', element: ph('Wiadomości', 'F7') },
           { path: 'wiadomosci/:id', element: ph('Wiadomości', 'F7') },
           { path: 'zarobki', element: ph('Zarobki', 'F6') },
-          { path: 'ustawienia', element: ph('Ustawienia konta', 'F5') },
+          { path: 'ustawienia', element: <SettingsPage /> },
         ],
       },
     ],

@@ -47,6 +47,29 @@ export type CancelResult = Schemas['CancelResult'];
 export type ScheduleEvent = Schemas['ScheduleEvent'];
 export type HostStats = Schemas['HostStats'];
 
+/** Panel-tab grouping accepted by `GET /reservations/?status_group=` (PLAN §8.2). */
+export type ReservationStatusGroup = 'upcoming' | 'completed' | 'cancelled';
+
+/* ----- Reviews ----- */
+export type Review = Schemas['Review'];
+export type ReviewWrite = Schemas['ReviewWrite'];
+export type ReviewAuthor = Schemas['ReviewAuthor'];
+export type EligibleReservation = Schemas['EligibleReservation'];
+
+/* ----- Invoices ----- */
+export type Invoice = Schemas['Invoice'];
+
+/* ----- Account (me) ----- */
+export type MeUpdate = Schemas['PatchedMeUpdate'];
+export type PasswordChange = Schemas['PatchedPasswordChange'];
+
+/**
+ * Health-document status the backend serializes for a dog
+ * (`health_status` / `vaccinations_status` / `deworming_status`, PLAN §7.2).
+ * The API returns plain strings; this narrows them for the UI colour mapping.
+ */
+export type DogHealthStatus = 'valid' | 'expiring_soon' | 'expired' | 'unknown';
+
 /* ----- System ----- */
 export type HealthResponse = Schemas['HealthResponse'];
 

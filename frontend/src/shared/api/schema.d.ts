@@ -111,6 +111,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/conversations/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET (either participant) lists threads; POST (client) starts/returns one (PLAN 8.2). */
+        get: operations["conversations_list"];
+        put?: never;
+        /** @description GET (either participant) lists threads; POST (client) starts/returns one (PLAN 8.2). */
+        post: operations["conversations_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/conversations/{id}/messages/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET /conversations/{id}/messages/?before= — keyset history, newest first (PLAN 8.2). */
+        get: operations["conversations_messages_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/conversations/{id}/read/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description POST /conversations/{id}/read/ — mark the other party's messages read (PLAN 8.2). */
+        post: operations["conversations_read_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/dogs/": {
         parameters: {
             query?: never;
@@ -208,6 +260,23 @@ export interface paths {
         };
         /** @description GET /gardens/{id}/availability/?date=YYYY-MM-DD — hourly slot map for a day. */
         get: operations["gardens_availability_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/gardens/{id}/reviews/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET /gardens/{id}/reviews/ — a garden's public reviews, newest first (PLAN 8.2). */
+        get: operations["gardens_reviews_list"];
         put?: never;
         post?: never;
         delete?: never;
@@ -446,6 +515,46 @@ export interface paths {
         patch: operations["me_password_partial_update"];
         trace?: never;
     };
+    "/api/v1/payments/config/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET /payments/config/ — public Stripe publishable key for the frontend. */
+        get: operations["payments_config_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/payments/webhook/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description POST /payments/webhook/ — Stripe event sink (PLAN 10.1).
+         *
+         *     Public route authenticated by the Stripe signature, not JWT: no auth class (so DRF
+         *     skips SessionAuthentication and therefore CSRF) and no throttling (Stripe may burst).
+         *     The raw request body must be verified before parsing, hence ``request.body``.
+         */
+        post: operations["payments_webhook_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/reservations/": {
         parameters: {
             query?: never;
@@ -498,6 +607,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/reservations/{id}/invoice/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET /reservations/{id}/invoice/ — invoice metadata for the owning client. */
+        get: operations["reservations_invoice_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reservations/{id}/invoice/pdf/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET /reservations/{id}/invoice/pdf/ — download the PDF (attachment, owner only). */
+        get: operations["reservations_invoice_pdf_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reservations/{id}/payment-intent/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description POST /reservations/{id}/payment-intent/ — start/refresh the client's payment. */
+        post: operations["reservations_payment_intent_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reservations/{id}/review/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description POST /reservations/{id}/review/ — the owning client reviews a completed stay. */
+        post: operations["reservations_review_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/reservations/export.csv": {
         parameters: {
             query?: never;
@@ -507,6 +684,42 @@ export interface paths {
         };
         /** @description GET /reservations/export.csv — the client's reservations as a CSV download. */
         get: operations["reservations_export.csv_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reviews/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET (public) / PATCH / DELETE /reviews/{id}/ — read any, edit/delete only your own. */
+        get: operations["reviews_retrieve"];
+        put?: never;
+        post?: never;
+        /** @description GET (public) / PATCH / DELETE /reviews/{id}/ — read any, edit/delete only your own. */
+        delete: operations["reviews_destroy"];
+        options?: never;
+        head?: never;
+        /** @description GET (public) / PATCH / DELETE /reviews/{id}/ — read any, edit/delete only your own. */
+        patch: operations["reviews_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/reviews/eligible/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description GET /reviews/eligible/ — the client's completed stays still awaiting a review. */
+        get: operations["reviews_eligible_list"];
         put?: never;
         post?: never;
         delete?: never;
@@ -549,6 +762,26 @@ export interface components {
             open_to: string;
             slots: components["schemas"]["Slot"][];
         };
+        /**
+         * @description Billing details for the invoice buyer (PLAN 7.5 / Payment.html).
+         *
+         *     The core address block is required (it bills the invoice, B6); company name and NIP
+         *     are the optional "faktura na firmę" extension. ``billing_country`` defaults to PL.
+         */
+        Billing: {
+            billing_name: string;
+            /** Format: email */
+            billing_email: string;
+            billing_address: string;
+            billing_postal_code: string;
+            billing_city: string;
+            /** @default PL */
+            billing_country: string;
+            /** @default  */
+            billing_company: string;
+            /** @default  */
+            tax_id: string;
+        };
         /** @enum {unknown} */
         BlankEnum: "";
         /** @description Cancel response: the refund outcome plus the updated reservation (PLAN 8.2). */
@@ -556,10 +789,57 @@ export interface components {
             refunded: boolean;
             reservation: components["schemas"]["ReservationDetail"];
         };
+        /** @description Compact garden card embedded in a conversation row (its host is the counterparty). */
+        ChatGarden: {
+            readonly id: number;
+            readonly title: string;
+            readonly city: string;
+            readonly cover_image: string | null;
+        };
+        /** @description A single message (PLAN 7.8). ``sender``/``conversation`` serialise as their ids. */
+        ChatMessage: {
+            readonly id: number;
+            readonly conversation: number;
+            readonly sender: number;
+            readonly content: string;
+            /** Format: date-time */
+            readonly read_at: string | null;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        /** @description Public-facing identity of a conversation participant (client or host). */
+        ChatParticipant: {
+            readonly id: number;
+            readonly full_name: string;
+        };
         /** @description Public-facing client identity shown to the host on a reservation. */
         ClientMini: {
             readonly id: number;
             readonly full_name: string;
+        };
+        /**
+         * @description A conversation row for the participant's list (PLAN 8.2).
+         *
+         *     ``unread_count`` and ``last_message`` come from ``selectors.participant_conversations``;
+         *     on a freshly created thread (no messages yet) ``last_message`` is ``null``.
+         */
+        Conversation: {
+            readonly id: number;
+            readonly garden: components["schemas"]["ChatGarden"];
+            readonly client: components["schemas"]["ChatParticipant"];
+            readonly host: components["schemas"]["ChatParticipant"];
+            readonly unread_count: number;
+            readonly last_message: {
+                [key: string]: unknown;
+            } | null;
+            /** Format: date-time */
+            readonly last_message_at: string | null;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
+        /** @description Body of "start a conversation" (PLAN 8.2): just the garden to message. */
+        ConversationCreate: {
+            garden: number;
         };
         /** @description Generic ``{"detail": "..."}`` response. */
         Detail: {
@@ -634,6 +914,15 @@ export interface components {
             /** Format: date */
             deworming_valid_until?: string | null;
             notes?: string;
+        };
+        /** @description A completed stay awaiting a review — the client-panel CTA card (PLAN 8.2). */
+        EligibleReservation: {
+            readonly id: number;
+            readonly garden: components["schemas"]["GardenMini"];
+            /** Format: date-time */
+            readonly start_time: string;
+            /** Format: date-time */
+            readonly end_time: string;
         };
         /** @description Full garden view: gallery, public host, amenity labels, rules, rating. */
         GardenDetail: {
@@ -769,6 +1058,18 @@ export interface components {
             /** Format: double */
             rating_avg: number | null;
         };
+        /** @description Invoice metadata returned by ``GET /reservations/{id}/invoice/`` (PLAN 8.2). */
+        Invoice: {
+            readonly id: number;
+            readonly number: string;
+            /** Format: date-time */
+            readonly issued_at: string;
+            /** Format: decimal */
+            readonly total_gross: string;
+            readonly reservation: number;
+            /** @description Absolute URL of the PDF download endpoint for this invoice's reservation. */
+            readonly pdf_url: string;
+        };
         /** @description E-mail + password login; embeds the user profile and a ``role`` claim in the token. */
         Login: {
             email: string;
@@ -777,6 +1078,31 @@ export interface components {
         /** @description Refresh token to blacklist on logout. */
         Logout: {
             refresh: string;
+        };
+        /** @description Response of the read endpoint (PLAN 8.2): how many messages were just marked read. */
+        MarkReadResult: {
+            readonly marked_read: number;
+        };
+        /** @description Keyset page of history (PLAN 8.2): newest-first messages + the cursor for older ones. */
+        MessageHistory: {
+            readonly results: components["schemas"]["ChatMessage"][];
+            readonly has_more: boolean;
+            readonly next_before: number | null;
+        };
+        PaginatedConversationList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Conversation"][];
         };
         PaginatedDogListList: {
             /** @example 123 */
@@ -792,6 +1118,21 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["DogList"][];
+        };
+        PaginatedEligibleReservationList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["EligibleReservation"][];
         };
         PaginatedGardenListList: {
             /** @example 123 */
@@ -822,6 +1163,21 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["ReservationList"][];
+        };
+        PaginatedReviewList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Review"][];
         };
         /** @description Set a new password using the token from the reset e-mail. */
         PasswordResetConfirm: {
@@ -894,6 +1250,22 @@ export interface components {
         /** @description New gallery order: the full list of this garden's photo ids, cover first. */
         PatchedPhotoReorder: {
             photo_ids?: number[];
+        };
+        /** @description Review input body (PLAN 8.2). Eligibility is enforced in the service, not here. */
+        PatchedReviewWrite: {
+            rating?: number;
+            /** @default  */
+            comment: string;
+        };
+        /** @description Payload returned to the frontend to mount the Stripe Payment Element (PLAN 10.1). */
+        PaymentIntentResponse: {
+            client_secret: string;
+            payment_intent_id: string;
+            /** Format: decimal */
+            amount: string;
+            currency: string;
+            status: string;
+            publishable_key: string;
         };
         /** @description Validate a new client/host account (role limited, terms required, password confirmed). */
         Register: {
@@ -997,6 +1369,30 @@ export interface components {
             /** @default  */
             reason: string;
         };
+        /** @description Read shape of a review (PLAN 8.2). ``garden``/``reservation`` serialise as their ids. */
+        Review: {
+            readonly id: number;
+            readonly garden: number;
+            readonly reservation: number;
+            readonly author: components["schemas"]["ReviewAuthor"];
+            readonly rating: number;
+            readonly comment: string;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+        };
+        /** @description Public-facing identity of a review's author (shown on the catalogue card). */
+        ReviewAuthor: {
+            readonly id: number;
+            readonly full_name: string;
+        };
+        /** @description Review input body (PLAN 8.2). Eligibility is enforced in the service, not here. */
+        ReviewWrite: {
+            rating: number;
+            /** @default  */
+            comment: string;
+        };
         /** @description One calendar event in the host schedule (PLAN 8.2). */
         ScheduleEvent: {
             readonly id: number;
@@ -1031,6 +1427,10 @@ export interface components {
          * @enum {string}
          */
         StatusEnum: "pending_payment" | "awaiting_host" | "confirmed" | "rejected" | "cancelled";
+        /** @description Public Stripe configuration for the frontend (``GET /payments/config/``). */
+        StripeConfig: {
+            publishable_key: string;
+        };
         /**
          * @description * `grass` - Trawa
          *     * `sand` - Piasek
@@ -1230,6 +1630,104 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AuthTokens"];
+                };
+            };
+        };
+    };
+    conversations_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedConversationList"];
+                };
+            };
+        };
+    };
+    conversations_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConversationCreate"];
+                "application/x-www-form-urlencoded": components["schemas"]["ConversationCreate"];
+                "multipart/form-data": components["schemas"]["ConversationCreate"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationCreate"];
+                };
+            };
+        };
+    };
+    conversations_messages_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Return messages older than this message id (keyset cursor). */
+                before?: number;
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageHistory"];
+                };
+            };
+        };
+    };
+    conversations_read_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MarkReadResult"];
                 };
             };
         };
@@ -1465,6 +1963,36 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Availability"];
+                };
+            };
+        };
+    };
+    gardens_reviews_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedReviewList"];
                 };
             };
         };
@@ -1895,6 +2423,43 @@ export interface operations {
             };
         };
     };
+    payments_config_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StripeConfig"];
+                };
+            };
+        };
+    };
+    payments_webhook_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Event acknowledged. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     reservations_list: {
         parameters: {
             query?: {
@@ -1992,6 +2557,102 @@ export interface operations {
             };
         };
     };
+    reservations_invoice_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invoice"];
+                };
+            };
+        };
+    };
+    reservations_invoice_pdf_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": string;
+                };
+            };
+        };
+    };
+    reservations_payment_intent_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Billing"];
+                "application/x-www-form-urlencoded": components["schemas"]["Billing"];
+                "multipart/form-data": components["schemas"]["Billing"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentIntentResponse"];
+                };
+            };
+        };
+    };
+    reservations_review_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewWrite"];
+                "application/x-www-form-urlencoded": components["schemas"]["ReviewWrite"];
+                "multipart/form-data": components["schemas"]["ReviewWrite"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Review"];
+                };
+            };
+        };
+    };
     "reservations_export.csv_retrieve": {
         parameters: {
             query?: never;
@@ -2007,6 +2668,102 @@ export interface operations {
                 };
                 content: {
                     "text/csv": string;
+                };
+            };
+        };
+    };
+    reviews_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Review"];
+                };
+            };
+        };
+    };
+    reviews_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    reviews_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedReviewWrite"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedReviewWrite"];
+                "multipart/form-data": components["schemas"]["PatchedReviewWrite"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Review"];
+                };
+            };
+        };
+    };
+    reviews_eligible_list: {
+        parameters: {
+            query?: {
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /** @description A search term. */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedEligibleReservationList"];
                 };
             };
         };
