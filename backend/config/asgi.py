@@ -1,8 +1,8 @@
 """ASGI entrypoint.
 
-Routes HTTP to the Django application and WebSocket to a Channels router. The
-WebSocket routing list is intentionally empty here — part B8 (chat) plugs its
-consumers and JWT auth middleware in without touching this file's structure.
+Routes HTTP to the Django application and WebSocket through the chat stack: origin validation
+→ ``JWTAuthMiddleware`` (resolves ``scope["user"]`` from the ``?token=`` access JWT, PLAN 9.1)
+→ the chat ``URLRouter``. New websocket consumers register in ``apps.chat.routing``.
 """
 
 import os
@@ -16,12 +16,14 @@ django_asgi_app = get_asgi_application()
 from channels.routing import ProtocolTypeRouter, URLRouter  # noqa: E402
 from channels.security.websocket import AllowedHostsOriginValidator  # noqa: E402
 
-# B8 appends (path(...), Consumer.as_asgi()) entries to this list.
-websocket_urlpatterns: list = []
+from apps.chat.middleware import JWTAuthMiddleware  # noqa: E402
+from apps.chat.routing import websocket_urlpatterns  # noqa: E402
 
 application = ProtocolTypeRouter(
     {
         "http": django_asgi_app,
-        "websocket": AllowedHostsOriginValidator(URLRouter(websocket_urlpatterns)),
+        "websocket": AllowedHostsOriginValidator(
+            JWTAuthMiddleware(URLRouter(websocket_urlpatterns))
+        ),
     }
 )

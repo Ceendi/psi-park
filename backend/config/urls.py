@@ -21,7 +21,7 @@ urlpatterns = [
     path("api/v1/", include("apps.payments.urls")),
     path("api/v1/", include("apps.invoices.urls")),
     path("api/v1/", include("apps.reviews.urls")),
-    # B8+ plug their app routers here, e.g. path("api/v1/", include("apps.chat.urls")),
+    path("api/v1/", include("apps.chat.urls")),
     # --- OpenAPI schema ---
     path("api/v1/schema/", SpectacularAPIView.as_view(), name="schema"),
 ]
