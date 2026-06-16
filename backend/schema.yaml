@@ -166,6 +166,123 @@ paths:
               schema:
                 $ref: '#/components/schemas/AuthTokens'
           description: ''
+  /api/v1/conversations/:
+    get:
+      operationId: conversations_list
+      description: GET (either participant) lists threads; POST (client) starts/returns
+        one (PLAN 8.2).
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - conversations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedConversationList'
+          description: ''
+    post:
+      operationId: conversations_create
+      description: GET (either participant) lists threads; POST (client) starts/returns
+        one (PLAN 8.2).
+      tags:
+      - conversations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConversationCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ConversationCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConversationCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationCreate'
+          description: ''
+  /api/v1/conversations/{id}/messages/:
+    get:
+      operationId: conversations_messages_retrieve
+      description: GET /conversations/{id}/messages/?before= — keyset history, newest
+        first (PLAN 8.2).
+      parameters:
+      - in: query
+        name: before
+        schema:
+          type: integer
+        description: Return messages older than this message id (keyset cursor).
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - conversations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageHistory'
+          description: ''
+  /api/v1/conversations/{id}/read/:
+    post:
+      operationId: conversations_read_create
+      description: POST /conversations/{id}/read/ — mark the other party's messages
+        read (PLAN 8.2).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - conversations
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarkReadResult'
+          description: ''
   /api/v1/dogs/:
     get:
       operationId: dogs_list
@@ -1526,6 +1643,76 @@ components:
       required:
       - refunded
       - reservation
+    ChatGarden:
+      type: object
+      description: Compact garden card embedded in a conversation row (its host is
+        the counterparty).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        city:
+          type: string
+          readOnly: true
+        cover_image:
+          type: string
+          nullable: true
+          readOnly: true
+      required:
+      - city
+      - cover_image
+      - id
+      - title
+    ChatMessage:
+      type: object
+      description: A single message (PLAN 7.8). ``sender``/``conversation`` serialise
+        as their ids.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        conversation:
+          type: integer
+          readOnly: true
+        sender:
+          type: integer
+          readOnly: true
+        content:
+          type: string
+          readOnly: true
+        read_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - content
+      - conversation
+      - created_at
+      - id
+      - read_at
+      - sender
+    ChatParticipant:
+      type: object
+      description: Public-facing identity of a conversation participant (client or
+        host).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+      required:
+      - full_name
+      - id
     ClientMini:
       type: object
       description: Public-facing client identity shown to the host on a reservation.
@@ -1539,6 +1726,65 @@ components:
       required:
       - full_name
       - id
+    Conversation:
+      type: object
+      description: |-
+        A conversation row for the participant's list (PLAN 8.2).
+
+        ``unread_count`` and ``last_message`` come from ``selectors.participant_conversations``;
+        on a freshly created thread (no messages yet) ``last_message`` is ``null``.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        garden:
+          allOf:
+          - $ref: '#/components/schemas/ChatGarden'
+          readOnly: true
+        client:
+          allOf:
+          - $ref: '#/components/schemas/ChatParticipant'
+          readOnly: true
+        host:
+          allOf:
+          - $ref: '#/components/schemas/ChatParticipant'
+          readOnly: true
+        unread_count:
+          type: integer
+          readOnly: true
+        last_message:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          readOnly: true
+        last_message_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - client
+      - created_at
+      - garden
+      - host
+      - id
+      - last_message
+      - last_message_at
+      - unread_count
+    ConversationCreate:
+      type: object
+      description: 'Body of "start a conversation" (PLAN 8.2): just the garden to
+        message.'
+      properties:
+        garden:
+          type: integer
+          minimum: 1
+      required:
+      - garden
     Detail:
       type: object
       description: 'Generic ``{"detail": "..."}`` response.'
@@ -2244,6 +2490,60 @@ components:
           writeOnly: true
       required:
       - refresh
+    MarkReadResult:
+      type: object
+      description: 'Response of the read endpoint (PLAN 8.2): how many messages were
+        just marked read.'
+      properties:
+        marked_read:
+          type: integer
+          readOnly: true
+      required:
+      - marked_read
+    MessageHistory:
+      type: object
+      description: 'Keyset page of history (PLAN 8.2): newest-first messages + the
+        cursor for older ones.'
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatMessage'
+          readOnly: true
+        has_more:
+          type: boolean
+          readOnly: true
+        next_before:
+          type: integer
+          readOnly: true
+          nullable: true
+      required:
+      - has_more
+      - next_before
+      - results
+    PaginatedConversationList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Conversation'
     PaginatedDogListList:
       type: object
       required:
