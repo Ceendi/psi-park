@@ -835,139 +835,6 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description GET /reservations/{id}/invoice/ — invoice metadata for the owning client. */
-        get: operations["reservations_invoice_retrieve"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/reviews/{id}/": {
-    "/api/v1/reservations/{id}/invoice/pdf/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description GET (public) / PATCH / DELETE /reviews/{id}/ — read any, edit/delete only your own. */
-        get: operations["reviews_retrieve"];
-        put?: never;
-        post?: never;
-        /** @description GET (public) / PATCH / DELETE /reviews/{id}/ — read any, edit/delete only your own. */
-        delete: operations["reviews_destroy"];
-        options?: never;
-        head?: never;
-        /** @description GET (public) / PATCH / DELETE /reviews/{id}/ — read any, edit/delete only your own. */
-        patch: operations["reviews_partial_update"];
-        trace?: never;
-    };
-    "/api/v1/reviews/eligible/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description GET /reviews/eligible/ — the client's completed stays still awaiting a review. */
-        get: operations["reviews_eligible_list"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-}
-export type webhooks = Record<string, never>;
-export interface components {
-    schemas: {
-        /**
-         * @description * `pool` - Basen dla psów
-         *     * `water` - Woda i miski
-         *     * `shelter` - Wiata / schronienie
-         *     * `lighting` - Oświetlenie wieczorne
-         *     * `parking` - Parking
-         *     * `agility` - Tor agility
-         *     * `bench` - Ławki dla opiekuna
-         *     * `bin` - Kosze na odchody
-         *     * `fenced_secure` - Pełne ogrodzenie 1,8 m
-         *     * `shade` - Naturalny cień / drzewa
-         * @enum {string}
-         */
-        AmenitiesEnum: "pool" | "water" | "shelter" | "lighting" | "parking" | "agility" | "bench" | "bin" | "fenced_secure" | "shade";
-        /** @description Response shape for register/login: token pair plus the user profile. */
-        AuthTokens: {
-            readonly access: string;
-            readonly refresh: string;
-            readonly user: components["schemas"]["User"];
-        };
-        /** @description Daily availability map for a garden (PLAN 8.3). */
-        Availability: {
-            /** Format: date */
-            date: string;
-            /** Format: time */
-            open_from: string;
-            /** Format: time */
-            open_to: string;
-            slots: components["schemas"]["Slot"][];
-        };
-        };
-        /** @description GET /reservations/{id}/invoice/pdf/ — download the PDF (attachment, owner only). */
-        get: operations["reservations_invoice_pdf_retrieve"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/reservations/{id}/payment-intent/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** @description POST /reservations/{id}/payment-intent/ — start/refresh the client's payment. */
-        post: operations["reservations_payment_intent_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/reservations/{id}/review/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** @description POST /reservations/{id}/review/ — the owning client reviews a completed stay. */
-        post: operations["reservations_review_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/reservations/export.csv": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
         /** @description GET /reservations/export.csv — the client's reservations as a CSV download. */
         get: operations["reservations_export.csv_retrieve"];
         put?: never;
@@ -1465,6 +1332,51 @@ export interface components {
             readonly has_more: boolean;
             readonly next_before: number | null;
         };
+        PaginatedAdminGardenList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["AdminGarden"][];
+        };
+        PaginatedAdminReviewList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["AdminReview"][];
+        };
+        PaginatedAdminUserList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["AdminUser"][];
+        };
         PaginatedConversationList: {
             /** @example 123 */
             count: number;
@@ -1493,7 +1405,7 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results: components["schemas"]["AdminGarden"][];
+            results: components["schemas"]["DogList"][];
         };
         PaginatedEligibleReservationList: {
             /** @example 123 */
@@ -1523,9 +1435,9 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results: components["schemas"]["AdminReview"][];
+            results: components["schemas"]["GardenList"][];
         };
-        PaginatedAdminUserList: {
+        PaginatedReservationListList: {
             /** @example 123 */
             count: number;
             /**
@@ -1538,7 +1450,7 @@ export interface components {
              * @example http://api.example.org/accounts/?page=2
              */
             previous?: string | null;
-            results: components["schemas"]["AdminUser"][];
+            results: components["schemas"]["ReservationList"][];
         };
         PaginatedReviewList: {
             /** @example 123 */
@@ -2250,104 +2162,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AuthTokens"];
-                };
-            };
-        };
-    };
-    conversations_list: {
-        parameters: {
-            query?: {
-                /** @description Which field to use when ordering the results. */
-                ordering?: string;
-                /** @description A page number within the paginated result set. */
-                page?: number;
-                /** @description Number of results to return per page. */
-                page_size?: number;
-                /** @description A search term. */
-                search?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedConversationList"];
-                };
-            };
-        };
-    };
-    conversations_create: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ConversationCreate"];
-                "application/x-www-form-urlencoded": components["schemas"]["ConversationCreate"];
-                "multipart/form-data": components["schemas"]["ConversationCreate"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ConversationCreate"];
-                };
-            };
-        };
-    };
-    conversations_messages_retrieve: {
-        parameters: {
-            query?: {
-                /** @description Return messages older than this message id (keyset cursor). */
-                before?: number;
-            };
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MessageHistory"];
-                };
-            };
-        };
-    };
-    conversations_read_create: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MarkReadResult"];
                 };
             };
         };
