@@ -78,6 +78,7 @@ class Command(BaseCommand):
             owner.save(update_fields=["password"])
             self.stdout.write(self.style.SUCCESS(f"Created demo client {owner.email}."))
         from pathlib import Path
+
         from django.core.files import File
         seed_images_dir = Path(__file__).parent / "seed_images"
         dog_images = {
@@ -282,8 +283,10 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(f"Created {created_count} demo gardens."))
 
         # Attach default images if they exist
-        from django.core.files import File
         from pathlib import Path
+
+        from django.core.files import File
+
         from apps.gardens.models import GardenPhoto
 
         seed_images_dir = Path(__file__).parent / "seed_images"
@@ -308,7 +311,9 @@ class Command(BaseCommand):
                         photos_created += 1
 
         if photos_created:
-            self.stdout.write(self.style.SUCCESS(f"Attached photos to {photos_created} demo gardens."))
+            self.stdout.write(
+                self.style.SUCCESS(f"Attached photos to {photos_created} demo gardens.")
+            )
 
     def _seed_reservations(self) -> None:
         """B4: bookings for the demo client across all panel states (PLAN 14).
