@@ -51,6 +51,12 @@ export type HostStats = Schemas['HostStats'];
 export type Review = Schemas['Review'];
 export type ReviewAuthor = Schemas['ReviewAuthor'];
 
+/* ----- Payments / invoices (booking checkout) ----- */
+export type Billing = Schemas['Billing'];
+export type PaymentIntentResponse = Schemas['PaymentIntentResponse'];
+export type StripeConfig = Schemas['StripeConfig'];
+export type Invoice = Schemas['Invoice'];
+
 /* ----- System ----- */
 export type HealthResponse = Schemas['HealthResponse'];
 
