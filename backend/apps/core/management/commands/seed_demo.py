@@ -80,6 +80,7 @@ class Command(BaseCommand):
         from pathlib import Path
 
         from django.core.files import File
+
         seed_images_dir = Path(__file__).parent / "seed_images"
         dog_images = {
             "Łata": "dog_lata.png",
