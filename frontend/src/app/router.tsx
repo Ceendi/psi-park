@@ -9,9 +9,22 @@ import {
   DashboardClientLayout,
   DashboardHostLayout,
 } from './layouts/dashboards';
-import { HomePlaceholder } from './pages/HomePlaceholder';
 import { NotFound } from './pages/NotFound';
 import { PlaceholderPage } from './pages/PlaceholderPage';
+
+// Public catalogue / home (F2) + garden detail (F3) — lazy.
+const HomePage = lazy(() => import('@/features/gardens').then((m) => ({ default: m.HomePage })));
+const GardenDetailPage = lazy(() =>
+  import('@/features/gardens').then((m) => ({ default: m.GardenDetailPage })),
+);
+
+// Booking wizard + Stripe payment (F4) — client-only, lazy.
+const BookingWizardPage = lazy(() =>
+  import('@/features/booking').then((m) => ({ default: m.BookingWizardPage })),
+);
+const BookingSuccessPage = lazy(() =>
+  import('@/features/booking').then((m) => ({ default: m.SuccessPage })),
+);
 
 // Auth screens (F1) — lazy per route; the top-level Suspense in AppProviders
 // renders the fallback while the chunk loads.
@@ -21,6 +34,34 @@ const PasswordResetPage = lazy(() => import('@/features/auth/PasswordResetPage')
 
 // Chat (F7) — one component, mounted under both dashboards with its base path.
 const ChatPage = lazy(() => import('@/features/chat').then((m) => ({ default: m.ChatPage })));
+// Client panel screens (F5) — lazy per route.
+const ReservationsPage = lazy(() =>
+  import('@/features/reservations').then((m) => ({ default: m.ReservationsPage })),
+);
+const PetsPage = lazy(() => import('@/features/dogs').then((m) => ({ default: m.PetsPage })));
+const ReviewsPage = lazy(() =>
+  import('@/features/reviews').then((m) => ({ default: m.ReviewsPage })),
+);
+const SettingsPage = lazy(() =>
+  import('@/features/account').then((m) => ({ default: m.SettingsPage })),
+);
+
+// Host panel screens (F6) — lazy per route.
+const HostGardensPage = lazy(() =>
+  import('@/features/host').then((m) => ({ default: m.GardensPage })),
+);
+const GardenFormPage = lazy(() =>
+  import('@/features/host').then((m) => ({ default: m.GardenFormPage })),
+);
+const HostReservationsPage = lazy(() =>
+  import('@/features/host').then((m) => ({ default: m.HostReservationsPage })),
+);
+const HostSchedulePage = lazy(() =>
+  import('@/features/host').then((m) => ({ default: m.SchedulePage })),
+);
+const HostEarningsPage = lazy(() =>
+  import('@/features/host').then((m) => ({ default: m.EarningsPage })),
+);
 
 // Placeholders keep every route navigable on the F0 skeleton; later parts swap
 // in the real screens (the routing, layouts and guards stay).
@@ -30,14 +71,14 @@ const routes: RouteObject[] = [
   {
     element: <PublicLayout />,
     children: [
-      { index: true, element: <HomePlaceholder /> },
-      { path: 'ogrody/:id', element: ph('Szczegóły ogrodu', 'F3') },
+      { index: true, element: <HomePage /> },
+      { path: 'ogrody/:id', element: <GardenDetailPage /> },
       // Booking flow — public layout but client-only (PLAN §16.2).
       {
         element: <RequireRole role="client" />,
         children: [
-          { path: 'rezerwacja/:gardenId', element: ph('Rezerwacja ogrodu', 'F4') },
-          { path: 'rezerwacja/:id/sukces', element: ph('Rezerwacja potwierdzona', 'F4') },
+          { path: 'rezerwacja/:gardenId', element: <BookingWizardPage /> },
+          { path: 'rezerwacja/:id/sukces', element: <BookingSuccessPage /> },
         ],
       },
       // Static legal/help pages (F8).
@@ -67,12 +108,12 @@ const routes: RouteObject[] = [
         path: 'panel',
         element: <DashboardClientLayout />,
         children: [
-          { index: true, element: ph('Moje rezerwacje', 'F5') },
-          { path: 'pupile', element: ph('Moi pupile', 'F5') },
-          { path: 'recenzje', element: ph('Moje recenzje', 'F5') },
+          { index: true, element: <ReservationsPage /> },
+          { path: 'pupile', element: <PetsPage /> },
+          { path: 'recenzje', element: <ReviewsPage /> },
           { path: 'wiadomosci', element: <ChatPage basePath="/panel/wiadomosci" /> },
           { path: 'wiadomosci/:id', element: <ChatPage basePath="/panel/wiadomosci" /> },
-          { path: 'ustawienia', element: ph('Ustawienia konta', 'F5') },
+          { path: 'ustawienia', element: <SettingsPage /> },
         ],
       },
     ],
@@ -85,15 +126,15 @@ const routes: RouteObject[] = [
         path: 'gospodarz',
         element: <DashboardHostLayout />,
         children: [
-          { index: true, element: ph('Moje ogrody', 'F6') },
-          { path: 'ogrody/nowy', element: ph('Nowy ogród', 'F6') },
-          { path: 'ogrody/:id/edycja', element: ph('Edycja ogrodu', 'F6') },
-          { path: 'rezerwacje', element: ph('Rezerwacje', 'F6') },
-          { path: 'harmonogram', element: ph('Harmonogram', 'F6') },
+          { index: true, element: <HostGardensPage /> },
+          { path: 'ogrody/nowy', element: <GardenFormPage /> },
+          { path: 'ogrody/:id/edycja', element: <GardenFormPage /> },
+          { path: 'rezerwacje', element: <HostReservationsPage /> },
+          { path: 'harmonogram', element: <HostSchedulePage /> },
           { path: 'wiadomosci', element: <ChatPage basePath="/gospodarz/wiadomosci" /> },
           { path: 'wiadomosci/:id', element: <ChatPage basePath="/gospodarz/wiadomosci" /> },
-          { path: 'zarobki', element: ph('Zarobki', 'F6') },
-          { path: 'ustawienia', element: ph('Ustawienia konta', 'F5') },
+          { path: 'zarobki', element: <HostEarningsPage /> },
+          { path: 'ustawienia', element: <SettingsPage /> },
         ],
       },
     ],
