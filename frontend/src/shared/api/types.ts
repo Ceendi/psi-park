@@ -9,7 +9,7 @@ type Schemas = components['schemas'];
 
 /* ----- Accounts / auth ----- */
 export type User = Schemas['User'];
-export type UserRole = Schemas['UserRoleEnum'];
+export type UserRole = Schemas['RoleEnum'];
 export type AuthTokens = Schemas['AuthTokens'];
 export type TokenRefresh = Schemas['TokenRefresh'];
 export type LoginInput = Schemas['Login'];
@@ -57,6 +57,9 @@ export type ReviewAuthor = Schemas['ReviewAuthor'];
 export type EligibleReservation = Schemas['EligibleReservation'];
 
 /* ----- Invoices ----- */
+export type Billing = Schemas['Billing'];
+export type PaymentIntentResponse = Schemas['PaymentIntentResponse'];
+export type StripeConfig = Schemas['StripeConfig'];
 export type Invoice = Schemas['Invoice'];
 
 /* ----- Account (me) ----- */
