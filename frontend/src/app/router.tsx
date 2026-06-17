@@ -18,6 +18,14 @@ const GardenDetailPage = lazy(() =>
   import('@/features/gardens').then((m) => ({ default: m.GardenDetailPage })),
 );
 
+// Booking wizard + Stripe payment (F4) — client-only, lazy.
+const BookingWizardPage = lazy(() =>
+  import('@/features/booking').then((m) => ({ default: m.BookingWizardPage })),
+);
+const BookingSuccessPage = lazy(() =>
+  import('@/features/booking').then((m) => ({ default: m.SuccessPage })),
+);
+
 // Auth screens (F1) — lazy per route; the top-level Suspense in AppProviders
 // renders the fallback while the chunk loads.
 const LoginPage = lazy(() => import('@/features/auth/LoginPage'));
@@ -38,8 +46,8 @@ const routes: RouteObject[] = [
       {
         element: <RequireRole role="client" />,
         children: [
-          { path: 'rezerwacja/:gardenId', element: ph('Rezerwacja ogrodu', 'F4') },
-          { path: 'rezerwacja/:id/sukces', element: ph('Rezerwacja potwierdzona', 'F4') },
+          { path: 'rezerwacja/:gardenId', element: <BookingWizardPage /> },
+          { path: 'rezerwacja/:id/sukces', element: <BookingSuccessPage /> },
         ],
       },
       // Static legal/help pages (F8).
