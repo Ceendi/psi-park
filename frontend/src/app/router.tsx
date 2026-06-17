@@ -9,9 +9,11 @@ import {
   DashboardClientLayout,
   DashboardHostLayout,
 } from './layouts/dashboards';
-import { HomePlaceholder } from './pages/HomePlaceholder';
 import { NotFound } from './pages/NotFound';
 import { PlaceholderPage } from './pages/PlaceholderPage';
+
+// Public catalogue / home (F2) — lazy; landing route.
+const HomePage = lazy(() => import('@/features/gardens').then((m) => ({ default: m.HomePage })));
 
 // Auth screens (F1) — lazy per route; the top-level Suspense in AppProviders
 // renders the fallback while the chunk loads.
@@ -27,7 +29,7 @@ const routes: RouteObject[] = [
   {
     element: <PublicLayout />,
     children: [
-      { index: true, element: <HomePlaceholder /> },
+      { index: true, element: <HomePage /> },
       { path: 'ogrody/:id', element: ph('Szczegóły ogrodu', 'F3') },
       // Booking flow — public layout but client-only (PLAN §16.2).
       {
