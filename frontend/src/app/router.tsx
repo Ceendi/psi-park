@@ -12,8 +12,11 @@ import {
 import { NotFound } from './pages/NotFound';
 import { PlaceholderPage } from './pages/PlaceholderPage';
 
-// Public catalogue / home (F2) — lazy; landing route.
+// Public catalogue / home (F2) + garden detail (F3) — lazy.
 const HomePage = lazy(() => import('@/features/gardens').then((m) => ({ default: m.HomePage })));
+const GardenDetailPage = lazy(() =>
+  import('@/features/gardens').then((m) => ({ default: m.GardenDetailPage })),
+);
 
 // Auth screens (F1) — lazy per route; the top-level Suspense in AppProviders
 // renders the fallback while the chunk loads.
@@ -30,7 +33,7 @@ const routes: RouteObject[] = [
     element: <PublicLayout />,
     children: [
       { index: true, element: <HomePage /> },
-      { path: 'ogrody/:id', element: ph('Szczegóły ogrodu', 'F3') },
+      { path: 'ogrody/:id', element: <GardenDetailPage /> },
       // Booking flow — public layout but client-only (PLAN §16.2).
       {
         element: <RequireRole role="client" />,
