@@ -58,6 +58,9 @@ INSTALLED_APPS = [
     "apps.reviews",
     "apps.chat",
     "apps.notifications",
+    # adminpanel loads last so its Django-admin actions can re-register the Garden/User
+    # admins after the owning apps have registered them (B9).
+    "apps.adminpanel",
 ]
 
 MIDDLEWARE = [
@@ -195,6 +198,12 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "PsiPark API",
     "DESCRIPTION": "Marketplace wynajmu prywatnych ogrodów dla psów.",
     "VERSION": "1.0.0",
+    # The full user-role enum is shared by several serializers (account profile + the B9
+    # admin lists), so pin its component name instead of letting the collision resolver pick
+    # a hash-suffixed one — keeps the committed schema stable and the generated FE types clean.
+    "ENUM_NAME_OVERRIDES": {
+        "RoleEnum": "apps.accounts.models.User.Role",
+    },
     "SERVE_INCLUDE_SCHEMA": False,
     "SCHEMA_PATH_PREFIX": "/api/v1",
 }
