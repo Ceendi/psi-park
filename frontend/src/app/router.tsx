@@ -10,7 +10,7 @@ import {
   DashboardHostLayout,
 } from './layouts/dashboards';
 import { NotFound } from './pages/NotFound';
-import { PlaceholderPage } from './pages/PlaceholderPage';
+// import { PlaceholderPage } from './pages/PlaceholderPage';
 
 // Public catalogue / home (F2) + garden detail (F3) — lazy.
 const HomePage = lazy(() => import('@/features/gardens').then((m) => ({ default: m.HomePage })));
@@ -78,7 +78,7 @@ const HostEarningsPage = lazy(() =>
 
 // Placeholders keep every route navigable on the F0 skeleton; later parts swap
 // in the real screens (the routing, layouts and guards stay).
-const ph = (title: string, part: string) => <PlaceholderPage title={title} part={part} />;
+// const ph = (title: string, part: string) => <PlaceholderPage title={title} part={part} />;
 
 const routes: RouteObject[] = [
   {
@@ -161,8 +161,7 @@ const routes: RouteObject[] = [
         element: <DashboardAdminLayout />,
         children: [
           { index: true, element: <VerificationQueuePage /> },
-          { path: 'uzytkownicy', element: <
-           /> },
+          { path: 'uzytkownicy', element: <AdminUsersPage /> },
           { path: 'recenzje', element: <ReviewsModerationPage /> },
         ],
       },
