@@ -47,6 +47,13 @@ export type CancelResult = Schemas['CancelResult'];
 export type ScheduleEvent = Schemas['ScheduleEvent'];
 export type HostStats = Schemas['HostStats'];
 
+/* ----- Chat ----- */
+export type Conversation = Schemas['Conversation'];
+export type ConversationCreate = Schemas['ConversationCreate'];
+export type ChatGarden = Schemas['ChatGarden'];
+export type ChatParticipant = Schemas['ChatParticipant'];
+export type ChatMessage = Schemas['ChatMessage'];
+export type MessageHistory = Schemas['MessageHistory'];
 /** Panel-tab grouping accepted by `GET /reservations/?status_group=` (PLAN §8.2). */
 export type ReservationStatusGroup = 'upcoming' | 'completed' | 'cancelled';
 

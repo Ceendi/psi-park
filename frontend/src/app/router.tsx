@@ -32,6 +32,8 @@ const LoginPage = lazy(() => import('@/features/auth/LoginPage'));
 const RegisterPage = lazy(() => import('@/features/auth/RegisterPage'));
 const PasswordResetPage = lazy(() => import('@/features/auth/PasswordResetPage'));
 
+// Chat (F7) — one component, mounted under both dashboards with its base path.
+const ChatPage = lazy(() => import('@/features/chat').then((m) => ({ default: m.ChatPage })));
 // Client panel screens (F5) — lazy per route.
 const ReservationsPage = lazy(() =>
   import('@/features/reservations').then((m) => ({ default: m.ReservationsPage })),
@@ -109,8 +111,8 @@ const routes: RouteObject[] = [
           { index: true, element: <ReservationsPage /> },
           { path: 'pupile', element: <PetsPage /> },
           { path: 'recenzje', element: <ReviewsPage /> },
-          { path: 'wiadomosci', element: ph('Wiadomości', 'F7') },
-          { path: 'wiadomosci/:id', element: ph('Wiadomości', 'F7') },
+          { path: 'wiadomosci', element: <ChatPage basePath="/panel/wiadomosci" /> },
+          { path: 'wiadomosci/:id', element: <ChatPage basePath="/panel/wiadomosci" /> },
           { path: 'ustawienia', element: <SettingsPage /> },
         ],
       },
@@ -129,8 +131,8 @@ const routes: RouteObject[] = [
           { path: 'ogrody/:id/edycja', element: <GardenFormPage /> },
           { path: 'rezerwacje', element: <HostReservationsPage /> },
           { path: 'harmonogram', element: <HostSchedulePage /> },
-          { path: 'wiadomosci', element: ph('Wiadomości', 'F7') },
-          { path: 'wiadomosci/:id', element: ph('Wiadomości', 'F7') },
+          { path: 'wiadomosci', element: <ChatPage basePath="/gospodarz/wiadomosci" /> },
+          { path: 'wiadomosci/:id', element: <ChatPage basePath="/gospodarz/wiadomosci" /> },
           { path: 'zarobki', element: <HostEarningsPage /> },
           { path: 'ustawienia', element: <SettingsPage /> },
         ],
