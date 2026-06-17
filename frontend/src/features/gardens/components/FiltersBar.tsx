@@ -30,7 +30,7 @@ export function FiltersBar({ value, onChange, availableCities, onOpenAllFilters 
   }
 
   return (
-    <div className="sticky top-[73px] z-30 border-b border-ink-100 bg-bone/90 backdrop-blur">
+    <div id="szukaj" className="sticky top-[73px] lg:top-[87px] z-30 border-b border-ink-100 bg-bone/90 backdrop-blur">
       <div className="mx-auto flex max-w-[1400px] flex-wrap items-center gap-2.5 px-4 py-3 md:px-8">
         <label className={chip}>
           <input

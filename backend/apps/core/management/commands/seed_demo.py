@@ -77,6 +77,13 @@ class Command(BaseCommand):
             owner.set_password("klient12345")
             owner.save(update_fields=["password"])
             self.stdout.write(self.style.SUCCESS(f"Created demo client {owner.email}."))
+        from pathlib import Path
+        from django.core.files import File
+        seed_images_dir = Path(__file__).parent / "seed_images"
+        dog_images = {
+            "Łata": "dog_lata.png",
+            "Borys": "dog_borys.png",
+        }
 
         dogs = {
             "Łata": {
@@ -101,7 +108,14 @@ class Command(BaseCommand):
             },
         }
         for name, defaults in dogs.items():
-            Dog.objects.get_or_create(owner=owner, name=name, defaults=defaults)
+            dog, _ = Dog.objects.get_or_create(owner=owner, name=name, defaults=defaults)
+            if not dog.photo:
+                filename = dog_images.get(name)
+                if filename:
+                    img_path = seed_images_dir / filename
+                    if img_path.exists():
+                        with img_path.open("rb") as f:
+                            dog.photo.save(filename, File(f), save=True)
 
     def _seed_gardens(self) -> None:
         """B3: demo hosts (incl. "Magda Krawczyk") and their Kraków gardens (PLAN 14).
@@ -266,6 +280,35 @@ class Command(BaseCommand):
             created_count += int(created)
         if created_count:
             self.stdout.write(self.style.SUCCESS(f"Created {created_count} demo gardens."))
+
+        # Attach default images if they exist
+        from django.core.files import File
+        from pathlib import Path
+        from apps.gardens.models import GardenPhoto
+
+        seed_images_dir = Path(__file__).parent / "seed_images"
+        image_mapping = {
+            "Ogród z basenem i wiatą na Woli Justowskiej": "garden_pool.png",
+            "Zielona oaza pod Kopcem Kościuszki": "garden_oasis.png",
+            "Przestronny wybieg w Nowej Hucie": "garden_agility.png",
+            "Kameralny ogród na Zabłociu": "garden_urban.png",
+        }
+
+        photos_created = 0
+        for title, filename in image_mapping.items():
+            garden = Garden.objects.filter(title=title).first()
+            if garden and not garden.photos.exists():
+                img_path = seed_images_dir / filename
+                if img_path.exists():
+                    with img_path.open("rb") as f:
+                        photo = GardenPhoto(garden=garden, position=0)
+                        photo.image.save(filename, File(f), save=False)
+                        photo.thumbnail.save(f"thumb_{filename}", File(f), save=False)
+                        photo.save()
+                        photos_created += 1
+
+        if photos_created:
+            self.stdout.write(self.style.SUCCESS(f"Attached photos to {photos_created} demo gardens."))
 
     def _seed_reservations(self) -> None:
         """B4: bookings for the demo client across all panel states (PLAN 14).

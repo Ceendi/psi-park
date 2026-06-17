@@ -19,8 +19,9 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173,
     proxy: {
-      '/api': { target: proxyTarget, changeOrigin: true },
-      '/ws': { target: proxyTarget, ws: true, changeOrigin: true },
+      '/api': { target: proxyTarget, changeOrigin: false },
+      '/ws': { target: proxyTarget, ws: true, changeOrigin: false },
+      '/media': { target: proxyTarget, changeOrigin: false },
     },
   },
   build: {
