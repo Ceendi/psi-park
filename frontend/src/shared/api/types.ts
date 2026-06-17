@@ -9,7 +9,7 @@ type Schemas = components['schemas'];
 
 /* ----- Accounts / auth ----- */
 export type User = Schemas['User'];
-export type UserRole = Schemas['UserRoleEnum'];
+export type UserRole = Schemas['RoleEnum'];
 export type AuthTokens = Schemas['AuthTokens'];
 export type TokenRefresh = Schemas['TokenRefresh'];
 export type LoginInput = Schemas['Login'];
@@ -46,6 +46,14 @@ export type ReservationStatus = Schemas['StatusEnum'];
 export type CancelResult = Schemas['CancelResult'];
 export type ScheduleEvent = Schemas['ScheduleEvent'];
 export type HostStats = Schemas['HostStats'];
+
+/* ----- Chat ----- */
+export type Conversation = Schemas['Conversation'];
+export type ConversationCreate = Schemas['ConversationCreate'];
+export type ChatGarden = Schemas['ChatGarden'];
+export type ChatParticipant = Schemas['ChatParticipant'];
+export type ChatMessage = Schemas['ChatMessage'];
+export type MessageHistory = Schemas['MessageHistory'];
 
 /* ----- System ----- */
 export type HealthResponse = Schemas['HealthResponse'];

@@ -19,6 +19,9 @@ const LoginPage = lazy(() => import('@/features/auth/LoginPage'));
 const RegisterPage = lazy(() => import('@/features/auth/RegisterPage'));
 const PasswordResetPage = lazy(() => import('@/features/auth/PasswordResetPage'));
 
+// Chat (F7) — one component, mounted under both dashboards with its base path.
+const ChatPage = lazy(() => import('@/features/chat').then((m) => ({ default: m.ChatPage })));
+
 // Placeholders keep every route navigable on the F0 skeleton; later parts swap
 // in the real screens (the routing, layouts and guards stay).
 const ph = (title: string, part: string) => <PlaceholderPage title={title} part={part} />;
@@ -67,8 +70,8 @@ const routes: RouteObject[] = [
           { index: true, element: ph('Moje rezerwacje', 'F5') },
           { path: 'pupile', element: ph('Moi pupile', 'F5') },
           { path: 'recenzje', element: ph('Moje recenzje', 'F5') },
-          { path: 'wiadomosci', element: ph('Wiadomości', 'F7') },
-          { path: 'wiadomosci/:id', element: ph('Wiadomości', 'F7') },
+          { path: 'wiadomosci', element: <ChatPage basePath="/panel/wiadomosci" /> },
+          { path: 'wiadomosci/:id', element: <ChatPage basePath="/panel/wiadomosci" /> },
           { path: 'ustawienia', element: ph('Ustawienia konta', 'F5') },
         ],
       },
@@ -87,8 +90,8 @@ const routes: RouteObject[] = [
           { path: 'ogrody/:id/edycja', element: ph('Edycja ogrodu', 'F6') },
           { path: 'rezerwacje', element: ph('Rezerwacje', 'F6') },
           { path: 'harmonogram', element: ph('Harmonogram', 'F6') },
-          { path: 'wiadomosci', element: ph('Wiadomości', 'F7') },
-          { path: 'wiadomosci/:id', element: ph('Wiadomości', 'F7') },
+          { path: 'wiadomosci', element: <ChatPage basePath="/gospodarz/wiadomosci" /> },
+          { path: 'wiadomosci/:id', element: <ChatPage basePath="/gospodarz/wiadomosci" /> },
           { path: 'zarobki', element: ph('Zarobki', 'F6') },
           { path: 'ustawienia', element: ph('Ustawienia konta', 'F5') },
         ],
