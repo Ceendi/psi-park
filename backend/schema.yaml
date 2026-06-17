@@ -4,6 +4,306 @@ info:
   version: 1.0.0
   description: Marketplace wynajmu prywatnych ogrodów dla psów.
 paths:
+  /api/v1/admin/gardens/:
+    get:
+      operationId: admin_gardens_list
+      description: GET /admin/gardens/?status=pending — the verification queue (any
+        status, filterable).
+      parameters:
+      - in: query
+        name: city
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - approved
+          - pending
+          - rejected
+        description: |-
+          * `pending` - Oczekuje weryfikacji
+          * `approved` - Zatwierdzony
+          * `rejected` - Odrzucony
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminGardenList'
+          description: ''
+  /api/v1/admin/gardens/{id}/approve/:
+    post:
+      operationId: admin_gardens_approve_create
+      description: POST /admin/gardens/{id}/approve/ — publish the garden + e-mail
+        the host.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminGarden'
+          description: ''
+  /api/v1/admin/gardens/{id}/reject/:
+    post:
+      operationId: admin_gardens_reject_create
+      description: POST /admin/gardens/{id}/reject/ — reject with a reason + e-mail
+        the host.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GardenReject'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GardenReject'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GardenReject'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminGarden'
+          description: ''
+  /api/v1/admin/reviews/:
+    get:
+      operationId: admin_reviews_list
+      description: GET /admin/reviews/ — all reviews for moderation, newest first
+        (filter by garden/rating).
+      parameters:
+      - in: query
+        name: garden
+        schema:
+          type: number
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: rating
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminReviewList'
+          description: ''
+  /api/v1/admin/reviews/{id}/:
+    delete:
+      operationId: admin_reviews_destroy
+      description: DELETE /admin/reviews/{id}/ — remove a violating review (moderation).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/admin/users/:
+    get:
+      operationId: admin_users_list
+      description: GET /admin/users/ — all accounts, filterable by role/active and
+        searchable.
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: role
+        schema:
+          type: string
+          enum:
+          - admin
+          - client
+          - host
+        description: |-
+          * `client` - Klient
+          * `host` - Gospodarz
+          * `admin` - Administrator
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminUserList'
+          description: ''
+  /api/v1/admin/users/{id}/block/:
+    post:
+      operationId: admin_users_block_create
+      description: POST /admin/users/{id}/block/ — deactivate the account (``is_active=False``).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUser'
+          description: ''
+  /api/v1/admin/users/{id}/unblock/:
+    post:
+      operationId: admin_users_unblock_create
+      description: POST /admin/users/{id}/unblock/ — re-activate the account (``is_active=True``).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUser'
+          description: ''
+  /api/v1/admin/users/{id}/verify/:
+    post:
+      operationId: admin_users_verify_create
+      description: POST /admin/users/{id}/verify/ — mark a host as verified (badge)
+        + e-mail.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - admin
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUser'
+          description: ''
   /api/v1/auth/login/:
     post:
       operationId: auth_login_create
@@ -1523,6 +1823,286 @@ paths:
           description: ''
 components:
   schemas:
+    AdminGarden:
+      type: object
+      description: 'Full garden view for moderation: every detail field plus the host''s
+        contact block.'
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        description:
+          type: string
+          readOnly: true
+        city:
+          type: string
+          readOnly: true
+        address:
+          type: string
+          readOnly: true
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          readOnly: true
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          readOnly: true
+        area_m2:
+          type: integer
+          readOnly: true
+        surface_type:
+          allOf:
+          - $ref: '#/components/schemas/SurfaceTypeEnum'
+          readOnly: true
+        is_fenced:
+          type: boolean
+          readOnly: true
+        fence_height_m:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,2}(?:\.\d{0,1})?$
+          readOnly: true
+          nullable: true
+        max_dogs:
+          type: integer
+          readOnly: true
+        price_per_hour:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,5}(?:\.\d{0,2})?$
+          readOnly: true
+        open_from:
+          type: string
+          format: time
+          readOnly: true
+        open_to:
+          type: string
+          format: time
+          readOnly: true
+        min_booking_hours:
+          type: integer
+          readOnly: true
+        amenities:
+          readOnly: true
+        amenities_display:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          description: Resolve stored amenity codes to ``{code, label}`` (label catalogue
+            lives in BE).
+          readOnly: true
+        rules:
+          readOnly: true
+        verification_status:
+          allOf:
+          - $ref: '#/components/schemas/VerificationStatusEnum'
+          readOnly: true
+        rejection_reason:
+          type: string
+          readOnly: true
+        is_active:
+          type: boolean
+          readOnly: true
+        host:
+          allOf:
+          - $ref: '#/components/schemas/AdminHost'
+          readOnly: true
+        photos:
+          type: array
+          items:
+            $ref: '#/components/schemas/GardenPhoto'
+          readOnly: true
+        rating_avg:
+          type: number
+          format: double
+          nullable: true
+          readOnly: true
+        rating_count:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - address
+      - amenities
+      - amenities_display
+      - area_m2
+      - city
+      - created_at
+      - description
+      - fence_height_m
+      - host
+      - id
+      - is_active
+      - is_fenced
+      - latitude
+      - longitude
+      - max_dogs
+      - min_booking_hours
+      - open_from
+      - open_to
+      - photos
+      - price_per_hour
+      - rating_avg
+      - rating_count
+      - rejection_reason
+      - rules
+      - surface_type
+      - title
+      - updated_at
+      - verification_status
+    AdminHost:
+      type: object
+      description: Host identity for the garden queue — adds contact details over
+        the public card.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+        phone:
+          type: string
+          readOnly: true
+        role:
+          allOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          readOnly: true
+        is_verified_host:
+          type: boolean
+          readOnly: true
+        verified_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - email
+      - full_name
+      - id
+      - is_verified_host
+      - phone
+      - role
+      - verified_at
+    AdminReview:
+      type: object
+      description: 'Review row for moderation: who wrote it, on which garden, plus
+        the content (PLAN 8.2).'
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        garden:
+          allOf:
+          - $ref: '#/components/schemas/_ReviewGarden'
+          readOnly: true
+        author:
+          allOf:
+          - $ref: '#/components/schemas/_ReviewAuthor'
+          readOnly: true
+        reservation:
+          type: integer
+          readOnly: true
+        rating:
+          type: integer
+          readOnly: true
+        comment:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - author
+      - comment
+      - created_at
+      - garden
+      - id
+      - rating
+      - reservation
+      - updated_at
+    AdminUser:
+      type: object
+      description: 'Admin-facing account row: identity, role and the moderation status
+        flags (PLAN 8.2).'
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+        first_name:
+          type: string
+          readOnly: true
+        last_name:
+          type: string
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        phone:
+          type: string
+          readOnly: true
+        role:
+          allOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          readOnly: true
+        is_active:
+          type: boolean
+          readOnly: true
+        is_verified_host:
+          type: boolean
+          readOnly: true
+        verified_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        marketing_consent:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - email
+      - first_name
+      - full_name
+      - id
+      - is_active
+      - is_verified_host
+      - last_name
+      - marketing_consent
+      - phone
+      - role
+      - verified_at
     AmenitiesEnum:
       enum:
       - pool
@@ -2302,6 +2882,16 @@ components:
           writeOnly: true
       required:
       - image
+    GardenReject:
+      type: object
+      description: Garden rejection body (PLAN 8.2). ``reason`` is required so the
+        host gets feedback.
+      properties:
+        reason:
+          type: string
+          maxLength: 300
+      required:
+      - reason
     GardenWrite:
       type: object
       description: Validate garden create/update. ``host``/status/photos are set elsewhere
@@ -2521,6 +3111,75 @@ components:
       - has_more
       - next_before
       - results
+    PaginatedAdminGardenList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminGarden'
+    PaginatedAdminReviewList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminReview'
+    PaginatedAdminUserList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminUser'
     PaginatedConversationList:
       type: object
       required:
@@ -3236,6 +3895,16 @@ components:
           maxLength: 2000
       required:
       - rating
+    RoleEnum:
+      enum:
+      - client
+      - host
+      - admin
+      type: string
+      description: |-
+        * `client` - Klient
+        * `host` - Gospodarz
+        * `admin` - Administrator
     ScheduleEvent:
       type: object
       description: One calendar event in the host schedule (PLAN 8.2).
@@ -3370,7 +4039,7 @@ components:
           readOnly: true
         role:
           allOf:
-          - $ref: '#/components/schemas/UserRoleEnum'
+          - $ref: '#/components/schemas/RoleEnum'
           readOnly: true
         is_verified_host:
           type: boolean
@@ -3405,16 +4074,6 @@ components:
       - role
       - terms_accepted_at
       - verified_at
-    UserRoleEnum:
-      enum:
-      - client
-      - host
-      - admin
-      type: string
-      description: |-
-        * `client` - Klient
-        * `host` - Gospodarz
-        * `admin` - Administrator
     VerificationStatusEnum:
       enum:
       - pending
@@ -3425,6 +4084,42 @@ components:
         * `pending` - Oczekuje weryfikacji
         * `approved` - Zatwierdzony
         * `rejected` - Odrzucony
+    _ReviewAuthor:
+      type: object
+      description: Review author identity for moderation (admins see the e-mail, unlike
+        the public card).
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        full_name:
+          type: string
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+      required:
+      - email
+      - full_name
+      - id
+    _ReviewGarden:
+      type: object
+      description: Minimal garden identity shown next to a moderated review.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        city:
+          type: string
+          readOnly: true
+      required:
+      - city
+      - id
+      - title
   securitySchemes:
     jwtAuth:
       type: http
