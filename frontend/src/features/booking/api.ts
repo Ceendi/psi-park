@@ -91,7 +91,7 @@ export function useStripeConfig() {
 
 export function useClientDogs() {
   return useQuery({
-    queryKey: ['dogs'],
+    queryKey: ['booking', 'dogs'],
     queryFn: async () => {
       const { data } = await api.get<Paginated<DogListItem>>('dogs/', { params: { page_size: 100 } });
       return data.results;
@@ -116,6 +116,9 @@ export function useAddDog() {
       });
       return data;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['dogs'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['dogs'] });
+      qc.invalidateQueries({ queryKey: ['booking', 'dogs'] });
+    },
   });
 }

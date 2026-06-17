@@ -11,16 +11,12 @@ import type { GardenListItem } from '@/shared/api/types';
 const DEFAULT_CENTER: [number, number] = [50.0614, 19.9372];
 
 function priceIcon(price: string, active: boolean): L.DivIcon {
-  const bg = active ? '#2E7D32' : '#FFFFFF';
-  const color = active ? '#FAFFFA' : '#1B1B1B';
+  const bgClass = active ? 'bg-green-700 text-bone' : 'bg-white text-ink-900';
   return L.divIcon({
-    className: '',
-    iconSize: [1, 1],
-    iconAnchor: [0, 0],
-    html:
-      `<div style="transform:translate(-50%,-100%);white-space:nowrap;border-radius:999px;` +
-      `padding:4px 10px;font:600 12px Inter,system-ui,sans-serif;background:${bg};color:${color};` +
-      `border:1px solid rgba(20,30,20,.15);box-shadow:0 4px 12px rgba(20,30,20,.18);">${formatPLN(price)}</div>`,
+    className: '', // Let Leaflet use its default empty container
+    iconSize: [0, 0], // Container is a 0x0 point
+    iconAnchor: [0, 0], // Anchored exactly at the coordinate
+    html: `<div class="flex items-center justify-center whitespace-nowrap rounded-pill border border-black/15 px-2.5 py-1 text-[12px] font-semibold shadow-sm ${bgClass}" style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:max-content;">${formatPLN(price)}</div>`,
   });
 }
 
