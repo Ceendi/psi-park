@@ -47,6 +47,11 @@ export type CancelResult = Schemas['CancelResult'];
 export type ScheduleEvent = Schemas['ScheduleEvent'];
 export type HostStats = Schemas['HostStats'];
 
+/* ----- Admin (panel) ----- */
+export type AdminGarden = Schemas['AdminGarden'];
+export type AdminHost = Schemas['AdminHost'];
+export type AdminUser = Schemas['AdminUser'];
+export type AdminReview = Schemas['AdminReview'];
 /* ----- Chat ----- */
 export type Conversation = Schemas['Conversation'];
 export type ConversationCreate = Schemas['ConversationCreate'];
