@@ -22,7 +22,12 @@ export function Navbar() {
 
         {/* Search pill — visual placeholder; the real search lives in F2 (Home). */}
         <Link
-          to="/"
+          to="/#szukaj"
+          onClick={() => {
+            if (window.location.pathname === '/') {
+              document.getElementById('szukaj')?.scrollIntoView({ behavior: 'smooth' });
+            }
+          }}
           className="hidden w-full max-w-[640px] grid-cols-[1fr_1fr_0.7fr_auto] items-center justify-self-center overflow-hidden rounded-pill border border-ink-200 bg-surface shadow-1 transition hover:shadow-2 lg:grid"
           aria-label="Szukaj ogrodów"
         >

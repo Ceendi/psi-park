@@ -46,13 +46,20 @@ def eligible_reservations(*, client: User, now: datetime | None = None) -> Query
     """
     now = now or timezone.now()
     already_reviewed = Review.objects.filter(author=client).values("garden_id")
-    return (
+    distinct_ids = (
         Reservation.objects.filter(
             client=client,
             status=Reservation.Status.CONFIRMED,
             end_time__lt=now,
         )
         .exclude(garden_id__in=already_reviewed)
+        .order_by("garden_id", "-end_time")
+        .distinct("garden_id")
+        .values("id")
+    )
+
+    return (
+        Reservation.objects.filter(id__in=distinct_ids)
         .select_related("garden")
         .prefetch_related(_PHOTOS_PREFETCH)
         .order_by("-end_time", "-id")

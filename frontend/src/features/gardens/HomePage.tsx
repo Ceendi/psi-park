@@ -124,7 +124,7 @@ export function HomePage() {
           Zweryfikowane, ogrodzone ogrody w całej Polsce
         </span>
         <h1 className="mt-5 text-[40px] font-bold leading-[1.05] tracking-tight md:text-[56px]">
-          Znajdź <em className="not-italic text-green-700">idealny ogród</em>
+          Znajdź <em className="relative whitespace-nowrap not-italic text-green-700 after:absolute after:inset-x-0 after:-bottom-[2px] after:-z-10 after:h-[10px] after:rounded-[6px] after:bg-green-100 after:content-['']">idealny ogród</em>
           <br />
           dla swojego psa
         </h1>
