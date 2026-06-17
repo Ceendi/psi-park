@@ -19,6 +19,20 @@ const LoginPage = lazy(() => import('@/features/auth/LoginPage'));
 const RegisterPage = lazy(() => import('@/features/auth/RegisterPage'));
 const PasswordResetPage = lazy(() => import('@/features/auth/PasswordResetPage'));
 
+// Admin panel (F8) — lazy per route.
+const VerificationQueuePage = lazy(() =>
+  import('@/features/admin').then((m) => ({ default: m.VerificationQueuePage })),
+);
+const AdminUsersPage = lazy(() =>
+  import('@/features/admin').then((m) => ({ default: m.UsersPage })),
+);
+const ReviewsModerationPage = lazy(() =>
+  import('@/features/admin').then((m) => ({ default: m.ReviewsModerationPage })),
+);
+
+// Static legal/help pages (F8) — one component per document.
+const StaticPage = lazy(() => import('@/features/static').then((m) => ({ default: m.StaticPage })));
+
 // Placeholders keep every route navigable on the F0 skeleton; later parts swap
 // in the real screens (the routing, layouts and guards stay).
 const ph = (title: string, part: string) => <PlaceholderPage title={title} part={part} />;
@@ -38,10 +52,10 @@ const routes: RouteObject[] = [
         ],
       },
       // Static legal/help pages (F8).
-      { path: 'regulamin', element: ph('Regulamin serwisu', 'F8') },
-      { path: 'polityka-prywatnosci', element: ph('Polityka prywatności', 'F8') },
-      { path: 'pomoc', element: ph('Centrum pomocy', 'F8') },
-      { path: 'uslugi-elektroniczne', element: ph('Świadczenie usług drogą elektroniczną', 'F8') },
+      { path: 'regulamin', element: <StaticPage doc="regulamin" /> },
+      { path: 'polityka-prywatnosci', element: <StaticPage doc="polityka-prywatnosci" /> },
+      { path: 'pomoc', element: <StaticPage doc="pomoc" /> },
+      { path: 'uslugi-elektroniczne', element: <StaticPage doc="uslugi-elektroniczne" /> },
       { path: '*', element: <NotFound /> },
     ],
   },
@@ -103,9 +117,9 @@ const routes: RouteObject[] = [
         path: 'admin',
         element: <DashboardAdminLayout />,
         children: [
-          { index: true, element: ph('Kolejka weryfikacji', 'F8') },
-          { path: 'uzytkownicy', element: ph('Użytkownicy', 'F8') },
-          { path: 'recenzje', element: ph('Moderacja recenzji', 'F8') },
+          { index: true, element: <VerificationQueuePage /> },
+          { path: 'uzytkownicy', element: <AdminUsersPage /> },
+          { path: 'recenzje', element: <ReviewsModerationPage /> },
         ],
       },
     ],
