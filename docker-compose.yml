@@ -73,6 +73,8 @@ services:
     image: stripe/stripe-cli:latest
     profiles: ["stripe"]
     env_file: .env
+    environment:
+      - STRIPE_API_KEY=${STRIPE_SECRET_KEY}
     command: listen --forward-to backend:8000/api/v1/payments/webhook/
     depends_on:
       - backend
