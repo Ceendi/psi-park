@@ -52,6 +52,41 @@ export type AdminGarden = Schemas['AdminGarden'];
 export type AdminHost = Schemas['AdminHost'];
 export type AdminUser = Schemas['AdminUser'];
 export type AdminReview = Schemas['AdminReview'];
+/* ----- Chat ----- */
+export type Conversation = Schemas['Conversation'];
+export type ConversationCreate = Schemas['ConversationCreate'];
+export type ChatGarden = Schemas['ChatGarden'];
+export type ChatParticipant = Schemas['ChatParticipant'];
+export type ChatMessage = Schemas['ChatMessage'];
+export type MessageHistory = Schemas['MessageHistory'];
+/** Panel-tab grouping accepted by `GET /reservations/?status_group=` (PLAN §8.2). */
+export type ReservationStatusGroup = 'upcoming' | 'completed' | 'cancelled';
+
+/** Host-panel tab grouping for `GET /host/reservations/?status_group=` (PLAN §8.2). */
+export type HostReservationStatusGroup = 'pending' | 'accepted' | 'completed' | 'cancelled';
+
+/* ----- Reviews ----- */
+export type Review = Schemas['Review'];
+export type ReviewWrite = Schemas['ReviewWrite'];
+export type ReviewAuthor = Schemas['ReviewAuthor'];
+export type EligibleReservation = Schemas['EligibleReservation'];
+
+/* ----- Invoices ----- */
+export type Billing = Schemas['Billing'];
+export type PaymentIntentResponse = Schemas['PaymentIntentResponse'];
+export type StripeConfig = Schemas['StripeConfig'];
+export type Invoice = Schemas['Invoice'];
+
+/* ----- Account (me) ----- */
+export type MeUpdate = Schemas['PatchedMeUpdate'];
+export type PasswordChange = Schemas['PatchedPasswordChange'];
+
+/**
+ * Health-document status the backend serializes for a dog
+ * (`health_status` / `vaccinations_status` / `deworming_status`, PLAN §7.2).
+ * The API returns plain strings; this narrows them for the UI colour mapping.
+ */
+export type DogHealthStatus = 'valid' | 'expiring_soon' | 'expired' | 'unknown';
 
 /* ----- System ----- */
 export type HealthResponse = Schemas['HealthResponse'];
